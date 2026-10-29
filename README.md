@@ -112,7 +112,7 @@ For anything neither has, your Coach draws a simple start/end diagram for you, o
 
 ## Credits and licences
 
-- **Sylvester's code and text:** MIT licence (see `LICENSE`): use it, change it, share it, keep the credit. Improvements are welcome as pull requests.
+- **Sylvester's code and text:** MIT licence (see `LICENSE`, and `NOTICE.md` for the medical disclaimer and third-party data): use it, change it, share it, keep the credit. Improvements are welcome as pull requests.
 - **Exercise data:**
   - [Everkinetic](https://github.com/everkinetic/data), CC BY-SA 4.0: `coach/exercises/LICENSE-everkinetic.md`.
   - [free-exercise-db](https://github.com/yuhonas/free-exercise-db), Unlicense: `coach/exercises/LICENSE-free-exercise-db.md`.

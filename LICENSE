@@ -19,13 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Not medical advice. Sylvester is a training assistant, not a medical device. It does not
-diagnose or treat anything, and it can be wrong. Use it at your own risk, and check your
-plan with a doctor or physiotherapist.
-
-Third-party data in coach/exercises/ keeps its own licence:
-- everkinetic.json: CC BY-SA 4.0, Everkinetic (see LICENSE-everkinetic.md)
-- exercises.json: Unlicense (public domain), free-exercise-db (see LICENSE-free-exercise-db.md)
