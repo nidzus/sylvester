@@ -1,0 +1,753 @@
+<title>Sylvester</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one narrow column, sticky header with recovery state, three views (today / check-in / history). */
+:root {
+  --bg: #eef1ef; --surface: #ffffff; --sunk: #e3e8e5; --fg: #1d2622; --muted: #5d6b65; --line: #cfd8d3;
+  --accent: #0f7b8a; --accent-ink: #ffffff;
+  --green: #2f8a4c; --amber: #b7791f; --red: #c0392b;
+  --green-bg: #e2f2e6; --amber-bg: #fbefd9; --red-bg: #f8e1de;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #121715; --surface: #1b2220; --sunk: #232c29; --fg: #e4ebe7; --muted: #94a39c; --line: #2f3a36;
+  --accent: #3fb3c2; --accent-ink: #0b1514;
+  --green: #5cc27a; --amber: #e0a84a; --red: #ec7466;
+  --green-bg: #1d3325; --amber-bg: #3a2e18; --red-bg: #3d211e; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #121715; --surface: #1b2220; --sunk: #232c29; --fg: #e4ebe7; --muted: #94a39c; --line: #2f3a36;
+  --accent: #3fb3c2; --accent-ink: #0b1514;
+  --green: #5cc27a; --amber: #e0a84a; --red: #ec7466;
+  --green-bg: #1d3325; --amber-bg: #3a2e18; --red-bg: #3d211e; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.45 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.wrap { max-width: 640px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+header .wrap { display: grid; gap: 8px; padding-block: 10px 0; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font: 700 22px/1 var(--display); letter-spacing: .02em; text-transform: uppercase; }
+.brand small { display: block; font: 500 13px/1.2 var(--body); letter-spacing: 0; text-transform: none; color: var(--muted); margin-top: 2px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font: 600 13px/1.2 var(--body); background: var(--sunk); color: var(--muted); white-space: nowrap; }
+.chip.green { background: var(--green-bg); color: var(--green); }
+.chip.amber { background: var(--amber-bg); color: var(--amber); }
+.chip.red { background: var(--red-bg); color: var(--red); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+nav { display: flex; gap: 4px; }
+nav a { flex: 1; text-align: center; padding: 10px 4px 9px; color: var(--muted); text-decoration: none; font: 600 15px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; border-bottom: 3px solid transparent; }
+nav a[aria-current="page"] { color: var(--fg); border-color: var(--accent); }
+nav a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+main .wrap { display: grid; gap: 16px; padding-block: 16px 48px; }
+h2 { font: 700 26px/1.1 var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0; text-wrap: balance; }
+h3 { font: 600 21px/1.15 var(--display); letter-spacing: .01em; margin: 0; }
+p { margin: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.banner { padding: 10px 12px; border-radius: var(--r); background: var(--amber-bg); color: var(--fg); font-size: 14px; }
+.strip { display: grid; gap: 6px; }
+.strip .days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.strip .d { border: 1px solid var(--line); background: var(--surface); color: var(--muted); border-radius: 8px; padding: 6px 0; text-align: center; font: 500 11px/1.25 var(--body); }
+.strip button.d { cursor: pointer; }
+.strip .d b { display: block; font: 600 16px/1.1 var(--display); color: var(--fg); }
+.strip .d .k { display: block; text-transform: uppercase; letter-spacing: .04em; }
+.strip .d.session, .strip .d.optional { border-color: var(--accent); }
+.strip .d.session .k { color: var(--accent); font-weight: 700; }
+.strip .d.easy, .strip .d.deload, .strip .d.optional { border-style: dashed; }
+.strip .d.rest, .strip .d.recovery { background: var(--sunk); }
+.strip .d.done { background: var(--green-bg); }
+.strip .d.today { outline: 2px solid var(--fg); outline-offset: -2px; }
+.strip .d[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.strip .d[aria-pressed="true"] b, .strip .d[aria-pressed="true"] .k { color: var(--bg); }
+.adjust { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; padding: 10px 12px; border-radius: var(--r); background: var(--amber-bg); font-size: 15px; }
+.gear { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 8px 12px; border-radius: var(--r); border: 1px dashed var(--line); font-size: 14px; color: var(--muted); }
+.gear button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 6px 12px; font: 500 13px/1.2 var(--body); cursor: pointer; }
+.gear.on { border-style: solid; background: var(--amber-bg); color: var(--fg); }
+.adjust button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 6px 12px; font: 500 13px/1.2 var(--body); cursor: pointer; }
+.recovery { display: grid; gap: 4px; padding: 12px 14px; border-radius: var(--r); background: var(--surface); border: 1px solid var(--line); }
+.recovery .nums { display: flex; flex-wrap: wrap; gap: 4px 16px; font-variant-numeric: tabular-nums; font-size: 14px; color: var(--muted); }
+.recovery .nums b { color: var(--fg); font-weight: 600; }
+
+.picker { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.picker button { flex: none; border: 1px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 999px; padding: 7px 14px; font: 500 14px/1.2 var(--body); cursor: pointer; }
+.picker button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+
+.session-head { display: grid; gap: 6px; }
+.session-head .meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 14px; color: var(--muted); }
+.warmup { margin: 0; padding-left: 20px; font-size: 15px; }
+
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.ex-body { display: grid; gap: 12px; padding: 14px; }
+.ex-title { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.ex-title .n { font: 700 15px/1 var(--display); color: var(--muted); letter-spacing: .05em; }
+.rx { font: 600 18px/1.2 var(--display); letter-spacing: .02em; color: var(--accent); font-variant-numeric: tabular-nums; }
+.plate { position: relative; background: #ffffff; aspect-ratio: 16 / 9; max-width: 100%; border-bottom: 1px solid var(--line); }
+.plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.plate img.b { opacity: 0; }
+.plate.end img.b { opacity: 1; }
+.plate .tag { position: absolute; left: 8px; bottom: 8px; font: 600 12px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; background: rgba(29, 38, 34, .78); color: #ffffff; padding: 4px 7px; border-radius: 4px; }
+.plate.paused .tag::after { content: " · paused"; }
+.plate button { position: absolute; inset: 0; width: 100%; height: 100%; background: none; border: 0; cursor: pointer; }
+@media (prefers-reduced-motion: reduce) {
+  .plate { aspect-ratio: auto; display: grid; grid-template-columns: 1fr 1fr; }
+  .plate img { position: static; aspect-ratio: 4 / 3; }
+  .plate img.b { opacity: 1; }
+  .plate .tag, .plate button { display: none; }
+}
+.cues { margin: 0; padding-left: 20px; display: grid; gap: 2px; }
+details summary { cursor: pointer; color: var(--accent); font-weight: 500; font-size: 15px; }
+details ol { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; font-size: 15px; }
+.credit { font-size: 12px; color: var(--muted); }
+.note { font-size: 15px; padding: 8px 10px; border-radius: 8px; background: var(--sunk); }
+
+.sets { display: grid; gap: 6px; }
+.set { display: grid; grid-template-columns: 2.2em 1fr 1fr 2.8em; gap: 8px; align-items: center; }
+.set .lbl { font: 600 15px/1 var(--display); color: var(--muted); font-variant-numeric: tabular-nums; }
+.set.done .lbl { color: var(--green); }
+.sets .hdr { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+input, select, textarea { width: 100%; min-width: 0; font: 16px/1.3 var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-variant-numeric: tabular-nums; }
+textarea { min-height: 70px; resize: vertical; }
+.tick { width: 2.8em; height: 2.6em; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font-size: 18px; cursor: pointer; }
+.set.done .tick { background: var(--green); border-color: var(--green); color: var(--surface); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+label.f { display: grid; gap: 4px; font-size: 14px; color: var(--muted); min-width: 0; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 14px; }
+.scale { display: grid; gap: 6px; }
+.scale .q { display: flex; justify-content: space-between; gap: 8px; font-weight: 600; }
+.scale .q span { font-weight: 400; color: var(--muted); font-size: 14px; }
+.opts { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.opts button { padding: 10px 0; border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 8px; font: 600 16px/1 var(--body); font-variant-numeric: tabular-nums; cursor: pointer; }
+.opts button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.opts.wide { grid-auto-flow: row; grid-template-columns: repeat(6, 1fr); }
+.hint { font-size: 13px; color: var(--muted); }
+
+.primary { justify-self: start; padding: 12px 22px; border: 0; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font: 700 17px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; }
+.primary:disabled { opacity: .45; cursor: default; }
+.saved { font-size: 14px; color: var(--green); }
+.err { font-size: 14px; color: var(--red); }
+
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 6px; }
+code { font-size: 14px; background: var(--sunk); padding: 1px 5px; border-radius: 4px; }
+.hist { display: grid; gap: 10px; }
+.hist .item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 4px; }
+.hist .when { font: 600 15px/1.1 var(--display); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.hist ul { margin: 0; padding-left: 18px; font-size: 15px; }
+.kv { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.kv b { font-weight: 600; }
+
+/* Calibration (assessment) sessions: typed results per test and side. */
+.cat { font: 700 15px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.how { margin: 0; padding-left: 20px; display: grid; gap: 3px; font-size: 15px; }
+.stop { font-size: 14px; padding: 8px 10px; border-radius: 8px; background: var(--amber-bg); }
+.why { font-size: 13px; color: var(--muted); }
+.res { display: grid; gap: 8px; }
+.res-row { display: grid; grid-template-columns: 2.6em 1fr 4.4em 4.4em; gap: 8px; align-items: end; }
+.res-row.solo { grid-template-columns: 1fr 4.4em 4.4em; }
+.res-row .lbl { font: 600 15px/1 var(--display); color: var(--muted); padding-bottom: 12px; }
+.res-row label.f { font-size: 12px; }
+.flags { display: flex; flex-wrap: wrap; gap: 6px; }
+.flags button { border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 999px; padding: 6px 11px; font: 500 13px/1.2 var(--body); cursor: pointer; }
+.flags button[aria-pressed="true"] { background: var(--amber-bg); border-color: var(--amber); color: var(--fg); }
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">Sylvester<small id="today-label"></small></div>
+      <span id="rec-chip" class="chip" hidden><span class="dot"></span><span></span></span>
+    </div>
+    <nav>
+      <a href="#today" data-view="today">Today</a>
+      <a href="#checkin" data-view="checkin">Check-in</a>
+      <a href="#history" data-view="history">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p id="offline" class="banner" hidden>Saving isn't available in this view. Open the page signed in to claude.ai to log sessions and check-ins.</p>
+
+    <section id="view-today" hidden>
+      <div style="display:grid;gap:16px">
+        <div id="recovery" class="recovery" hidden></div>
+        <div id="strip" class="strip" hidden></div>
+        <div id="picker" class="picker" role="group" aria-label="Choose a session"></div>
+        <div id="session"></div>
+      </div>
+    </section>
+
+    <section id="view-checkin" hidden>
+      <form id="checkin" class="card" novalidate>
+        <div class="row2">
+          <label class="f">Date<input type="date" id="ci-date"></label>
+          <label class="f">Blood pressure<input id="ci-bp" inputmode="numeric" placeholder="e.g. 128/82"></label>
+        </div>
+        <div id="ci-scales" style="display:grid;gap:14px"></div>
+        <label class="f">Pain is where?<input id="ci-pain_where" placeholder="e.g. low back, right knee"></label>
+        <label class="f">Notes<textarea id="ci-notes" placeholder="Sleep, stress, anything the Coach should know"></textarea></label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <button class="primary" id="ci-save" type="submit">Save check-in</button>
+          <span id="ci-msg" aria-live="polite"></span>
+        </div>
+      </form>
+    </section>
+
+    <section id="view-history" hidden>
+      <div style="display:grid;gap:12px">
+        <h2>Last two weeks</h2>
+        <div id="hist" class="hist"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+const $ = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "text") el.textContent = v;
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : document.createTextNode(k));
+  return el;
+};
+const localDay = (d = new Date()) => d.toLocaleDateString("en-CA");
+const slug = s => (s || "session").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "session";
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+
+const state = { db: null, sessions: [], selected: null, status: null, checkins: [], workouts: [], assessments: [],
+  plan: null, config: { signals: [] }, asPlanned: {}, anywhere: {} };
+const TODAY = localDay();
+const UNIT_LABEL = { s: "Seconds", m: "Metres", min: "Minutes" };
+const UNIT_SUFFIX = { s: " s", m: " m", min: " min" };
+document.getElementById("today-label").textContent =
+  new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
+
+// ---------- views ----------
+const VIEWS = ["today", "checkin", "history"];
+function show(view) {
+  if (!VIEWS.includes(view)) view = "today";
+  for (const v of VIEWS) document.getElementById("view-" + v).hidden = v !== view;
+  for (const a of document.querySelectorAll("nav a")) {
+    if (a.dataset.view === view) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+  }
+}
+window.addEventListener("hashchange", () => show(location.hash.slice(1)));
+show(location.hash.slice(1));
+
+// ---------- recovery ----------
+function renderStatus() {
+  const s = state.status, chip = document.getElementById("rec-chip"), box = document.getElementById("recovery");
+  if (!s || !s.recovery) { chip.hidden = true; box.hidden = true; return; }
+  const r = s.recovery;
+  chip.className = "chip " + (r.status || "");
+  chip.lastElementChild.textContent = (r.status || "").toUpperCase() + (r.readiness ? " · " + r.readiness : "");
+  chip.hidden = false;
+  box.replaceChildren(
+    $("p", {}, $("b", { text: "Recovery: " + (r.status || "").toUpperCase() }), r.meaning ? " — " + r.meaning : ""),
+    $("div", { class: "nums" },
+      r.readiness != null && $("span", {}, r.source === "WHOOP" ? "Recovery " : "Readiness ", $("b", { text: r.readiness })),
+      r.sleep_h != null && $("span", {}, "Sleep ", $("b", { text: r.sleep_h + " h" })),
+      r.hrv != null && $("span", {}, "HRV ", $("b", { text: r.hrv + " ms" }), r.hrv_baseline ? ` (usual ${r.hrv_baseline})` : "")),
+    $("p", { class: "small muted", text: "Updated " + (s.updated || "").replace("T", " ").slice(0, 16) }));
+  box.hidden = false;
+}
+
+// ---------- sessions ----------
+function sessionLabel(s) {
+  const t = (s.optional ? "Optional: " : "") + s.title;
+  if (s.date === TODAY) return "Today · " + t;
+  if (s.date) return new Date(s.date + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) + " · " + t;
+  return t;
+}
+// Picker: sessions from the last two days up to the next one ahead, then routines and tests. The strip reaches the rest.
+function sortSessions(list) {
+  const recent = localDay(new Date(Date.now() - 2 * 864e5));
+  const dated = list.filter(s => s.date && s.date >= recent).sort((a, b) => a.date.localeCompare(b.date));
+  const next = dated.find(s => s.date >= TODAY);
+  const shown = dated.filter(s => s.date < TODAY || s.date === TODAY || s === next);
+  const routines = list.filter(s => !s.date).sort((a, b) => (a.order ?? 99) - (b.order ?? 99) || a.title.localeCompare(b.title));
+  return { shown: [...shown, ...routines], all: list };
+}
+function pickerList() { return (state.sorted && state.sorted.shown) || []; }
+function select(id) { state.selected = id; store.set("hgc.selected", id); renderStrip(); renderPicker(); renderSession(); }
+
+// How today should go, from the morning check-in and recovery: null | "easy" | "recovery".
+function todayMode() {
+  const rank = { easy: 1, recovery: 2, rest: 2 }, why = [];
+  let mode = null;
+  const bump = (m, reason) => { if (!m) return; if (!mode || rank[m] > rank[mode]) mode = m; why.push(reason); };
+  const r = state.status && state.status.recovery;
+  if (r && (state.status.updated || "").slice(0, 10) >= localDay(new Date(Date.now() - 864e5))) {
+    if (r.status === "red") bump("recovery", "recovery is red");
+    else if (r.status === "amber") bump("easy", "recovery is amber");
+  }
+  const c = state.checkins.find(x => x.date === TODAY);
+  if (c) {
+    const pain = parseFloat(c.pain);
+    if (pain >= 6) bump("recovery", `pain ${pain}/10`); else if (pain >= 4) bump("easy", `pain ${pain}/10`);
+    if (parseFloat(c.energy) <= 1) bump("easy", "energy 1/5");
+    for (const sig of state.config.signals || []) {
+      const v = parseFloat(c[sig.key]);
+      if (isNaN(v)) continue;
+      const lvl = Object.keys(sig.levels || {}).map(Number).filter(l => v >= l).sort((a, b) => b - a)[0];
+      if (lvl != null) bump(sig.levels[String(lvl)], `${sig.label.toLowerCase()} ${v}`);
+    }
+  }
+  return { mode, why };
+}
+
+function renderStrip() {
+  const box = document.getElementById("strip"), p = state.plan;
+  if (!p || !p.days || !p.days.length) { box.hidden = true; return; }
+  const ids = new Set(state.sessions.map(s => s.id));
+  const label = { session: "Train", optional: "Extra", rest: "Rest", recovery: "Easy", done: "Done", review: "Review" };
+  const days = p.days.slice(0, 14).map(d => {
+    const id = "day-" + d.date, has = ids.has(id);
+    const cls = ["d", d.kind, d.intensity, d.date === TODAY ? "today" : ""].filter(Boolean).join(" ");
+    const kids = [new Date(d.date + "T12:00").toLocaleDateString(undefined, { weekday: "narrow" }),
+      $("b", { text: String(+d.date.slice(8)) }), $("span", { class: "k", text: label[d.kind] || d.kind })];
+    const title = (d.title || "") + (d.intensity && d.intensity !== "normal" ? ` (${d.intensity})` : "") + (d.reasons && d.reasons.length ? ": " + d.reasons.join("; ") : "") + (d.note ? ". " + d.note : "");
+    return has ? $("button", { type: "button", class: cls, title, "aria-label": d.date + " " + title, "aria-pressed": String(state.selected === id), onclick: () => select(id) }, ...kids)
+               : $("div", { class: cls, title }, ...kids);
+  });
+  const t = p.days[0], lines = [];
+  if (t && (t.kind === "recovery" || t.kind === "rest")) lines.push($("p", { class: "small", text: `Today: ${t.title}${t.reasons && t.reasons.length ? " (" + t.reasons.join("; ") + ")" : ""}. ${t.note || ""}` }));
+  box.replaceChildren($("div", { class: "days" }, ...days), ...lines,
+    $("p", { class: "small muted", text: `Next 14 days${p.phase ? " · " + p.phase : ""} · planned ${(p.updated || "").replace("T", " ")}` }));
+  box.hidden = false;
+}
+
+function renderPicker() {
+  const picker = document.getElementById("picker");
+  const list = pickerList();
+  if (!state.sessions.length) { picker.replaceChildren(); return; }
+  if (!state.selected || !state.sessions.some(s => s.id === state.selected)) {
+    const today = state.sessions.find(s => s.date === TODAY) || list.find(s => s.date && s.date >= TODAY);
+    state.selected = (today || list[0] || state.sessions[0]).id;
+  }
+  picker.replaceChildren(...list.map(s => $("button", {
+    type: "button", "aria-pressed": String(s.id === state.selected), text: sessionLabel(s),
+    onclick: () => select(s.id),
+  })));
+}
+
+function draftKey(s) { return `hgc.draft.${s.id}${s.variant ? "." + s.variant : ""}.${TODAY}`; }
+function loadDraft(s) {
+  const d = store.get(draftKey(s));
+  if (d) return d;
+  return { exercises: (s.exercises || []).map(e => ({
+    sets: Array.from({ length: Math.max(1, +e.sets || 1) }, () => ({ reps: "", kg: "", done: false })),
+    rpe: "", pain: "", notes: "",
+  })), duration: "", notes: "" };
+}
+
+function figure(e) {
+  if (!e.images || !e.images.length) return null;
+  const [a, b] = e.images;
+  const plate = $("div", { class: "plate" },
+    $("img", { src: a, alt: e.name + " — start position", loading: "lazy" }),
+    b && $("img", { class: "b", src: b, alt: e.name + " — end position", loading: "lazy" }),
+    b && $("span", { class: "tag", text: "Start" }));
+  if (b) plate.append($("button", { type: "button", "aria-label": "Pause or play the movement", onclick: () => plate.classList.toggle("paused") }));
+  return plate;
+}
+// Start and end positions alternate, so each exercise reads as a slow two-frame animation. Tap to pause.
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) setInterval(() => {
+  for (const p of document.querySelectorAll(".plate:not(.paused)")) {
+    if (!p.querySelector("img.b")) continue;
+    const end = p.classList.toggle("end");
+    p.querySelector(".tag").textContent = end ? "End" : "Start";
+  }
+}, 1400);
+
+function renderSession() {
+  const box = document.getElementById("session");
+  let s = state.sessions.find(x => x.id === state.selected);
+  if (!s) {
+    box.replaceChildren($("div", { class: "empty" },
+      $("h3", { text: "No session yet" }),
+      $("p", { class: "muted" }, "Sessions appear here when the Coach writes them. In Claude Code, run ", $("code", { text: "/coach today" }), ".")));
+    return;
+  }
+  if (s.kind === "assessment") return renderAssessment(s, box);
+  // Today's check-in or recovery can switch a planned session to its easier version.
+  let adjust = null;
+  if (s.date === TODAY && s.easy) {
+    const { mode, why } = todayMode();
+    if (mode) {
+      const planned = state.asPlanned[s.id];
+      if (!planned) s = { ...s, ...s.easy, variant: "easy" };
+      const lead = mode === "recovery" ? "Today looks like a recovery day (" + why.join("; ") + "). If you still train, keep it to this easier version, or walk and do your mobility work instead."
+                                       : "Easier version today: " + why.join("; ") + ".";
+      adjust = $("div", { class: "adjust" }, $("span", { text: planned ? "Showing the session as planned. " + lead : lead }),
+        $("button", { type: "button", text: planned ? "Use easier" : "As planned",
+          onclick: () => { state.asPlanned[state.selected] = !planned; renderSession(); } }));
+    }
+  }
+  // No gym, travelling, or the rack is taken: the same session from a wall, floor, chair, towel and backpack.
+  let gear = null;
+  if (s.anywhere) {
+    const on = !!state.anywhere[s.id];
+    if (on) s = { ...s, ...s.anywhere, variant: s.variant ? s.variant + "-anywhere" : "anywhere" };
+    gear = $("div", { class: "gear" + (on ? " on" : "") },
+      $("span", { text: on ? "No-equipment version: wall, floor, chair, towel, backpack." : "Away from your equipment today?" }),
+      $("button", { type: "button", text: on ? "Back to the full session" : "No equipment",
+        onclick: () => { state.anywhere[state.selected] = !on; renderSession(); } }));
+  }
+  const draft = loadDraft(s);
+  const save = () => store.set(draftKey(s), draft);
+
+  const head = $("div", { class: "session-head" },
+    $("h2", { text: s.title }),
+    $("div", { class: "meta" },
+      s.date && $("span", { text: new Date(s.date + "T12:00").toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" }) }),
+      s.duration && $("span", { text: "≈ " + s.duration }),
+      s.focus && $("span", { text: s.focus })),
+    s.coach_note && $("p", { class: "note", text: s.coach_note }));
+  const warm = s.warmup && s.warmup.length ? $("div", { style: "display:grid;gap:6px" },
+    $("h3", { text: "Warm-up" }), $("ul", { class: "warmup" }, s.warmup.map(w => $("li", { text: w })))) : null;
+
+  const cards = (s.exercises || []).map((e, i) => {
+    const d = draft.exercises[i] || (draft.exercises[i] = { sets: [{ reps: "", kg: "", done: false }], rpe: "", pain: "", notes: "" });
+    const setsBox = $("div", { class: "sets" },
+      $("div", { class: "set hdr" }, $("span", { text: "Set" }), $("span", { text: UNIT_LABEL[e.unit] || "Reps" }), $("span", { text: "kg" }), $("span")));
+    const addSetRow = (st, n) => {
+      const row = $("div", { class: "set" + (st.done ? " done" : "") });
+      const reps = $("input", { inputmode: "decimal", value: st.reps, placeholder: e.reps || "", "aria-label": `Set ${n} ${(UNIT_LABEL[e.unit] || "Reps").toLowerCase()}` });
+      const kg = $("input", { inputmode: "decimal", value: st.kg, placeholder: e.load_kg || "–", "aria-label": `Set ${n} kg` });
+      reps.addEventListener("input", () => { st.reps = reps.value; save(); });
+      kg.addEventListener("input", () => { st.kg = kg.value; save(); });
+      const tick = $("button", { type: "button", class: "tick", "aria-label": `Mark set ${n} done`, "aria-pressed": String(st.done), text: "✓",
+        onclick: () => {
+          st.done = !st.done;
+          if (st.done && !st.reps) { st.reps = (e.reps || "").split(/[–\-/ ]/)[0]; reps.value = st.reps; }
+          if (st.done && !st.kg && e.load_kg) { st.kg = e.load_kg; kg.value = st.kg; }
+          row.classList.toggle("done", st.done); tick.setAttribute("aria-pressed", String(st.done)); save();
+        } });
+      row.append($("span", { class: "lbl", text: String(n) }), reps, kg, tick);
+      setsBox.append(row);
+    };
+    d.sets.forEach((st, k) => addSetRow(st, k + 1));
+    const more = $("button", { type: "button", class: "chip", style: "justify-self:start;border:0;cursor:pointer", text: "+ Add set",
+      onclick: () => { const st = { reps: "", kg: "", done: false }; d.sets.push(st); addSetRow(st, d.sets.length); save(); } });
+
+    const rpe = $("select", { "aria-label": "Effort (RPE)" }, $("option", { value: "", text: "–" }),
+      [5, 6, 7, 8, 9, 10].map(v => $("option", { value: v, text: v, selected: String(v) === String(d.rpe) })));
+    const pain = $("select", { "aria-label": "Pain" }, $("option", { value: "", text: "–" }),
+      Array.from({ length: 11 }, (_, v) => $("option", { value: v, text: v, selected: String(v) === String(d.pain) })));
+    rpe.addEventListener("change", () => { d.rpe = rpe.value; save(); });
+    pain.addEventListener("change", () => { d.pain = pain.value; save(); });
+
+    const rx = [e.sets && e.reps ? `${e.sets} × ${e.reps}${UNIT_SUFFIX[e.unit] || ""}` : e.reps,
+                e.load_kg ? e.load_kg + " kg" : e.load, e.rest ? "rest " + e.rest : null].filter(Boolean).join(" · ");
+    return $("article", { class: "ex" },
+      figure(e),
+      $("div", { class: "ex-body" },
+        $("div", { class: "ex-title" }, $("h3", { text: e.name }), $("span", { class: "n", text: `${i + 1}/${s.exercises.length}` })),
+        rx && $("p", { class: "rx", text: rx }),
+        e.cues && e.cues.length > 0 && $("ul", { class: "cues" }, e.cues.map(c => $("li", { text: c }))),
+        e.note && $("p", { class: "note", text: e.note }),
+        e.instructions && e.instructions.length > 0 && $("details", {}, $("summary", { text: "Step by step" }),
+          $("ol", {}, e.instructions.map(c => $("li", { text: c })))),
+        e.video && $("p", { class: "small" }, $("a", { href: e.video, target: "_blank", rel: "noopener", text: "Watch a demo video" })),
+        setsBox, more,
+        $("div", { class: "row2" }, $("label", { class: "f" }, "Effort (RPE 1–10)", rpe), $("label", { class: "f" }, "Pain (0–10)", pain)),
+        e.credit && $("p", { class: "credit", text: "Images: " + e.credit })));
+  });
+
+  const dur = $("input", { inputmode: "numeric", value: draft.duration, placeholder: "e.g. 35" });
+  const notes = $("textarea", { placeholder: "How did it feel? Anything that ached or felt off…" });
+  notes.value = draft.notes || "";
+  dur.addEventListener("input", () => { draft.duration = dur.value; save(); });
+  notes.addEventListener("input", () => { draft.notes = notes.value; save(); });
+  const msg = $("span", { "aria-live": "polite" });
+  const btn = $("button", { class: "primary", type: "button", text: "Save workout", disabled: !state.db,
+    onclick: () => saveWorkout(s, draft, btn, msg) });
+
+  box.replaceChildren($("div", { style: "display:grid;gap:16px" }, adjust, gear, head, warm, ...cards,
+    $("div", { class: "card" },
+      $("h3", { text: "Finish" }),
+      $("div", { class: "row2" }, $("label", { class: "f" }, "Minutes", dur), $("span")),
+      $("label", { class: "f" }, "Notes", notes),
+      $("div", { style: "display:flex;align-items:center;gap:12px;flex-wrap:wrap" }, btn, msg))));
+}
+
+function collapse(values) {
+  const v = values.filter(x => x !== "" && x != null).map(String);
+  if (!v.length) return "";
+  return v.every(x => x === v[0]) ? v[0] : v.join("/");
+}
+
+async function saveWorkout(s, draft, btn, msg) {
+  const date = s.date || TODAY;
+  const exercises = (s.exercises || []).map((e, i) => {
+    const d = draft.exercises[i] || { sets: [] };
+    const done = d.sets.filter(x => x.done || x.reps);
+    return {
+      exercise: e.name, planned: e.sets && e.reps ? `${e.sets} × ${e.reps}` : (e.reps || ""),
+      sets: done.length ? String(done.length) : "",
+      reps: collapse(done.map(x => x.reps)), load_kg: collapse(done.map(x => x.kg)),
+      rpe: d.rpe || "", pain: d.pain || "", notes: d.notes || "",
+      set_detail: d.sets,
+    };
+  }).filter(x => x.sets);
+  if (!exercises.length) { msg.className = "err"; msg.textContent = "Tick at least one set before saving."; return; }
+  btn.disabled = true; msg.className = ""; msg.textContent = "Saving…";
+  const id = `${date}__${slug(s.title)}`;
+  try {
+    await state.db.doc("workouts/" + id).set({
+      date, session: s.title, session_id: s.id, duration_min: draft.duration || "", notes: draft.notes || "",
+      exercises, saved_at: new Date().toISOString(),
+    });
+    msg.className = "saved"; msg.textContent = "Saved. The Coach will see it next time you talk.";
+  } catch (err) {
+    msg.className = "err"; msg.textContent = "Couldn't save: " + (err && err.message || "unknown error") + ". Your entries are kept on this phone; try again.";
+  } finally { btn.disabled = false; }
+}
+
+// ---------- calibration ----------
+// One card per test; one row per side (L/R, or a single row). Scores store the option's rank (best = highest).
+function renderAssessment(s, box) {
+  const key = `hgc.assess.${s.id}.${TODAY}`;
+  const draft = store.get(key) || { r: {}, notes: "" };
+  const save = () => store.set(key, draft);
+  const cell = (t, side) => draft.r[t.id + "|" + side] || (draft.r[t.id + "|" + side] = { value: "", rpe: "", pain: "", flags: [], load_kg: t.load_kg ?? "" });
+
+  const head = $("div", { class: "session-head" },
+    $("h2", { text: s.title }),
+    $("div", { class: "meta" }, s.duration && $("span", { text: "≈ " + s.duration }), $("span", { text: (s.tests || []).length + " tests" })),
+    s.coach_note && $("p", { class: "note", text: s.coach_note }));
+  const warm = s.warmup && s.warmup.length ? $("div", { style: "display:grid;gap:6px" },
+    $("h3", { text: "Warm-up" }), $("ul", { class: "warmup" }, s.warmup.map(w => $("li", { text: w })))) : null;
+
+  const parts = [];
+  let lastCat = null;
+  (s.tests || []).forEach((t, i) => {
+    if (t.category && t.category !== lastCat) { parts.push($("p", { class: "cat", text: t.category })); lastCat = t.category; }
+    const sides = t.sides && t.sides.length ? t.sides : [""];
+    const rows = sides.map(side => {
+      const c = cell(t, side);
+      let input;
+      if (t.measure === "score") {
+        input = $("select", { "aria-label": `${t.name} ${side} result` }, $("option", { value: "", text: "–" }),
+          t.options.map((o, k) => $("option", { value: t.options.length - k, text: o, selected: String(t.options.length - k) === String(c.value) })));
+        input.addEventListener("change", () => { c.value = input.value; save(); });
+      } else {
+        input = $("input", { inputmode: t.measure === "bp" ? "text" : "decimal", value: c.value,
+          placeholder: t.measure === "bp" ? "128/82" : (t.cap ? "≤ " + t.cap : ""), "aria-label": `${t.name} ${side} ${t.unit || ""}` });
+        input.addEventListener("input", () => { c.value = input.value.trim(); save(); });
+      }
+      const sel = (lbl, k, vals) => {
+        const el = $("select", { "aria-label": `${t.name} ${side} ${lbl}` }, $("option", { value: "", text: "–" }),
+          vals.map(v => $("option", { value: v, text: v, selected: String(v) === String(c[k]) })));
+        el.addEventListener("change", () => { c[k] = el.value; save(); });
+        return $("label", { class: "f" }, lbl, el);
+      };
+      const unit = t.measure === "score" ? "Result" : (t.unit === "reps" ? "Reps" : t.unit === "s" ? "Seconds" : t.unit || "Value");
+      const row = $("div", { class: "res-row" + (side === "" ? " solo" : "") },
+        side !== "" && $("span", { class: "lbl", text: side }),
+        $("label", { class: "f" }, unit, input),
+        t.rpe ? sel("RPE", "rpe", [5, 6, 7, 8, 9, 10]) : $("span"),
+        t.pain || (t.flags || []).some(f => /pain/i.test(f)) ? sel("Pain", "pain", Array.from({ length: 11 }, (_, v) => v)) : $("span"));
+      const flags = t.flags && t.flags.length ? $("div", { class: "flags" }, t.flags.map(f => {
+        const b = $("button", { type: "button", "aria-pressed": String(c.flags.includes(f)), text: (side ? side + ": " : "") + f,
+          onclick: () => { const on = !c.flags.includes(f); c.flags = on ? [...c.flags, f] : c.flags.filter(x => x !== f); b.setAttribute("aria-pressed", String(on)); save(); } });
+        return b;
+      })) : null;
+      return [row, flags];
+    });
+
+    let load = null;
+    if (t.load_kg != null) {
+      const first = cell(t, sides[0]);
+      const inp = $("input", { inputmode: "decimal", value: first.load_kg, "aria-label": t.name + " load kg" });
+      inp.addEventListener("input", () => { for (const sd of sides) cell(t, sd).load_kg = inp.value.trim(); save(); });
+      load = $("label", { class: "f", style: "max-width:9em" }, "Load used (kg)", inp);
+    }
+    const note = $("input", { value: draft.r[t.id + "|note"] || "", placeholder: "Note (optional)", "aria-label": t.name + " note" });
+    note.addEventListener("input", () => { draft.r[t.id + "|note"] = note.value; save(); });
+
+    const cap = t.cap ? `${t.cap}${t.unit === "s" ? " s" : t.unit === "reps" ? " reps" : ""}` : "";
+    const rx = [t.load_kg != null ? t.load_kg + " kg" : null,
+                t.rpe && cap ? `stop at RPE 8 or ${cap}` : cap ? `stop at ${cap}` : null].filter(Boolean).join(" · ");
+    parts.push($("article", { class: "ex" },
+      figure(t),
+      $("div", { class: "ex-body" },
+        $("div", { class: "ex-title" }, $("h3", { text: t.name }), $("span", { class: "n", text: `${i + 1}/${s.tests.length}` })),
+        rx && $("p", { class: "rx", text: rx }),
+        t.gate && $("p", { class: "note", text: t.gate }),
+        t.how && t.how.length > 0 && $("ol", { class: "how" }, t.how.map(h => $("li", { text: h }))),
+        t.cues && t.cues.length > 0 && $("ul", { class: "cues" }, t.cues.map(c => $("li", { text: c }))),
+        t.stop && $("p", { class: "stop", text: t.stop }),
+        $("div", { class: "res" }, rows.flat(), load, note),
+        t.why && $("p", { class: "why", text: "Why: " + t.why }),
+        t.credit && $("p", { class: "credit", text: "Images: " + t.credit }))));
+  });
+
+  const notes = $("textarea", { placeholder: "How did it go? Anything that felt off?" });
+  notes.value = draft.notes || "";
+  notes.addEventListener("input", () => { draft.notes = notes.value; save(); });
+  const msg = $("span", { "aria-live": "polite" });
+  const btn = $("button", { class: "primary", type: "button", text: "Save results", disabled: !state.db,
+    onclick: () => saveAssessment(s, draft, btn, msg) });
+  box.replaceChildren($("div", { style: "display:grid;gap:16px" }, head, warm, ...parts,
+    $("div", { class: "card" }, $("h3", { text: "Finish" }), $("label", { class: "f" }, "Notes", notes),
+      $("p", { class: "hint", text: "You can save part-way and again later today; the latest save replaces the earlier one." }),
+      $("div", { style: "display:flex;align-items:center;gap:12px;flex-wrap:wrap" }, btn, msg))));
+}
+
+async function saveAssessment(s, draft, btn, msg) {
+  const date = s.date || TODAY;
+  const results = [];
+  for (const t of s.tests || []) {
+    const sides = t.sides && t.sides.length ? t.sides : [""];
+    const note = draft.r[t.id + "|note"] || "";
+    for (const side of sides) {
+      const c = draft.r[t.id + "|" + side];
+      if (!c || (c.value === "" && !c.flags.length && !(side === sides[0] && note))) continue;
+      results.push({ test: t.id, name: t.name, side, value: c.value, unit: t.measure === "score" ? "score" : (t.unit || ""),
+        load_kg: t.load_kg != null ? c.load_kg : "", rpe: c.rpe || "", pain: c.pain || "", flags: c.flags, note: side === sides[0] ? note : "" });
+    }
+  }
+  const bad = results.find(r => r.unit === "mmHg" && r.value && !/^\d{2,3}\s*\/\s*\d{2,3}$/.test(r.value));
+  if (bad) { msg.className = "err"; msg.textContent = "Blood pressure looks like 128/82."; return; }
+  if (!results.length) { msg.className = "err"; msg.textContent = "Enter at least one result before saving."; return; }
+  btn.disabled = true; msg.className = ""; msg.textContent = "Saving…";
+  try {
+    await state.db.doc(`assessments/${date}__${s.battery || s.id}`).set({
+      date, battery: s.battery || s.id, title: s.title, notes: draft.notes || "", results, saved_at: new Date().toISOString() });
+    msg.className = "saved"; msg.textContent = `Saved ${results.length} results. The Coach will turn them into your baseline.`;
+  } catch (err) {
+    msg.className = "err"; msg.textContent = "Couldn't save: " + (err && err.message || "unknown error") + ". Your entries are kept on this phone; try again.";
+  } finally { btn.disabled = false; }
+}
+
+// ---------- check-in ----------
+const BASE_SCALES = [
+  ["mood", "Mood", 1, 5, "1 low · 5 great"],
+  ["energy", "Energy", 1, 5, "1 drained · 5 full"],
+  ["stress", "Stress", 1, 5, "1 calm · 5 overloaded"],
+  ["motivation", "Motivation to train", 1, 5, "1 none · 5 eager"],
+  ["soreness", "Muscle soreness", 1, 5, "1 none · 5 very sore"],
+  ["pain", "Pain", 0, 10, "0 none · 10 worst"],
+];
+// The person's own warning signals come from config/checkin (set up by the Coach).
+const scales = () => [...BASE_SCALES, ...(state.config.signals || []).map(g => [g.key, g.label, g.lo ?? 0, g.hi ?? 3, g.hint || "", g.help || ""])];
+const ci = {};
+function renderScales() {
+  const box = document.getElementById("ci-scales");
+  box.replaceChildren(...scales().map(([k, label, lo, hi, hint, help]) => {
+    const opts = $("div", { class: "opts" + (hi - lo > 6 ? " wide" : ""), role: "group", "aria-label": label });
+    for (let v = lo; v <= hi; v++) opts.append($("button", { type: "button", "aria-pressed": String(String(ci[k]) === String(v)), text: String(v),
+      onclick: () => { ci[k] = String(ci[k]) === String(v) ? "" : v; renderScales(); } }));
+    return $("div", { class: "scale" },
+      $("div", { class: "q" }, label, $("span", { text: hint })), opts,
+      help && $("p", { class: "hint", text: help }));
+  }));
+}
+function fillCheckin(date) {
+  const row = state.checkins.find(c => c.date === date) || {};
+  for (const [k] of scales()) ci[k] = row[k] ?? "";
+  for (const k of ["bp", "pain_where", "notes"]) document.getElementById("ci-" + k).value = row[k] || "";
+  renderScales();
+}
+const ciDate = document.getElementById("ci-date");
+ciDate.value = TODAY;
+ciDate.addEventListener("change", () => fillCheckin(ciDate.value));
+document.getElementById("checkin").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const msg = document.getElementById("ci-msg"), btn = document.getElementById("ci-save");
+  if (!state.db) return;
+  const date = ciDate.value || TODAY;
+  const bp = document.getElementById("ci-bp").value.trim();
+  if (bp && !/^\d{2,3}\s*\/\s*\d{2,3}$/.test(bp)) { msg.className = "err"; msg.textContent = "Blood pressure looks like 128/82."; return; }
+  const doc = { date, saved_at: new Date().toISOString(), bp: bp.replace(/\s/g, "") };
+  for (const [k] of scales()) doc[k] = ci[k] === "" || ci[k] == null ? "" : String(ci[k]);
+  for (const k of ["pain_where", "notes"]) doc[k] = document.getElementById("ci-" + k).value.trim();
+  btn.disabled = true; msg.className = ""; msg.textContent = "Saving…";
+  try { await state.db.doc("checkins/" + date).set(doc); msg.className = "saved"; msg.textContent = "Saved."; }
+  catch (err) { msg.className = "err"; msg.textContent = "Couldn't save: " + (err && err.message || "unknown error") + ". Try again."; }
+  finally { btn.disabled = false; }
+});
+fillCheckin(TODAY);
+
+// ---------- history ----------
+function renderHistory() {
+  const box = document.getElementById("hist");
+  const since = localDay(new Date(Date.now() - 13 * 864e5));
+  const days = new Map();
+  for (const c of state.checkins) if (c.date >= since) (days.get(c.date) || days.set(c.date, { w: [] }).get(c.date)).c = c;
+  for (const w of state.workouts) if (w.date >= since) (days.get(w.date) || days.set(w.date, { w: [] }).get(w.date)).w.push(w);
+  for (const a of state.assessments) if (a.date >= since) (days.get(a.date) || days.set(a.date, { w: [] }).get(a.date)).w.push(
+    { session: a.title || a.battery, exercises: [], summary: `${(a.results || []).length} results saved` });
+  if (!days.size) {
+    box.replaceChildren($("div", { class: "empty" }, $("h3", { text: "Nothing logged yet" }),
+      $("p", { class: "muted", text: "Check-ins and workouts you save here show up for 14 days." })));
+    return;
+  }
+  const lbl = { mood: "Mood", energy: "Energy", stress: "Stress", motivation: "Motivation", soreness: "Soreness", pain: "Pain" };
+  for (const g of state.config.signals || []) lbl[g.key] = g.label;
+  box.replaceChildren(...[...days.entries()].sort((a, b) => b[0].localeCompare(a[0])).map(([d, { c, w }]) =>
+    $("div", { class: "item" },
+      $("span", { class: "when", text: new Date(d + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) }),
+      c && $("div", { class: "kv" }, Object.entries(lbl).filter(([k]) => c[k] !== "" && c[k] != null).map(([k, l]) => $("span", {}, l + " ", $("b", { text: c[k] }))),
+        c.bp && $("span", {}, "BP ", $("b", { text: c.bp }))),
+      w.map(x => $("div", {}, $("b", { text: x.session + (x.duration_min ? ` · ${x.duration_min} min` : "") }),
+        x.summary && $("p", { class: "small muted", text: x.summary }),
+        $("ul", {}, (x.exercises || []).map(e => $("li", { text: `${e.exercise} ${e.sets}×${e.reps}${e.load_kg ? " @ " + e.load_kg + " kg" : ""}${e.rpe ? " · RPE " + e.rpe : ""}${e.pain && e.pain !== "0" ? " · pain " + e.pain : ""}` }))))))));
+}
+
+// ---------- data ----------
+renderSession();
+renderHistory();
+state.selected = store.get("hgc.selected");
+(async () => {
+  const db = await window.claude?.use?.("db");
+  if (!db) { document.getElementById("offline").hidden = false; document.getElementById("ci-save").disabled = true; return; }
+  state.db = db;
+  renderSession();
+  const fail = () => { document.getElementById("offline").hidden = false; };
+  // Re-render the session only when today's mode changes, so typing in a set isn't interrupted.
+  const modeKey = () => JSON.stringify(todayMode());
+  let lastMode = modeKey();
+  const modeChanged = () => { const m = modeKey(); if (m !== lastMode) { lastMode = m; renderSession(); } };
+  db.doc("status/current").onSnapshot(s => { state.status = s.exists ? s.data() : null; renderStatus(); modeChanged(); }, fail);
+  db.doc("plan/current").onSnapshot(s => { state.plan = s.exists ? s.data() : null; renderStrip(); }, fail);
+  db.doc("config/checkin").onSnapshot(s => {
+    state.config = s.exists ? { signals: [], ...s.data() } : { signals: [] };
+    if (!document.getElementById("checkin").contains(document.activeElement)) fillCheckin(ciDate.value);
+    renderHistory(); modeChanged();
+  }, fail);
+  db.collection("sessions").onSnapshot(q => {
+    state.sessions = q.docs.map(d => ({ id: d.id, ...d.data() }));
+    state.sorted = sortSessions(state.sessions);
+    renderPicker(); renderStrip(); renderSession();
+  }, fail);
+  db.collection("checkins").orderBy("date", "desc").limit(30).onSnapshot(q => {
+    state.checkins = q.docs.map(d => d.data());
+    if (!document.getElementById("checkin").contains(document.activeElement)) fillCheckin(ciDate.value);
+    renderHistory(); modeChanged();
+  }, fail);
+  db.collection("workouts").orderBy("date", "desc").limit(30).onSnapshot(q => {
+    state.workouts = q.docs.map(d => d.data()); renderHistory();
+  }, fail);
+  db.collection("assessments").orderBy("date", "desc").limit(20).onSnapshot(q => {
+    state.assessments = q.docs.map(d => d.data()); renderHistory();
+  }, fail);
+})();
+</script>

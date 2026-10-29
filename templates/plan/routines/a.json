@@ -1,0 +1,20 @@
+{
+  "id": "routine-a",
+  "title": "Full body A",
+  "date": "",
+  "order": 2,
+  "focus": "Push, squat, carry",
+  "duration": "45–60 min",
+  "coach_note": "Example routine. Main lifts RPE 6–7 while you learn them. Breathe out on every effort.",
+  "_about": "Main lifts are fixed with \"ex\" (coach/library.json ids); \"slot\" entries rotate every few weeks. See coach/knowledge/exercise_library.md.",
+  "warmup": ["Cat-cow × 8", "Glute bridge × 10", "Band pull-apart × 15"],
+  "exercises": [
+    {"lib": "ek-bench-press", "name": "Barbell bench press", "sets": 3, "reps": "8–12", "load_kg": 20, "implement": "barbell",
+     "rest": "2 min", "cues": ["Spotter arms just below chest height", "Feet planted, shoulder blades pinched", "Breathe out as you press"]},
+    {"ex": "goblet_squat", "sets": 3, "reps": "8–12", "load_kg": 10, "rest": "90 s"},
+    {"ex": "push_up", "sets": 3, "reps": "6–12", "rest": "90 s"},
+    {"slot": {"pattern": "pull_h", "purpose": "strength", "every_weeks": 3}, "sets": 3, "reps": "8–12", "rest": "90 s"},
+    {"slot": {"pattern": "core_rot", "purpose": "core", "every_weeks": 3}, "sets": 2, "reps": {"reps": "6–10", "s": "20–30"}, "rest": "45 s"},
+    {"slot": {"pattern": "carry", "every_weeks": 3}, "sets": 3, "reps": {"m": "30"}, "rest": "60 s"}
+  ]
+}

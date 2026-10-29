@@ -1,0 +1,7175 @@
+{
+ "_about": "Sylvester's exercise library: what each exercise trains (pattern, family and level for progressions, purposes), what it needs (equipment) and what it loads (stresses, matched against a person's limits). Conditions are general guidance with sources; the Coach turns them into each person's own limits. See coach/library.py and coach/knowledge/exercise_library.md.",
+ "version": 1,
+ "patterns": {
+  "squat": "Knee- and hip-bend on two legs (squats, sit-to-stand, wall sit).",
+  "lunge": "Single-leg knee-dominant: split squats, lunges, step-ups, single-leg squats.",
+  "hinge": "Hip-dominant: bridges, hip thrusts, deadlifts, swings, hamstring work.",
+  "push_h": "Horizontal push: push-ups, bench and floor presses, chest presses, dips.",
+  "push_v": "Vertical push: overhead and landmine presses, pike push-ups.",
+  "pull_h": "Horizontal pull: rows, inverted rows, pull-aparts, face pulls.",
+  "pull_v": "Vertical pull: pull-ups, chin-ups, pulldowns, hangs.",
+  "carry": "Loaded walking: farmer, suitcase, front-rack, overhead, rucking, sled.",
+  "core_ext": "Anti-extension: resisting the low back arching (dead bug, planks, roll-outs).",
+  "core_rot": "Anti-rotation: resisting twisting (Pallof press, bird dog, renegade row).",
+  "core_lat": "Anti-lateral flexion: resisting side-bending (side planks, Copenhagen planks).",
+  "core_flex": "Trunk flexion: crunches, sit-ups, leg raises. Listed so limits can exclude them.",
+  "rotation": "Controlled or powerful rotation: chops, lifts, rotational throws.",
+  "power": "Fast, explosive work: jumps, throws, slams, push press.",
+  "locomotion": "Crawling and floor-based movement: bear crawl, get-ups, getting down and up.",
+  "arms": "Biceps and triceps.",
+  "shoulder": "Shoulder health and size: raises, rotator cuff, scapular work.",
+  "lower_acc": "Lower-body accessories: calves, shins, adductors, glute medius, knee and tendon work.",
+  "grip": "Grip and forearm, wrist and elbow health.",
+  "balance": "Static and dynamic balance.",
+  "mobility": "Range of motion and joint control.",
+  "conditioning": "Aerobic and interval work."
+ },
+ "purposes": {
+  "strength": {
+   "label": "Strength",
+   "dose": "3–5 × 3–8, RPE 7–8, 2–3 min rest"
+  },
+  "hypertrophy": {
+   "label": "Muscle",
+   "dose": "2–4 × 6–15 close to failure (RPE 7–9), 1–2 min rest"
+  },
+  "endurance": {
+   "label": "Muscular endurance",
+   "dose": "2–3 × 15–30 or 30–60 s, short rest"
+  },
+  "power": {
+   "label": "Power",
+   "dose": "3–5 × 3–5 fast reps, full rest, stop before speed drops"
+  },
+  "conditioning": {
+   "label": "Conditioning",
+   "dose": "20–45 min easy (zone 2), or intervals 6–10 × 30–60 s"
+  },
+  "core": {
+   "label": "Core stability",
+   "dose": "2–3 × 6–10 s holds × 5–8, or 20–45 s"
+  },
+  "balance": {
+   "label": "Balance",
+   "dose": "2–3 × 20–40 s per side, near a support"
+  },
+  "mobility": {
+   "label": "Mobility",
+   "dose": "1–2 × 5–10 slow reps or 30–60 s"
+  },
+  "rehab": {
+   "label": "Rehab and joint health",
+   "dose": "2–3 × 10–20 slow, pain ≤ 3/10 that settles by the next morning"
+  },
+  "injury_prevention": {
+   "label": "Injury prevention",
+   "dose": "1–3 × 3–10, 1–2×/week, all season"
+  },
+  "posture": {
+   "label": "Posture and upper back",
+   "dose": "2–3 × 12–20"
+  },
+  "bone": {
+   "label": "Bone loading",
+   "dose": "Heavy-ish (RPE 7–8) weight-bearing lifts and, where safe, impact, 2–3×/week"
+  },
+  "bp": {
+   "label": "Blood pressure",
+   "dose": "Isometric: 4 × 2 min at a hard-but-steady effort, 2 min rest, 3×/week; breathe throughout"
+  },
+  "glucose": {
+   "label": "Blood sugar",
+   "dose": "Big muscles, whole-body sessions; walk 10–15 min after meals"
+  },
+  "grip": {
+   "label": "Grip",
+   "dose": "2–4 × 20–60 s holds or carries"
+  },
+  "warmup": {
+   "label": "Warm-up",
+   "dose": "1 × 5–10, easy"
+  },
+  "recovery": {
+   "label": "Recovery",
+   "dose": "Easy, 10–30 min, conversational"
+  },
+  "athletic": {
+   "label": "Real-life strength",
+   "dose": "Carries, get-ups, single-leg and rotational work, 2–3 × moderate"
+  }
+ },
+ "stresses": {
+  "spine_axial": "Compression down the spine: bar on the back, heavy overhead or heavy carries.",
+  "spine_flex_loaded": "Bending the spine forward under load or many times (sit-ups, crunches, rounded lifting).",
+  "spine_flex_end": "End-range forward bending without load (child's pose, toe touches).",
+  "spine_ext_end": "End-range back arching (press-ups, supermans, back extensions past neutral).",
+  "spine_rot_loaded": "Twisting the spine under load or fast (Russian twists, rotational throws).",
+  "spine_shear": "Long-lever bent-over positions that load the low back (bent-over rows, RDLs, good mornings).",
+  "floor_lift": "Lifting a load from the floor.",
+  "knee_deep": "Loaded deep knee bend (deep squats, pistols, full lunges).",
+  "knee_open": "Open-chain knee extension under load (leg extension).",
+  "kneeling": "Weight on the knees.",
+  "impact": "Landing or running impact.",
+  "plantar": "High load through the foot and calf (calf raises, long walks, skipping).",
+  "wrist_ext": "Bodyweight on the hands with the wrist bent back (push-ups, planks, crawls).",
+  "grip_heavy": "Heavy or long gripping (carries, hangs, deadlifts).",
+  "overhead": "Arms overhead under load.",
+  "shoulder_end": "Loaded shoulder end range (dips, deep flyes, deficit push-ups).",
+  "hanging": "Hanging the body from the arms.",
+  "high_pressure": "Big pressure spikes in the chest, belly and blood vessels: heavy or near-maximal efforts, hard bracing.",
+  "inverted": "Head below the heart.",
+  "supine": "Lying on the back.",
+  "prone": "Lying on the stomach.",
+  "floor_transition": "Getting down to and up from the floor.",
+  "balance": "Single-leg or unstable: a fall risk.",
+  "hip_deep": "Deep hip bend (deep squats, knee-to-chest).",
+  "ballistic": "Fast or explosive: swings, throws, jumps.",
+  "end_stretch": "Long, passive end-range stretching.",
+  "neck": "Load through the neck or head."
+ },
+ "equipment": {
+  "wall": "a wall",
+  "chair": "a sturdy chair",
+  "stairs": "a step or stairs",
+  "towel": "a towel",
+  "backpack": "a backpack you can load",
+  "door": "a door frame",
+  "table": "a sturdy table",
+  "stick": "a broomstick or dowel",
+  "cushion": "a cushion or folded mat",
+  "dumbbell": "dumbbells",
+  "kettlebell": "kettlebells",
+  "barbell": "a barbell",
+  "rack": "a rack or squat stands",
+  "bench": "a bench",
+  "pullup_bar": "a pull-up bar",
+  "band": "resistance bands",
+  "mini_band": "mini bands",
+  "rings": "rings or a suspension trainer",
+  "cable": "a cable machine",
+  "machine": "gym machines",
+  "landmine": "a landmine",
+  "dip": "a dip station",
+  "box": "a box or step",
+  "vest": "a weight vest",
+  "medball": "a medicine or slam ball",
+  "sled": "a sled",
+  "ab_wheel": "an ab wheel",
+  "foam_roller": "a foam roller",
+  "jump_rope": "a jump rope",
+  "bike": "a bike",
+  "rower": "a rowing machine",
+  "treadmill": "a treadmill",
+  "air_bike": "an air bike",
+  "elliptical": "an elliptical",
+  "trap_bar": "a trap bar"
+ },
+ "household": [
+  "wall",
+  "chair",
+  "stairs",
+  "towel",
+  "backpack",
+  "door",
+  "stick",
+  "cushion"
+ ],
+ "conditions": {
+  "lumbar_disc": {
+   "label": "Lumbar disc problem (herniation, degeneration, sciatica)",
+   "avoid": [
+    "spine_flex_loaded",
+    "spine_rot_loaded"
+   ],
+   "caution": [
+    "spine_axial",
+    "spine_shear",
+    "floor_lift",
+    "high_pressure",
+    "spine_flex_end",
+    "impact"
+   ],
+   "prefer": [
+    "mcgill_curl_up",
+    "side_plank",
+    "bird_dog",
+    "chest_supported_db_row",
+    "goblet_box_squat",
+    "glute_bridge",
+    "brisk_walk"
+   ],
+   "notes": "Keep the spine near neutral under load; build trunk endurance (McGill's curl-up, side plank, bird dog). If an exercise sends symptoms further down the leg, stop it that day. Loaded flexion's risk is clearest in lab studies; clinical trials show most exercise types help back pain about equally, so choose what the person tolerates and enjoys.",
+   "sources": [
+    "mcgill_designing",
+    "callaghan_2001",
+    "who_lbp_2023",
+    "flexion_debate"
+   ]
+  },
+  "lumbar_stenosis": {
+   "label": "Lumbar spinal stenosis",
+   "avoid": [],
+   "caution": [
+    "spine_ext_end",
+    "spine_axial",
+    "overhead"
+   ],
+   "prefer": [
+    "bike_easy",
+    "dead_bug",
+    "glute_bridge",
+    "chest_supported_db_row"
+   ],
+   "notes": "Back arching and long standing narrow the canal; slightly flexed positions (cycling, incline walking) are usually better tolerated.",
+   "sources": [
+    "mcgill_designing"
+   ]
+  },
+  "hypertension": {
+   "label": "High blood pressure",
+   "avoid": [
+    "high_pressure"
+   ],
+   "caution": [
+    "inverted"
+   ],
+   "prefer": [
+    "wall_sit",
+    "handgrip_iso",
+    "brisk_walk",
+    "bike_easy"
+   ],
+   "notes": "Breathe out on every effort; never hold the breath across reps; stop 2–3 reps short of failure; no maximal attempts. Isometric training (wall sit, handgrip) lowered resting BP the most in the largest meta-analysis (−8/−4 mmHg); dynamic resistance and aerobic work help too. Untreated very high readings (≥ 160/100) need a doctor first.",
+   "sources": [
+    "edwards_2023"
+   ]
+  },
+  "heart": {
+   "label": "Heart condition",
+   "avoid": [
+    "high_pressure"
+   ],
+   "caution": [
+    "ballistic",
+    "inverted",
+    "impact"
+   ],
+   "prefer": [
+    "brisk_walk",
+    "bike_easy"
+   ],
+   "notes": "Needs a doctor's or cardiac-rehab clearance and their limits (heart rate, RPE) before training.",
+   "sources": [
+    "acsm_2026"
+   ]
+  },
+  "osteoporosis": {
+   "label": "Osteoporosis or low bone density",
+   "avoid": [
+    "spine_flex_loaded",
+    "spine_rot_loaded"
+   ],
+   "caution": [
+    "impact",
+    "spine_flex_end",
+    "floor_lift",
+    "ballistic"
+   ],
+   "prefer": [
+    "goblet_squat",
+    "db_rdl",
+    "back_extension_floor",
+    "farmer_carry",
+    "single_leg_stand",
+    "step_up"
+   ],
+   "notes": "Progressive resistance and balance training are the backbone; avoid forward bending and twisting of the spine, especially under load. Supervised heavy training and impact (LIFTMOR) improved bone in trials but needs supervision; after a vertebral fracture, the treating clinician sets the limits.",
+   "sources": [
+    "bhof_spine",
+    "essa_osteo",
+    "liftmor"
+   ]
+  },
+  "knee_oa": {
+   "label": "Knee osteoarthritis",
+   "avoid": [],
+   "caution": [
+    "knee_deep",
+    "impact",
+    "kneeling"
+   ],
+   "prefer": [
+    "chair_squat",
+    "step_up_low",
+    "wall_sit",
+    "bike_easy",
+    "terminal_knee_ext"
+   ],
+   "notes": "Strengthening clearly helps; closed-chain work (squats, step-ups) may help pain slightly more than open-chain in the short term. Work in a pain-tolerable range (≤ 3/10, settled by the next morning).",
+   "sources": [
+    "kcc_oa_2025"
+   ]
+  },
+  "patellofemoral": {
+   "label": "Kneecap pain (patellofemoral)",
+   "avoid": [],
+   "caution": [
+    "knee_deep",
+    "kneeling",
+    "impact",
+    "knee_open"
+   ],
+   "prefer": [
+    "wall_sit",
+    "spanish_squat",
+    "step_up_low",
+    "glute_bridge",
+    "side_lying_abduction"
+   ],
+   "notes": "Open- and closed-chain programmes give similar long-term results; combine hip and knee strengthening and adjust depth to symptoms.",
+   "sources": [
+    "witvrouw_pfp"
+   ]
+  },
+  "hip_oa": {
+   "label": "Hip osteoarthritis or impingement",
+   "avoid": [],
+   "caution": [
+    "hip_deep",
+    "end_stretch"
+   ],
+   "prefer": [
+    "glute_bridge",
+    "step_up",
+    "side_lying_abduction",
+    "bike_easy"
+   ],
+   "notes": "Strength and range within comfort; deep hip flexion with rotation often provokes impingement.",
+   "sources": [
+    "acsm_2026"
+   ]
+  },
+  "hip_replacement": {
+   "label": "Hip replacement",
+   "avoid": [
+    "hip_deep"
+   ],
+   "caution": [
+    "balance",
+    "impact",
+    "floor_transition"
+   ],
+   "prefer": [
+    "sit_to_stand",
+    "step_up_low",
+    "glute_bridge",
+    "side_lying_abduction"
+   ],
+   "notes": "Follow the surgeon's precautions for the approach used (for a posterior approach: no deep flexion, crossing the midline or inward rotation early on).",
+   "sources": []
+  },
+  "shoulder_tendinopathy": {
+   "label": "Shoulder pain: rotator cuff or subacromial",
+   "avoid": [],
+   "caution": [
+    "overhead",
+    "shoulder_end",
+    "hanging"
+   ],
+   "prefer": [
+    "band_external_rotation",
+    "side_lying_external_rotation",
+    "landmine_press",
+    "chest_supported_db_row",
+    "face_pull"
+   ],
+   "notes": "Progressive exercise works; heavy loading isn't clearly better than lighter loading; keep pain tolerable. Landmine and short-range incline pressing are gentler than full overhead work while it settles.",
+   "sources": [
+    "jospt_rc_2025"
+   ]
+  },
+  "shoulder_instability": {
+   "label": "Shoulder instability or dislocation history",
+   "avoid": [],
+   "caution": [
+    "shoulder_end",
+    "hanging",
+    "end_stretch",
+    "overhead"
+   ],
+   "prefer": [
+    "band_external_rotation",
+    "push_up",
+    "kb_bottoms_up_press",
+    "face_pull"
+   ],
+   "notes": "Strength through mid-range first; end-range loaded positions last.",
+   "sources": []
+  },
+  "wrist_hand": {
+   "label": "Wrist or hand injury, carpal tunnel",
+   "avoid": [],
+   "caution": [
+    "wrist_ext",
+    "grip_heavy"
+   ],
+   "prefer": [
+    "forearm_plank",
+    "push_up_handles",
+    "db_floor_press",
+    "wrist_extension_band"
+   ],
+   "notes": "Neutral wrists: push-ups on handles, dumbbells or a bar; forearm planks; carries with straps if grip is limited.",
+   "sources": []
+  },
+  "elbow_tendinopathy": {
+   "label": "Tennis or golfer's elbow",
+   "avoid": [],
+   "caution": [
+    "grip_heavy"
+   ],
+   "prefer": [
+    "wrist_extension_band",
+    "towel_wring"
+   ],
+   "notes": "Slow, progressive wrist and forearm loading; keep heavy grip moderate while it settles.",
+   "sources": []
+  },
+  "plantar_fasciitis": {
+   "label": "Plantar fasciitis (heel pain)",
+   "avoid": [],
+   "caution": [
+    "impact",
+    "plantar"
+   ],
+   "prefer": [
+    "towel_calf_raise",
+    "bike_easy"
+   ],
+   "notes": "High-load slow calf raises with a towel under the toes (3 s up, 2 s hold, 3 s down, every other day) improved pain faster than stretching. Dose it: first-step pain the next morning shouldn't rise.",
+   "sources": [
+    "rathleff_2015"
+   ]
+  },
+  "achilles": {
+   "label": "Achilles tendinopathy",
+   "avoid": [],
+   "caution": [
+    "impact",
+    "ballistic",
+    "plantar"
+   ],
+   "prefer": [
+    "calf_raise",
+    "seated_calf_raise",
+    "bike_easy"
+   ],
+   "notes": "Slow, heavy calf loading; reintroduce running and jumping gradually.",
+   "sources": []
+  },
+  "hernia": {
+   "label": "Hernia or abdominal separation (diastasis)",
+   "avoid": [],
+   "caution": [
+    "high_pressure",
+    "spine_flex_loaded"
+   ],
+   "prefer": [
+    "dead_bug",
+    "side_plank_knees",
+    "pallof_press"
+   ],
+   "notes": "Exhale on effort and avoid hard bracing; follow the surgeon's or physio's guidance after repair.",
+   "sources": []
+  },
+  "pregnancy": {
+   "label": "Pregnancy",
+   "avoid": [
+    "prone",
+    "high_pressure"
+   ],
+   "caution": [
+    "supine",
+    "impact",
+    "balance",
+    "inverted",
+    "spine_flex_loaded",
+    "end_stretch"
+   ],
+   "prefer": [
+    "brisk_walk",
+    "bike_easy",
+    "goblet_box_squat",
+    "band_row",
+    "side_plank_knees",
+    "incline_push_up"
+   ],
+   "notes": "Moderate resistance and aerobic work are recommended for uncomplicated pregnancies, with the care provider's OK. Avoid contact and fall-risk activities and long periods flat on the back later in pregnancy; avoid overheating.",
+   "sources": [
+    "acog_804"
+   ]
+  },
+  "glaucoma": {
+   "label": "Glaucoma or retinal problems",
+   "avoid": [
+    "inverted"
+   ],
+   "caution": [
+    "high_pressure"
+   ],
+   "prefer": [],
+   "notes": "Head-down positions and breath-holding raise eye pressure.",
+   "sources": []
+  },
+  "hypermobility": {
+   "label": "Hypermobility (HSD, hEDS)",
+   "avoid": [],
+   "caution": [
+    "end_stretch",
+    "shoulder_end",
+    "ballistic",
+    "hanging"
+   ],
+   "prefer": [
+    "wall_sit",
+    "glute_bridge",
+    "push_up",
+    "band_row",
+    "side_plank"
+   ],
+   "notes": "Strength through a controlled mid-range; closed-chain and isometric work first; limit passive stretching.",
+   "sources": [
+    "hsd_shoulder"
+   ]
+  },
+  "fall_risk": {
+   "label": "Falls or poor balance (often 65+)",
+   "avoid": [],
+   "caution": [
+    "balance",
+    "impact",
+    "floor_transition"
+   ],
+   "prefer": [
+    "sit_to_stand",
+    "single_leg_stand",
+    "tandem_walk",
+    "step_up_low",
+    "get_up_floor"
+   ],
+   "notes": "Balance plus functional and strength training cut falls by about a third; 3+ hours a week works best. Train balance next to a support, and practise getting up from the floor.",
+   "sources": [
+    "sherrington_2019"
+   ]
+  },
+  "neck": {
+   "label": "Neck pain or cervical problems",
+   "avoid": [],
+   "caution": [
+    "neck",
+    "inverted",
+    "overhead"
+   ],
+   "prefer": [
+    "chin_tuck",
+    "band_row",
+    "face_pull"
+   ],
+   "notes": "Deep-neck-flexor and upper-back work; avoid loading through the head.",
+   "sources": []
+  },
+  "diabetes": {
+   "label": "Diabetes or insulin resistance",
+   "avoid": [],
+   "caution": [],
+   "prefer": [
+    "goblet_squat",
+    "step_up",
+    "brisk_walk"
+   ],
+   "notes": "Whole-body resistance training and walking after meals help glucose control. With neuropathy: check the feet, and caution with impact and balance.",
+   "sources": [
+    "acsm_2026"
+   ]
+  }
+ },
+ "sources": {
+  "acsm_2026": "ACSM position stand: Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults (MSSE 2026;58(4):851–872). https://www.newswise.com/articles/acsm-unveils-landmark-2026-resistance-training-guidelines-first-update-in-17-years",
+  "edwards_2023": "Edwards et al. Exercise training and resting blood pressure: network meta-analysis of 270 RCTs. BJSM 2023. https://pubmed.ncbi.nlm.nih.gov/37491419/",
+  "mcgill_designing": "McGill. Designing back exercise: from rehabilitation to enhancing performance. https://www.backfitpro.com/pdf/selecting_back_exercises.pdf",
+  "callaghan_2001": "Callaghan & McGill 2001, Clinical Biomechanics: repeated flexion under load produces disc herniation in porcine spines (as reviewed in https://www.researchgate.net/publication/349768129).",
+  "flexion_debate": "Lehman. Revisiting the spinal flexion debate. https://www.greglehman.ca/blog/2016/01/31/revisiting-the-spinal-flexion-debate-prepare-for-doubt",
+  "who_lbp_2023": "WHO guideline on non-surgical management of chronic primary low back pain in adults (2023): structured exercise recommended.",
+  "bhof_spine": "Bone Health & Osteoporosis Foundation: Protecting your spine. https://www.bonehealthandosteoporosis.org/patients/treatment/exercisesafe-movement/protecting-your-spine/",
+  "essa_osteo": "ESSA position statement on exercise for osteoporosis (summary). https://www.physiotutors.com/strong-steady-and-straight-physical-activity-and-exercise-recommendations-for-osteoporosis/",
+  "liftmor": "Watson et al. LIFTMOR trial: high-intensity resistance and impact training in postmenopausal women with low bone mass (JBMR 2018).",
+  "kcc_oa_2025": "Closed vs open kinetic chain exercise in knee OA: systematic review and meta-analysis. Physiother Res Int 2025. https://onlinelibrary.wiley.com/doi/full/10.1002/pri.70105",
+  "witvrouw_pfp": "Witvrouw et al. Open vs closed kinetic chain exercises in patellofemoral pain: 5-year RCT. https://pubmed.ncbi.nlm.nih.gov/15262632/",
+  "jospt_rc_2025": "Rotator cuff tendinopathy clinical practice guideline. JOSPT 2025. https://www.jospt.org/doi/10.2519/jospt.2025.13182",
+  "rathleff_2015": "Rathleff et al. High-load strength training improves outcome in plantar fasciitis: RCT. Scand J Med Sci Sports 2015. https://pubmed.ncbi.nlm.nih.gov/25145882/",
+  "acog_804": "ACOG Committee Opinion 804 (2020): Physical activity and exercise during pregnancy and the postpartum period.",
+  "hsd_shoulder": "Heavy shoulder strengthening in hypermobility spectrum disorder: feasibility study. https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7350677/",
+  "sherrington_2019": "Sherrington et al. Exercise for preventing falls in older people living in the community. Cochrane 2019. https://www.cochranelibrary.com/cdsr/doi/10.1002/14651858.CD012424.pub2/full",
+  "van_dyk_2019": "van Dyk et al. Including the Nordic hamstring exercise halves hamstring injuries: meta-analysis of 8459 athletes. BJSM 2019. https://www.researchgate.net/publication/331367089",
+  "ishoi_2016": "Ishøi et al. 2016: progressive Copenhagen adduction programme increases eccentric hip adduction strength."
+ },
+ "exercises": [
+  {
+   "id": "sit_to_stand",
+   "name": "Sit-to-stand",
+   "pattern": "squat",
+   "family": "squat_bw",
+   "level": 1,
+   "equipment": [
+    "chair"
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "balance",
+    "glucose"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Feet under the knees, lean forward, stand without the hands",
+    "Sit down slowly, 3 s"
+   ],
+   "picture": "Sit_Squats"
+  },
+  {
+   "id": "chair_squat",
+   "name": "Bodyweight box squat",
+   "pattern": "squat",
+   "family": "squat_bw",
+   "level": 1,
+   "equipment": [
+    "chair"
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Sit back to touch the chair, don't rest on it",
+    "Chest up, knees over the toes"
+   ],
+   "picture": "Box_Squat"
+  },
+  {
+   "id": "wall_sit",
+   "name": "Wall sit",
+   "pattern": "squat",
+   "family": "squat_iso",
+   "level": 2,
+   "equipment": [
+    "wall"
+   ],
+   "styles": [
+    "isometric",
+    "wall_floor"
+   ],
+   "purposes": [
+    "bp",
+    "endurance",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "Back flat on the wall, knees about 90°",
+    "Breathe steadily the whole time"
+   ],
+   "picture": null
+  },
+  {
+   "id": "bw_squat",
+   "name": "Bodyweight squat",
+   "pattern": "squat",
+   "family": "squat_bw",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "endurance",
+    "warmup",
+    "glucose"
+   ],
+   "stresses": [
+    "knee_deep",
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Sit between the heels, knees track the toes",
+    "Depth you can control"
+   ],
+   "picture": "Bodyweight_Squat"
+  },
+  {
+   "id": "tempo_squat",
+   "name": "Tempo squat (3-1-3)",
+   "pattern": "squat",
+   "family": "squat_bw",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "endurance"
+   ],
+   "stresses": [
+    "knee_deep",
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "3 s down, 1 s pause, 3 s up",
+    "Breathe out on the way up"
+   ],
+   "picture": null
+  },
+  {
+   "id": "backpack_squat",
+   "name": "Backpack squat",
+   "pattern": "squat",
+   "family": "squat_bw",
+   "level": 3,
+   "equipment": [
+    "backpack"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Backpack hugged to the chest",
+    "Load it with books or water bottles"
+   ],
+   "picture": "Goblet_Squat"
+  },
+  {
+   "id": "goblet_box_squat",
+   "name": "Goblet box squat",
+   "pattern": "squat",
+   "family": "squat_loaded",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ],
+    [
+     "bench",
+     "chair",
+     "box"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "bone"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Weight at the chest, sit back to touch the box",
+    "3 s down"
+   ],
+   "picture": "Goblet_Squat"
+  },
+  {
+   "id": "goblet_squat",
+   "name": "Goblet squat",
+   "pattern": "squat",
+   "family": "squat_loaded",
+   "level": 3,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ]
+   ],
+   "styles": [
+    "conventional",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone",
+    "glucose"
+   ],
+   "stresses": [
+    "knee_deep",
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Elbows inside the knees at the bottom",
+    "Chest tall"
+   ],
+   "picture": "Goblet_Squat"
+  },
+  {
+   "id": "heel_elevated_goblet_squat",
+   "name": "Heel-elevated goblet squat",
+   "pattern": "squat",
+   "family": "squat_loaded",
+   "level": 3,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "strength"
+   ],
+   "stresses": [
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Heels on a plate or wedge",
+    "Upright torso, knees forward"
+   ],
+   "picture": "Goblet_Squat"
+  },
+  {
+   "id": "landmine_squat",
+   "name": "Landmine squat",
+   "pattern": "squat",
+   "family": "squat_loaded",
+   "level": 3,
+   "equipment": [
+    "landmine",
+    "barbell"
+   ],
+   "styles": [
+    "unconventional",
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Bar end at the chest, lean slightly into it"
+   ],
+   "picture": null
+  },
+  {
+   "id": "leg_press",
+   "name": "Leg press",
+   "pattern": "squat",
+   "family": "squat_machine",
+   "level": 2,
+   "equipment": [
+    "machine"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "high_pressure",
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "implement": "machine",
+   "unilateral": false,
+   "cues": [
+    "Lower back stays on the pad",
+    "Breathe out as you press; don't lock the knees"
+   ],
+   "picture": "ek-leg-press"
+  },
+  {
+   "id": "barbell_front_squat",
+   "name": "Barbell front squat",
+   "pattern": "squat",
+   "family": "squat_barbell",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone"
+   ],
+   "stresses": [
+    "spine_axial",
+    "high_pressure",
+    "knee_deep",
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Elbows high, bar on the shoulders",
+    "Safeties set"
+   ],
+   "picture": "ek-front-squat-with-barbell"
+  },
+  {
+   "id": "barbell_back_squat",
+   "name": "Barbell back squat",
+   "pattern": "squat",
+   "family": "squat_barbell",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone"
+   ],
+   "stresses": [
+    "spine_axial",
+    "high_pressure",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Safeties just below the bottom position",
+    "Brace, breathe out through the sticking point"
+   ],
+   "picture": "ek-barbell-squat"
+  },
+  {
+   "id": "zercher_squat",
+   "name": "Zercher squat",
+   "pattern": "squat",
+   "family": "squat_barbell",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "rack"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "athletic"
+   ],
+   "stresses": [
+    "spine_axial",
+    "high_pressure",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Bar in the crook of the elbows",
+    "Upper back tight"
+   ],
+   "picture": "Zercher_Squats"
+  },
+  {
+   "id": "jump_squat",
+   "name": "Jump squat",
+   "pattern": "squat",
+   "family": "squat_power",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "power",
+    "wall_floor"
+   ],
+   "purposes": [
+    "power",
+    "conditioning",
+    "bone"
+   ],
+   "stresses": [
+    "impact",
+    "ballistic",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Land softly, knees over the toes",
+    "Reset between reps"
+   ],
+   "picture": "Freehand_Jump_Squat"
+  },
+  {
+   "id": "box_jump",
+   "name": "Box jump",
+   "pattern": "power",
+   "family": "jump",
+   "level": 3,
+   "equipment": [
+    "box"
+   ],
+   "styles": [
+    "power"
+   ],
+   "purposes": [
+    "power",
+    "bone"
+   ],
+   "stresses": [
+    "impact",
+    "ballistic"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Step down, don't jump down",
+    "Land quietly"
+   ],
+   "picture": "Front_Box_Jump"
+  },
+  {
+   "id": "split_squat_supported",
+   "name": "Supported split squat",
+   "pattern": "lunge",
+   "family": "split_squat",
+   "level": 1,
+   "equipment": [
+    [
+     "chair",
+     "wall"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "balance"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Hold a chair, back knee drops straight down",
+    "Front heel stays down"
+   ],
+   "picture": "Split_Squats"
+  },
+  {
+   "id": "split_squat",
+   "name": "Split squat",
+   "pattern": "lunge",
+   "family": "split_squat",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "balance"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Long stance, torso tall",
+    "Back knee lightly touches a cushion"
+   ],
+   "picture": "Split_Squats"
+  },
+  {
+   "id": "db_split_squat",
+   "name": "Dumbbell split squat",
+   "pattern": "lunge",
+   "family": "split_squat",
+   "level": 3,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone"
+   ],
+   "stresses": [
+    "balance",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Split_Squat_with_Dumbbells"
+  },
+  {
+   "id": "rfess",
+   "name": "Rear-foot-elevated split squat",
+   "pattern": "lunge",
+   "family": "split_squat",
+   "level": 3,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "balance"
+   ],
+   "stresses": [
+    "balance",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Back foot laces-down on the bench",
+    "Most weight on the front leg"
+   ],
+   "picture": null
+  },
+  {
+   "id": "db_rfess",
+   "name": "Dumbbell Bulgarian split squat",
+   "pattern": "lunge",
+   "family": "split_squat",
+   "level": 4,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "balance",
+    "knee_deep",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "reverse_lunge",
+   "name": "Reverse lunge",
+   "pattern": "lunge",
+   "family": "lunge",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "balance",
+    "athletic"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Step back, drop the back knee",
+    "Easier on the knees than forward lunges"
+   ],
+   "picture": "Dumbbell_Rear_Lunge"
+  },
+  {
+   "id": "walking_lunge",
+   "name": "Walking lunge",
+   "pattern": "lunge",
+   "family": "lunge",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "endurance",
+    "balance",
+    "athletic"
+   ],
+   "stresses": [
+    "balance",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "ek-walking-lunges"
+  },
+  {
+   "id": "db_reverse_lunge",
+   "name": "Dumbbell reverse lunge",
+   "pattern": "lunge",
+   "family": "lunge",
+   "level": 3,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "balance",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "ek-rear-lunges-with-dumbbell"
+  },
+  {
+   "id": "lunge_jump",
+   "name": "Jumping lunge",
+   "pattern": "lunge",
+   "family": "lunge",
+   "level": 4,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "power"
+   ],
+   "purposes": [
+    "power",
+    "conditioning"
+   ],
+   "stresses": [
+    "impact",
+    "ballistic",
+    "balance",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Split_Jump"
+  },
+  {
+   "id": "lateral_lunge",
+   "name": "Lateral lunge",
+   "pattern": "lunge",
+   "family": "lateral_lunge",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "mobility",
+    "athletic"
+   ],
+   "stresses": [
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Sit into one hip, other leg straight",
+    "Feet flat"
+   ],
+   "picture": null
+  },
+  {
+   "id": "cossack_squat",
+   "name": "Cossack squat",
+   "pattern": "lunge",
+   "family": "lateral_lunge",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "mobility"
+   ],
+   "purposes": [
+    "mobility",
+    "strength"
+   ],
+   "stresses": [
+    "knee_deep",
+    "hip_deep",
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "step_up_low",
+   "name": "Low step-up",
+   "pattern": "lunge",
+   "family": "step_up",
+   "level": 1,
+   "equipment": [
+    [
+     "stairs",
+     "box"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "balance"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Whole foot on the step, push through the heel",
+    "Lower slowly"
+   ],
+   "picture": "ek-step-ups-with-dumbbells"
+  },
+  {
+   "id": "step_up",
+   "name": "Step-up",
+   "pattern": "lunge",
+   "family": "step_up",
+   "level": 2,
+   "equipment": [
+    [
+     "box",
+     "bench",
+     "stairs"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "balance",
+    "bone",
+    "athletic"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "ek-step-ups-with-dumbbells"
+  },
+  {
+   "id": "db_step_up",
+   "name": "Dumbbell step-up",
+   "pattern": "lunge",
+   "family": "step_up",
+   "level": 3,
+   "equipment": [
+    "dumbbell",
+    [
+     "box",
+     "bench"
+    ]
+   ],
+   "styles": [
+    "conventional",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone"
+   ],
+   "stresses": [
+    "balance",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "ek-step-ups-with-dumbbells"
+  },
+  {
+   "id": "skater_squat",
+   "name": "Skater squat",
+   "pattern": "lunge",
+   "family": "single_leg_squat",
+   "level": 4,
+   "equipment": [],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "balance"
+   ],
+   "stresses": [
+    "balance",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Back knee to a cushion",
+    "Arms forward to balance"
+   ],
+   "picture": null
+  },
+  {
+   "id": "pistol_box",
+   "name": "Box pistol squat",
+   "pattern": "lunge",
+   "family": "single_leg_squat",
+   "level": 4,
+   "equipment": [
+    [
+     "box",
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "balance"
+   ],
+   "stresses": [
+    "balance",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Sit to the box on one leg, stand back up"
+   ],
+   "picture": null
+  },
+  {
+   "id": "pistol_squat",
+   "name": "Pistol squat",
+   "pattern": "lunge",
+   "family": "single_leg_squat",
+   "level": 5,
+   "equipment": [],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "balance",
+    "mobility"
+   ],
+   "stresses": [
+    "balance",
+    "knee_deep",
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Kettlebell_Pistol_Squat"
+  },
+  {
+   "id": "hip_hinge_drill",
+   "name": "Hip hinge drill with a stick",
+   "pattern": "hinge",
+   "family": "hinge_bw",
+   "level": 1,
+   "equipment": [
+    "stick"
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Stick touches head, upper back and tailbone",
+    "Push the hips back, shins vertical"
+   ],
+   "picture": null
+  },
+  {
+   "id": "glute_bridge",
+   "name": "Glute bridge",
+   "pattern": "hinge",
+   "family": "bridge",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Ribs down, squeeze the glutes",
+    "Don't arch at the top"
+   ],
+   "picture": "Barbell_Glute_Bridge"
+  },
+  {
+   "id": "single_leg_glute_bridge",
+   "name": "Single-leg glute bridge",
+   "pattern": "hinge",
+   "family": "bridge",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Single_Leg_Glute_Bridge"
+  },
+  {
+   "id": "hip_thrust_bw",
+   "name": "Bodyweight hip thrust",
+   "pattern": "hinge",
+   "family": "hip_thrust",
+   "level": 2,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Upper back on the bench, chin tucked",
+    "Pause at the top"
+   ],
+   "picture": "Barbell_Hip_Thrust"
+  },
+  {
+   "id": "single_leg_hip_thrust",
+   "name": "Single-leg hip thrust",
+   "pattern": "hinge",
+   "family": "hip_thrust",
+   "level": 3,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Barbell_Hip_Thrust"
+  },
+  {
+   "id": "db_hip_thrust",
+   "name": "Dumbbell hip thrust",
+   "pattern": "hinge",
+   "family": "hip_thrust",
+   "level": 3,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Barbell_Hip_Thrust"
+  },
+  {
+   "id": "barbell_hip_thrust",
+   "name": "Barbell hip thrust",
+   "pattern": "hinge",
+   "family": "hip_thrust",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "high_pressure"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Pad or towel on the bar",
+    "Ribs down, no arching at the top"
+   ],
+   "picture": "Barbell_Hip_Thrust"
+  },
+  {
+   "id": "backpack_rdl",
+   "name": "Backpack Romanian deadlift",
+   "pattern": "hinge",
+   "family": "rdl",
+   "level": 2,
+   "equipment": [
+    "backpack"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [
+    "spine_shear"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hold the backpack in front, hips back, back flat",
+    "Stop when the hamstrings stretch"
+   ],
+   "picture": "Stiff-Legged_Dumbbell_Deadlift"
+  },
+  {
+   "id": "db_rdl",
+   "name": "Dumbbell Romanian deadlift",
+   "pattern": "hinge",
+   "family": "rdl",
+   "level": 3,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone"
+   ],
+   "stresses": [
+    "spine_shear",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Hips back, dumbbells slide down the thighs",
+    "Back flat, stop below the knees"
+   ],
+   "picture": "Stiff-Legged_Dumbbell_Deadlift"
+  },
+  {
+   "id": "barbell_rdl",
+   "name": "Barbell Romanian deadlift (from the rack)",
+   "pattern": "hinge",
+   "family": "rdl",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "bone"
+   ],
+   "stresses": [
+    "spine_shear",
+    "grip_heavy",
+    "high_pressure"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Romanian_Deadlift"
+  },
+  {
+   "id": "sl_rdl_bw",
+   "name": "Single-leg Romanian deadlift",
+   "pattern": "hinge",
+   "family": "sl_rdl",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance",
+    "strength",
+    "athletic"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Fingertips on a wall if needed",
+    "Hips square to the floor"
+   ],
+   "picture": null
+  },
+  {
+   "id": "sl_rdl_db",
+   "name": "Dumbbell single-leg Romanian deadlift",
+   "pattern": "hinge",
+   "family": "sl_rdl",
+   "level": 3,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ]
+   ],
+   "styles": [
+    "conventional",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "balance",
+    "athletic"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "kb_deadlift",
+   "name": "Kettlebell deadlift",
+   "pattern": "hinge",
+   "family": "deadlift",
+   "level": 2,
+   "equipment": [
+    [
+     "kettlebell",
+     "dumbbell"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "bone",
+    "rehab"
+   ],
+   "stresses": [
+    "floor_lift"
+   ],
+   "unit": "reps",
+   "implement": "kettlebell",
+   "unilateral": false,
+   "cues": [
+    "Bell between the feet, hips back",
+    "Stand tall, don't lean back"
+   ],
+   "picture": "Sumo_Deadlift"
+  },
+  {
+   "id": "trap_bar_deadlift",
+   "name": "Trap-bar deadlift",
+   "pattern": "hinge",
+   "family": "deadlift",
+   "level": 4,
+   "equipment": [
+    "trap_bar"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "bone"
+   ],
+   "stresses": [
+    "floor_lift",
+    "high_pressure",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Trap_Bar_Deadlift"
+  },
+  {
+   "id": "deadlift",
+   "name": "Barbell deadlift",
+   "pattern": "hinge",
+   "family": "deadlift",
+   "level": 5,
+   "equipment": [
+    "barbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "bone"
+   ],
+   "stresses": [
+    "floor_lift",
+    "spine_shear",
+    "spine_axial",
+    "high_pressure",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Barbell_Deadlift"
+  },
+  {
+   "id": "good_morning",
+   "name": "Good morning",
+   "pattern": "hinge",
+   "family": "good_morning",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "spine_shear",
+    "spine_axial"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-barbell-good-mornings"
+  },
+  {
+   "id": "kb_swing",
+   "name": "Kettlebell swing",
+   "pattern": "hinge",
+   "family": "swing",
+   "level": 3,
+   "equipment": [
+    "kettlebell"
+   ],
+   "styles": [
+    "functional",
+    "power"
+   ],
+   "purposes": [
+    "power",
+    "conditioning",
+    "glucose",
+    "athletic"
+   ],
+   "stresses": [
+    "ballistic",
+    "spine_shear",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "kettlebell",
+   "unilateral": false,
+   "cues": [
+    "Hike it back, snap the hips",
+    "Arms are ropes; the bell floats to chest height"
+   ],
+   "picture": "One-Arm_Kettlebell_Swings"
+  },
+  {
+   "id": "cable_pull_through",
+   "name": "Cable pull-through",
+   "pattern": "hinge",
+   "family": "pull_through",
+   "level": 2,
+   "equipment": [
+    "cable"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "cable",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Pull_Through"
+  },
+  {
+   "id": "band_pull_through",
+   "name": "Band pull-through",
+   "pattern": "hinge",
+   "family": "pull_through",
+   "level": 2,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Band anchored low behind you",
+    "Hips back, squeeze forward"
+   ],
+   "picture": "Band_Good_Morning_Pull_Through"
+  },
+  {
+   "id": "slider_ham_curl",
+   "name": "Towel hamstring curl",
+   "pattern": "hinge",
+   "family": "ham_curl",
+   "level": 2,
+   "equipment": [
+    "towel"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "injury_prevention"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Heels on a towel on a smooth floor, hips up",
+    "Slide out slowly, curl back"
+   ],
+   "picture": null
+  },
+  {
+   "id": "leg_curl",
+   "name": "Leg curl machine",
+   "pattern": "hinge",
+   "family": "ham_curl",
+   "level": 2,
+   "equipment": [
+    "machine"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "injury_prevention"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "machine",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-lying-leg-curl-machine"
+  },
+  {
+   "id": "nordic_curl",
+   "name": "Nordic hamstring curl",
+   "pattern": "hinge",
+   "family": "nordic",
+   "level": 4,
+   "equipment": [
+    [
+     "chair",
+     "bench"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "injury_prevention",
+    "strength"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Feet hooked under something heavy",
+    "Lower as slowly as you can, push back up with the hands"
+   ],
+   "notes": "About half the hamstring injuries in athletes when used regularly (van Dyk 2019).",
+   "picture": null
+  },
+  {
+   "id": "back_extension_floor",
+   "name": "Back extension on the floor (to neutral)",
+   "pattern": "hinge",
+   "family": "back_ext",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "posture",
+    "bone",
+    "rehab"
+   ],
+   "stresses": [
+    "prone"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Lift the chest a few centimetres, look at the floor",
+    "Stop at neutral, don't arch"
+   ],
+   "picture": "Hyperextensions_Back_Extensions"
+  },
+  {
+   "id": "back_extension_45",
+   "name": "45° back extension",
+   "pattern": "hinge",
+   "family": "back_ext",
+   "level": 3,
+   "equipment": [
+    "machine"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "posture"
+   ],
+   "stresses": [
+    "spine_ext_end"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hinge at the hips, stop at a straight line"
+   ],
+   "picture": "Hyperextensions_Back_Extensions"
+  },
+  {
+   "id": "wall_push_up",
+   "name": "Wall push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 1,
+   "equipment": [
+    "wall"
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Body in a straight line",
+    "Chest to the wall, breathe out pushing away"
+   ],
+   "picture": "Incline_Push-Up"
+  },
+  {
+   "id": "incline_push_up",
+   "name": "Incline push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 2,
+   "equipment": [
+    [
+     "bench",
+     "chair",
+     "table",
+     "box"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "endurance"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hands on a stable edge; lower = harder",
+    "Elbows about 45° from the body"
+   ],
+   "picture": "Incline_Push-Up"
+  },
+  {
+   "id": "knee_push_up",
+   "name": "Knee push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "endurance"
+   ],
+   "stresses": [
+    "wrist_ext",
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Pushups"
+  },
+  {
+   "id": "push_up",
+   "name": "Push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "endurance"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Plank from head to heels",
+    "Chest to a fist's height above the floor"
+   ],
+   "picture": "Pushups"
+  },
+  {
+   "id": "push_up_handles",
+   "name": "Push-up on handles or dumbbells",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 3,
+   "equipment": [
+    [
+     "dumbbell",
+     "rack"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Neutral, straight wrists",
+    "Slightly deeper range"
+   ],
+   "notes": "Wrist-friendly version.",
+   "picture": "Pushups"
+  },
+  {
+   "id": "tempo_push_up",
+   "name": "Tempo push-up (3 s down, pause)",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 4,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Pushups"
+  },
+  {
+   "id": "decline_push_up",
+   "name": "Decline push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 4,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "wrist_ext",
+    "inverted"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Decline_Push-Up"
+  },
+  {
+   "id": "deficit_push_up",
+   "name": "Deficit push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 4,
+   "equipment": [
+    [
+     "dumbbell",
+     "stairs"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "strength"
+   ],
+   "stresses": [
+    "shoulder_end"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Pushups"
+  },
+  {
+   "id": "archer_push_up",
+   "name": "Archer push-up",
+   "pattern": "push_h",
+   "family": "push_up",
+   "level": 5,
+   "equipment": [],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "wrist_ext",
+    "shoulder_end"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "plyo_push_up",
+   "name": "Plyometric push-up",
+   "pattern": "power",
+   "family": "push_power",
+   "level": 4,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "power"
+   ],
+   "purposes": [
+    "power"
+   ],
+   "stresses": [
+    "wrist_ext",
+    "impact",
+    "ballistic"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Plyo_Push-up"
+  },
+  {
+   "id": "db_floor_press",
+   "name": "Dumbbell floor press",
+   "pattern": "push_h",
+   "family": "db_press",
+   "level": 2,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "rehab"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Elbows touch the floor softly",
+    "Shoulder-friendly range"
+   ],
+   "picture": "Dumbbell_Floor_Press"
+  },
+  {
+   "id": "db_bench_press",
+   "name": "Dumbbell bench press",
+   "pattern": "push_h",
+   "family": "db_press",
+   "level": 3,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-bench-press-dumbbell"
+  },
+  {
+   "id": "db_incline_press",
+   "name": "Incline dumbbell press",
+   "pattern": "push_h",
+   "family": "db_press",
+   "level": 3,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "strength"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-incline-dumbbell-press"
+  },
+  {
+   "id": "barbell_bench_press",
+   "name": "Barbell bench press",
+   "pattern": "push_h",
+   "family": "bench",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "bench",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "supine",
+    "high_pressure"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Spotter arms set",
+    "Bar low in the palm; breathe out as you press"
+   ],
+   "picture": "ek-bench-press"
+  },
+  {
+   "id": "incline_bench_press",
+   "name": "Incline barbell bench press",
+   "pattern": "push_h",
+   "family": "bench",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "bench",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "supine",
+    "high_pressure"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-incline-bench-press"
+  },
+  {
+   "id": "band_chest_press",
+   "name": "Band chest press",
+   "pattern": "push_h",
+   "family": "band_press",
+   "level": 1,
+   "equipment": [
+    "band",
+    "door"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "endurance",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Band anchored behind you at chest height",
+    "Press and slowly return"
+   ],
+   "picture": "Cable_Chest_Press"
+  },
+  {
+   "id": "cable_chest_press",
+   "name": "Cable or machine chest press",
+   "pattern": "push_h",
+   "family": "machine_press",
+   "level": 2,
+   "equipment": [
+    [
+     "cable",
+     "machine"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "strength"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "cable",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Cable_Chest_Press"
+  },
+  {
+   "id": "bench_dip",
+   "name": "Bench dip",
+   "pattern": "push_h",
+   "family": "dip",
+   "level": 3,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "endurance"
+   ],
+   "stresses": [
+    "shoulder_end",
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Shoulders down and back",
+    "Only to 90° at the elbow"
+   ],
+   "picture": "ek-bench-dips"
+  },
+  {
+   "id": "dip",
+   "name": "Parallel-bar dip",
+   "pattern": "push_h",
+   "family": "dip",
+   "level": 4,
+   "equipment": [
+    "dip"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "shoulder_end"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Parallel_Bar_Dip"
+  },
+  {
+   "id": "band_overhead_press",
+   "name": "Band overhead press",
+   "pattern": "push_v",
+   "family": "ohp_band",
+   "level": 1,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Stand on the band, press to straight arms",
+    "Ribs down"
+   ],
+   "picture": "Shoulder_Press_-_With_Bands"
+  },
+  {
+   "id": "landmine_press",
+   "name": "Landmine press",
+   "pattern": "push_v",
+   "family": "landmine_press",
+   "level": 3,
+   "equipment": [
+    "landmine",
+    "barbell"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [
+    "Half-kneeling or standing, press up and forward"
+   ],
+   "notes": "Gentler on painful shoulders than full overhead pressing.",
+   "picture": null
+  },
+  {
+   "id": "half_kneeling_db_press",
+   "name": "Half-kneeling single-arm press",
+   "pattern": "push_v",
+   "family": "db_ohp",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "core"
+   ],
+   "stresses": [
+    "overhead",
+    "kneeling"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [
+    "Squeeze the glute of the down knee",
+    "Press without leaning"
+   ],
+   "picture": "Standing_Dumbbell_Press"
+  },
+  {
+   "id": "seated_db_press",
+   "name": "Seated dumbbell shoulder press",
+   "pattern": "push_v",
+   "family": "db_ohp",
+   "level": 3,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Back on the pad",
+    "Neutral grip if the shoulder complains"
+   ],
+   "picture": "Seated_Dumbbell_Press"
+  },
+  {
+   "id": "standing_db_press",
+   "name": "Standing dumbbell press",
+   "pattern": "push_v",
+   "family": "db_ohp",
+   "level": 3,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "core"
+   ],
+   "stresses": [
+    "overhead",
+    "spine_axial"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Standing_Dumbbell_Press"
+  },
+  {
+   "id": "kb_bottoms_up_press",
+   "name": "Bottoms-up kettlebell press",
+   "pattern": "push_v",
+   "family": "db_ohp",
+   "level": 4,
+   "equipment": [
+    "kettlebell"
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "rehab",
+    "strength",
+    "grip"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "reps",
+   "implement": "kettlebell",
+   "unilateral": true,
+   "cues": [],
+   "notes": "Light weight, big shoulder-stability demand.",
+   "picture": "Kettlebell_Seated_Press"
+  },
+  {
+   "id": "barbell_ohp",
+   "name": "Barbell overhead press",
+   "pattern": "push_v",
+   "family": "barbell_ohp",
+   "level": 4,
+   "equipment": [
+    "barbell",
+    "rack"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "overhead",
+    "spine_axial",
+    "high_pressure"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Barbell_Shoulder_Press"
+  },
+  {
+   "id": "push_press",
+   "name": "Push press",
+   "pattern": "power",
+   "family": "push_press",
+   "level": 4,
+   "equipment": [
+    [
+     "barbell",
+     "dumbbell"
+    ]
+   ],
+   "styles": [
+    "conventional",
+    "power"
+   ],
+   "purposes": [
+    "power",
+    "strength"
+   ],
+   "stresses": [
+    "overhead",
+    "spine_axial",
+    "ballistic"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Push_Press"
+  },
+  {
+   "id": "pike_push_up",
+   "name": "Pike push-up",
+   "pattern": "push_v",
+   "family": "pike",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "overhead",
+    "inverted",
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hips high, head to a spot in front of the hands"
+   ],
+   "picture": null
+  },
+  {
+   "id": "elevated_pike_push_up",
+   "name": "Feet-elevated pike push-up",
+   "pattern": "push_v",
+   "family": "pike",
+   "level": 4,
+   "equipment": [
+    [
+     "box",
+     "chair",
+     "bench"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "overhead",
+    "inverted",
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "wall_handstand",
+   "name": "Wall handstand hold",
+   "pattern": "push_v",
+   "family": "pike",
+   "level": 5,
+   "equipment": [
+    "wall"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "core"
+   ],
+   "stresses": [
+    "overhead",
+    "inverted",
+    "wrist_ext",
+    "neck"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Handstand_Push-Ups"
+  },
+  {
+   "id": "band_row",
+   "name": "Band row",
+   "pattern": "pull_h",
+   "family": "row_band",
+   "level": 1,
+   "equipment": [
+    "band",
+    "door"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "posture",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Band anchored at chest height",
+    "Elbows back, shoulder blades together"
+   ],
+   "picture": null
+  },
+  {
+   "id": "doorframe_row",
+   "name": "Door-frame row",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 1,
+   "equipment": [
+    "door"
+   ],
+   "styles": [
+    "calisthenics",
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "posture"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hold both sides of a door frame, lean back",
+    "Pull the chest to the frame"
+   ],
+   "picture": null
+  },
+  {
+   "id": "towel_door_row",
+   "name": "Towel door row",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 2,
+   "equipment": [
+    "door",
+    "towel"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "grip"
+   ],
+   "stresses": [
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Towel around both door handles, door shut, lean back",
+    "Only on a solid door that opens away from you"
+   ],
+   "picture": null
+  },
+  {
+   "id": "table_row",
+   "name": "Table row",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 2,
+   "equipment": [
+    "table"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Lie under a sturdy table, pull the chest to the edge"
+   ],
+   "notes": "Only a table that can't tip.",
+   "picture": "ek-body-row"
+  },
+  {
+   "id": "inverted_row_high",
+   "name": "Inverted row, bar high",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 2,
+   "equipment": [
+    [
+     "rack",
+     "rings",
+     "table"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "posture"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Body straight, chest to the bar"
+   ],
+   "picture": "Inverted_Row"
+  },
+  {
+   "id": "inverted_row",
+   "name": "Inverted row",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 3,
+   "equipment": [
+    [
+     "rack",
+     "rings"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "posture"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Inverted_Row"
+  },
+  {
+   "id": "feet_elevated_inverted_row",
+   "name": "Feet-elevated inverted row",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 4,
+   "equipment": [
+    [
+     "rack",
+     "rings"
+    ],
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Inverted_Row"
+  },
+  {
+   "id": "ring_row",
+   "name": "Ring or TRX row",
+   "pattern": "pull_h",
+   "family": "row_bw",
+   "level": 3,
+   "equipment": [
+    "rings"
+   ],
+   "styles": [
+    "calisthenics",
+    "functional"
+   ],
+   "purposes": [
+    "strength",
+    "posture",
+    "core"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Suspended_Row"
+  },
+  {
+   "id": "db_row",
+   "name": "Single-arm dumbbell row (bench-supported)",
+   "pattern": "pull_h",
+   "family": "db_row",
+   "level": 2,
+   "equipment": [
+    "dumbbell",
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "One-Arm_Dumbbell_Row"
+  },
+  {
+   "id": "chest_supported_db_row",
+   "name": "Chest-supported dumbbell row",
+   "pattern": "pull_h",
+   "family": "db_row",
+   "level": 2,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy",
+    "posture"
+   ],
+   "stresses": [
+    "prone"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "notes": "No low-back load.",
+   "picture": "Dumbbell_Incline_Row"
+  },
+  {
+   "id": "seated_cable_row",
+   "name": "Seated cable row",
+   "pattern": "pull_h",
+   "family": "cable_row",
+   "level": 2,
+   "equipment": [
+    "cable"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "cable",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-seated-cable-rows"
+  },
+  {
+   "id": "barbell_row",
+   "name": "Barbell bent-over row",
+   "pattern": "pull_h",
+   "family": "barbell_row",
+   "level": 4,
+   "equipment": [
+    "barbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "spine_shear",
+    "high_pressure",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "implement": "barbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Bent_Over_Barbell_Row"
+  },
+  {
+   "id": "backpack_row",
+   "name": "Bent-over backpack row",
+   "pattern": "pull_h",
+   "family": "db_row",
+   "level": 2,
+   "equipment": [
+    "backpack"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "spine_shear"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hinge with a flat back, or brace a hand on a chair"
+   ],
+   "picture": "Bent_Over_Two-Dumbbell_Row"
+  },
+  {
+   "id": "band_pull_apart",
+   "name": "Band pull-apart",
+   "pattern": "pull_h",
+   "family": "scap",
+   "level": 1,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "posture",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Arms straight, squeeze the shoulder blades"
+   ],
+   "picture": "Band_Pull_Apart"
+  },
+  {
+   "id": "face_pull",
+   "name": "Face pull",
+   "pattern": "pull_h",
+   "family": "scap",
+   "level": 2,
+   "equipment": [
+    [
+     "cable",
+     "band"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "posture",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Pull to the forehead, thumbs back"
+   ],
+   "picture": "Face_Pull"
+  },
+  {
+   "id": "prone_ytw",
+   "name": "Prone Y-T-W raises",
+   "pattern": "pull_h",
+   "family": "scap",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "posture",
+    "rehab"
+   ],
+   "stresses": [
+    "prone"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Lying face down, thumbs up",
+    "Lift only the arms"
+   ],
+   "picture": null
+  },
+  {
+   "id": "rear_delt_fly",
+   "name": "Chest-supported rear-delt fly",
+   "pattern": "shoulder",
+   "family": "rear_delt",
+   "level": 2,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "posture"
+   ],
+   "stresses": [
+    "prone"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Lying_Rear_Delt_Raise"
+  },
+  {
+   "id": "towel_pulldown_iso",
+   "name": "Towel pulldown hold",
+   "pattern": "pull_v",
+   "family": "pulldown_band",
+   "level": 1,
+   "equipment": [
+    "towel"
+   ],
+   "styles": [
+    "unconventional",
+    "isometric",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "posture"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "Towel overhead, pull it apart and down to the chin",
+    "Hold 10–20 s"
+   ],
+   "picture": null
+  },
+  {
+   "id": "band_pulldown",
+   "name": "Band lat pulldown",
+   "pattern": "pull_v",
+   "family": "pulldown_band",
+   "level": 1,
+   "equipment": [
+    "band",
+    "door"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Band anchored high, pull elbows to the ribs"
+   ],
+   "picture": "Wide-Grip_Lat_Pulldown"
+  },
+  {
+   "id": "lat_pulldown",
+   "name": "Lat pulldown",
+   "pattern": "pull_v",
+   "family": "pulldown",
+   "level": 2,
+   "equipment": [
+    [
+     "cable",
+     "machine"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "reps",
+   "implement": "cable",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Wide-Grip_Lat_Pulldown"
+  },
+  {
+   "id": "scap_pull_up",
+   "name": "Scapular pull-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 2,
+   "equipment": [
+    "pullup_bar"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "rehab",
+    "strength"
+   ],
+   "stresses": [
+    "hanging"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Arms straight, pull the shoulders down from the ears"
+   ],
+   "picture": "Scapular_Pull-Up"
+  },
+  {
+   "id": "dead_hang",
+   "name": "Dead hang",
+   "pattern": "pull_v",
+   "family": "hang",
+   "level": 2,
+   "equipment": [
+    "pullup_bar"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "grip",
+    "mobility"
+   ],
+   "stresses": [
+    "hanging",
+    "grip_heavy",
+    "overhead"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "feet_assisted_chin_up",
+   "name": "Feet-assisted chin-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 2,
+   "equipment": [
+    [
+     "rack",
+     "pullup_bar"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Bar at eye height, feet help only as needed",
+    "3 s lowering"
+   ],
+   "picture": "Chin-Up"
+  },
+  {
+   "id": "band_assisted_pull_up",
+   "name": "Band-assisted pull-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 3,
+   "equipment": [
+    "pullup_bar",
+    "band"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "hanging",
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Band_Assisted_Pull-Up"
+  },
+  {
+   "id": "negative_pull_up",
+   "name": "Negative pull-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 3,
+   "equipment": [
+    "pullup_bar",
+    [
+     "chair",
+     "box"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "hanging",
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Step up to the top, lower over 3–5 s"
+   ],
+   "picture": "Pullups"
+  },
+  {
+   "id": "chin_up",
+   "name": "Chin-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 4,
+   "equipment": [
+    "pullup_bar"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "hanging",
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Chin-Up"
+  },
+  {
+   "id": "pull_up",
+   "name": "Pull-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 4,
+   "equipment": [
+    "pullup_bar"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "hanging",
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Pullups"
+  },
+  {
+   "id": "weighted_pull_up",
+   "name": "Weighted pull-up",
+   "pattern": "pull_v",
+   "family": "pull_up",
+   "level": 5,
+   "equipment": [
+    "pullup_bar",
+    [
+     "vest",
+     "dumbbell"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "strength"
+   ],
+   "stresses": [
+    "hanging",
+    "overhead",
+    "grip_heavy"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Pullups"
+  },
+  {
+   "id": "farmer_carry",
+   "name": "Farmer carry",
+   "pattern": "carry",
+   "family": "carry",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell",
+     "backpack"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "grip",
+    "strength",
+    "athletic",
+    "bone",
+    "glucose"
+   ],
+   "stresses": [
+    "grip_heavy",
+    "spine_axial"
+   ],
+   "unit": "m",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Tall, shoulders down, short quick steps"
+   ],
+   "picture": "Farmers_Walk"
+  },
+  {
+   "id": "suitcase_carry",
+   "name": "Suitcase carry",
+   "pattern": "carry",
+   "family": "carry_uneven",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell",
+     "backpack"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "grip",
+    "athletic"
+   ],
+   "stresses": [
+    "grip_heavy"
+   ],
+   "unit": "m",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [
+    "One hand only, don't lean toward the weight"
+   ],
+   "picture": "Farmers_Walk"
+  },
+  {
+   "id": "goblet_carry",
+   "name": "Goblet carry",
+   "pattern": "carry",
+   "family": "carry_front",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "athletic"
+   ],
+   "stresses": [],
+   "unit": "m",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Farmers_Walk"
+  },
+  {
+   "id": "front_rack_carry",
+   "name": "Front-rack kettlebell carry",
+   "pattern": "carry",
+   "family": "carry_front",
+   "level": 3,
+   "equipment": [
+    "kettlebell"
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "athletic"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "m",
+   "implement": "kettlebell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Farmers_Walk"
+  },
+  {
+   "id": "overhead_carry",
+   "name": "Overhead carry",
+   "pattern": "carry",
+   "family": "carry_overhead",
+   "level": 3,
+   "equipment": [
+    [
+     "dumbbell",
+     "kettlebell"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "rehab",
+    "athletic"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "m",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Farmers_Walk"
+  },
+  {
+   "id": "bottoms_up_carry",
+   "name": "Bottoms-up kettlebell carry",
+   "pattern": "carry",
+   "family": "carry_overhead",
+   "level": 4,
+   "equipment": [
+    "kettlebell"
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "grip",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "m",
+   "implement": "kettlebell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Bottoms_Up"
+  },
+  {
+   "id": "ruck",
+   "name": "Ruck walk",
+   "pattern": "carry",
+   "family": "ruck",
+   "level": 2,
+   "equipment": [
+    "backpack"
+   ],
+   "styles": [
+    "unconventional",
+    "functional"
+   ],
+   "purposes": [
+    "conditioning",
+    "bone",
+    "glucose"
+   ],
+   "stresses": [
+    "spine_axial",
+    "plantar"
+   ],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [
+    "5–15 % of body weight to start",
+    "Pack high and tight"
+   ],
+   "picture": "Farmers_Walk"
+  },
+  {
+   "id": "sled_push",
+   "name": "Sled push",
+   "pattern": "carry",
+   "family": "sled",
+   "level": 3,
+   "equipment": [
+    "sled"
+   ],
+   "styles": [
+    "functional",
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning",
+    "strength",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "m",
+   "unilateral": false,
+   "cues": [],
+   "notes": "No eccentric load: little soreness, knee-friendly.",
+   "picture": "Sled_Push"
+  },
+  {
+   "id": "sled_drag_back",
+   "name": "Backward sled drag",
+   "pattern": "carry",
+   "family": "sled",
+   "level": 2,
+   "equipment": [
+    "sled"
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "rehab",
+    "conditioning"
+   ],
+   "stresses": [],
+   "unit": "m",
+   "unilateral": false,
+   "cues": [],
+   "notes": "Classic knee rehab: quads with no deep bend.",
+   "picture": "Backward_Drag"
+  },
+  {
+   "id": "mcgill_curl_up",
+   "name": "Modified curl-up (McGill)",
+   "pattern": "core_ext",
+   "family": "mcgill",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "rehab"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "One knee bent, hands under the low back",
+    "Lift the head and shoulders a little, hold 8–10 s"
+   ],
+   "picture": null
+  },
+  {
+   "id": "dead_bug",
+   "name": "Dead bug",
+   "pattern": "core_ext",
+   "family": "dead_bug",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Low back stays on the floor",
+    "Breathe out as the arm and leg reach"
+   ],
+   "picture": "Dead_Bug"
+  },
+  {
+   "id": "forearm_plank",
+   "name": "Forearm plank",
+   "pattern": "core_ext",
+   "family": "plank",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "endurance"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "Glutes tight, ribs down",
+    "10 s holds × 5 beat one long hold"
+   ],
+   "picture": "Plank"
+  },
+  {
+   "id": "incline_plank",
+   "name": "Incline plank (hands on a bench)",
+   "pattern": "core_ext",
+   "family": "plank",
+   "level": 1,
+   "equipment": [
+    [
+     "bench",
+     "chair",
+     "table"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Plank"
+  },
+  {
+   "id": "high_plank",
+   "name": "High plank",
+   "pattern": "core_ext",
+   "family": "plank",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "endurance"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Plank"
+  },
+  {
+   "id": "plank_shoulder_tap",
+   "name": "Plank shoulder taps",
+   "pattern": "core_rot",
+   "family": "plank",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "athletic"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "long_lever_plank",
+   "name": "Long-lever plank",
+   "pattern": "core_ext",
+   "family": "plank",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "Elbows a little ahead of the shoulders"
+   ],
+   "picture": "Plank"
+  },
+  {
+   "id": "body_saw",
+   "name": "Body saw",
+   "pattern": "core_ext",
+   "family": "plank",
+   "level": 4,
+   "equipment": [
+    "towel"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Forearm plank, feet on a towel, slide back and forth"
+   ],
+   "picture": null
+  },
+  {
+   "id": "bear_hold",
+   "name": "Bear hold",
+   "pattern": "core_ext",
+   "family": "bear",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "athletic"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "On hands and toes, knees 2 cm off the floor"
+   ],
+   "picture": null
+  },
+  {
+   "id": "hollow_hold",
+   "name": "Hollow hold",
+   "pattern": "core_ext",
+   "family": "hollow",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "ab_wheel_knees",
+   "name": "Ab wheel roll-out from the knees",
+   "pattern": "core_ext",
+   "family": "rollout",
+   "level": 4,
+   "equipment": [
+    "ab_wheel"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "core"
+   ],
+   "stresses": [
+    "kneeling",
+    "spine_ext_end",
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-ab-rollout-on-knees-with-barbell"
+  },
+  {
+   "id": "bird_dog",
+   "name": "Bird dog",
+   "pattern": "core_rot",
+   "family": "bird_dog",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Reach long, don't lift high",
+    "Hold 8–10 s, hips level"
+   ],
+   "picture": null
+  },
+  {
+   "id": "pallof_press",
+   "name": "Pallof press",
+   "pattern": "core_rot",
+   "family": "pallof",
+   "level": 2,
+   "equipment": [
+    [
+     "band",
+     "cable"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "rehab",
+    "athletic"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [
+    "Side-on to the anchor, press out and hold",
+    "Don't let it turn you"
+   ],
+   "picture": "Pallof_Press"
+  },
+  {
+   "id": "half_kneeling_pallof",
+   "name": "Half-kneeling Pallof press",
+   "pattern": "core_rot",
+   "family": "pallof",
+   "level": 2,
+   "equipment": [
+    [
+     "band",
+     "cable"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "rehab"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Pallof_Press"
+  },
+  {
+   "id": "renegade_row",
+   "name": "Renegade row",
+   "pattern": "core_rot",
+   "family": "renegade",
+   "level": 4,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "strength"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Alternating_Renegade_Row"
+  },
+  {
+   "id": "side_plank_knees",
+   "name": "Side plank on the knees",
+   "pattern": "core_lat",
+   "family": "side_plank",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [],
+   "picture": "ek-side-plank"
+  },
+  {
+   "id": "side_plank",
+   "name": "Side plank",
+   "pattern": "core_lat",
+   "family": "side_plank",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [
+    "Ear, hip and ankle in a line; breathe"
+   ],
+   "picture": "ek-side-plank"
+  },
+  {
+   "id": "copenhagen_short",
+   "name": "Copenhagen plank, short lever",
+   "pattern": "core_lat",
+   "family": "copenhagen",
+   "level": 3,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "injury_prevention",
+    "core"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [
+    "Top knee on the bench, lift the hips"
+   ],
+   "notes": "Builds adductor strength (Ishøi 2016).",
+   "picture": null
+  },
+  {
+   "id": "copenhagen_long",
+   "name": "Copenhagen plank, long lever",
+   "pattern": "core_lat",
+   "family": "copenhagen",
+   "level": 4,
+   "equipment": [
+    [
+     "bench",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "injury_prevention",
+    "core"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "crunch",
+   "name": "Crunch",
+   "pattern": "core_flex",
+   "family": "crunch",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [
+    "spine_flex_loaded",
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Crunches"
+  },
+  {
+   "id": "sit_up",
+   "name": "Sit-up",
+   "pattern": "core_flex",
+   "family": "crunch",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "endurance"
+   ],
+   "stresses": [
+    "spine_flex_loaded",
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Sit-Up"
+  },
+  {
+   "id": "reverse_crunch",
+   "name": "Reverse crunch",
+   "pattern": "core_flex",
+   "family": "leg_raise",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [
+    "spine_flex_loaded",
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Reverse_Crunch"
+  },
+  {
+   "id": "hanging_knee_raise",
+   "name": "Hanging knee raise",
+   "pattern": "core_flex",
+   "family": "leg_raise",
+   "level": 3,
+   "equipment": [
+    "pullup_bar"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "grip"
+   ],
+   "stresses": [
+    "hanging",
+    "spine_flex_loaded"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Hanging_Leg_Raise"
+  },
+  {
+   "id": "cable_crunch",
+   "name": "Cable crunch",
+   "pattern": "core_flex",
+   "family": "crunch",
+   "level": 3,
+   "equipment": [
+    "cable"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [
+    "spine_flex_loaded",
+    "kneeling"
+   ],
+   "unit": "reps",
+   "implement": "cable",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Cable_Crunch"
+  },
+  {
+   "id": "russian_twist",
+   "name": "Russian twist",
+   "pattern": "core_flex",
+   "family": "twist",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "endurance"
+   ],
+   "stresses": [
+    "spine_rot_loaded",
+    "spine_flex_loaded"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Russian_Twist"
+  },
+  {
+   "id": "cable_woodchop",
+   "name": "Cable or band woodchop",
+   "pattern": "rotation",
+   "family": "chop",
+   "level": 2,
+   "equipment": [
+    [
+     "cable",
+     "band"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "athletic",
+    "core"
+   ],
+   "stresses": [
+    "spine_rot_loaded"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Turn from the hips, arms stay long"
+   ],
+   "picture": null
+  },
+  {
+   "id": "half_kneeling_lift",
+   "name": "Half-kneeling cable lift",
+   "pattern": "rotation",
+   "family": "chop",
+   "level": 2,
+   "equipment": [
+    [
+     "cable",
+     "band"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "core",
+    "rehab"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Pull low to high across the body, trunk stays still"
+   ],
+   "picture": "Standing_Cable_Lift"
+  },
+  {
+   "id": "med_ball_rot_throw",
+   "name": "Medicine-ball rotational throw",
+   "pattern": "rotation",
+   "family": "rot_throw",
+   "level": 3,
+   "equipment": [
+    "medball",
+    "wall"
+   ],
+   "styles": [
+    "power",
+    "functional"
+   ],
+   "purposes": [
+    "power",
+    "athletic"
+   ],
+   "stresses": [
+    "ballistic",
+    "spine_rot_loaded"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Medicine_Ball_Full_Twist"
+  },
+  {
+   "id": "landmine_rotation",
+   "name": "Landmine rotation",
+   "pattern": "rotation",
+   "family": "landmine_rot",
+   "level": 4,
+   "equipment": [
+    "landmine",
+    "barbell"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "athletic",
+    "core"
+   ],
+   "stresses": [
+    "spine_rot_loaded"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Landmine_180s"
+  },
+  {
+   "id": "med_ball_chest_pass",
+   "name": "Medicine-ball chest pass",
+   "pattern": "power",
+   "family": "throw",
+   "level": 2,
+   "equipment": [
+    "medball",
+    "wall"
+   ],
+   "styles": [
+    "power",
+    "functional"
+   ],
+   "purposes": [
+    "power",
+    "athletic"
+   ],
+   "stresses": [
+    "ballistic"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Medicine_Ball_Chest_Pass"
+  },
+  {
+   "id": "med_ball_slam",
+   "name": "Medicine-ball slam",
+   "pattern": "power",
+   "family": "throw",
+   "level": 3,
+   "equipment": [
+    "medball"
+   ],
+   "styles": [
+    "power",
+    "conditioning"
+   ],
+   "purposes": [
+    "power",
+    "conditioning"
+   ],
+   "stresses": [
+    "ballistic",
+    "spine_flex_loaded",
+    "overhead"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "One-Arm_Medicine_Ball_Slam"
+  },
+  {
+   "id": "broad_jump",
+   "name": "Broad jump",
+   "pattern": "power",
+   "family": "jump",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "power"
+   ],
+   "purposes": [
+    "power",
+    "bone"
+   ],
+   "stresses": [
+    "impact",
+    "ballistic"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "pogo_hop",
+   "name": "Pogo hops",
+   "pattern": "power",
+   "family": "jump",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "power"
+   ],
+   "purposes": [
+    "power",
+    "bone"
+   ],
+   "stresses": [
+    "impact",
+    "plantar",
+    "ballistic"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "jump_rope",
+   "name": "Jump rope",
+   "pattern": "conditioning",
+   "family": "rope",
+   "level": 2,
+   "equipment": [
+    "jump_rope"
+   ],
+   "styles": [
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning",
+    "bone"
+   ],
+   "stresses": [
+    "impact",
+    "plantar"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Rope_Jumping"
+  },
+  {
+   "id": "get_up_floor",
+   "name": "Floor get-up practice",
+   "pattern": "locomotion",
+   "family": "get_up",
+   "level": 1,
+   "equipment": [
+    "chair"
+   ],
+   "styles": [
+    "functional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance",
+    "rehab",
+    "athletic"
+   ],
+   "stresses": [
+    "floor_transition"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Down to the floor and back up, any way that works",
+    "A chair nearby for help"
+   ],
+   "picture": null
+  },
+  {
+   "id": "bear_crawl",
+   "name": "Bear crawl",
+   "pattern": "locomotion",
+   "family": "crawl",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "functional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "core",
+    "athletic",
+    "conditioning"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "m",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "crab_walk",
+   "name": "Crab walk",
+   "pattern": "locomotion",
+   "family": "crawl",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "athletic"
+   ],
+   "stresses": [
+    "wrist_ext",
+    "shoulder_end"
+   ],
+   "unit": "m",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "inchworm",
+   "name": "Inchworm",
+   "pattern": "locomotion",
+   "family": "crawl",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "warmup",
+    "mobility"
+   ],
+   "stresses": [
+    "wrist_ext",
+    "spine_flex_end"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Inchworm"
+  },
+  {
+   "id": "turkish_get_up",
+   "name": "Turkish get-up",
+   "pattern": "locomotion",
+   "family": "get_up",
+   "level": 4,
+   "equipment": [
+    [
+     "kettlebell",
+     "dumbbell"
+    ]
+   ],
+   "styles": [
+    "functional"
+   ],
+   "purposes": [
+    "athletic",
+    "core",
+    "rehab"
+   ],
+   "stresses": [
+    "overhead",
+    "floor_transition",
+    "balance"
+   ],
+   "unit": "reps",
+   "implement": "kettlebell",
+   "unilateral": true,
+   "cues": [
+    "Eyes on the bell the whole way",
+    "Learn it with a shoe on the fist first"
+   ],
+   "picture": "Kettlebell_Turkish_Get-Up_Squat_style"
+  },
+  {
+   "id": "band_curl",
+   "name": "Band biceps curl",
+   "pattern": "arms",
+   "family": "curl",
+   "level": 1,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "endurance"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-quick-alternating-biceps-curls-with-band"
+  },
+  {
+   "id": "db_curl",
+   "name": "Dumbbell biceps curl",
+   "pattern": "arms",
+   "family": "curl",
+   "level": 2,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-biceps-curl-with-dumbbell"
+  },
+  {
+   "id": "hammer_curl",
+   "name": "Hammer curl",
+   "pattern": "arms",
+   "family": "curl",
+   "level": 2,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "grip"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Hammer_Curls"
+  },
+  {
+   "id": "backpack_curl",
+   "name": "Backpack curl",
+   "pattern": "arms",
+   "family": "curl",
+   "level": 2,
+   "equipment": [
+    "backpack"
+   ],
+   "styles": [
+    "unconventional",
+    "wall_floor"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "band_pushdown",
+   "name": "Band triceps pushdown",
+   "pattern": "arms",
+   "family": "triceps",
+   "level": 1,
+   "equipment": [
+    "band",
+    "door"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "endurance"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Triceps_Pushdown"
+  },
+  {
+   "id": "cable_pushdown",
+   "name": "Cable triceps pushdown",
+   "pattern": "arms",
+   "family": "triceps",
+   "level": 2,
+   "equipment": [
+    "cable"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "cable",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-triceps-pushdown-with-cable"
+  },
+  {
+   "id": "overhead_db_extension",
+   "name": "Overhead dumbbell triceps extension",
+   "pattern": "arms",
+   "family": "triceps",
+   "level": 2,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [
+    "overhead"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Standing_Dumbbell_Triceps_Extension"
+  },
+  {
+   "id": "close_grip_push_up",
+   "name": "Close-grip push-up",
+   "pattern": "arms",
+   "family": "triceps",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "strength"
+   ],
+   "stresses": [
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-close-triceps-pushup"
+  },
+  {
+   "id": "skull_crusher",
+   "name": "Dumbbell skull crusher",
+   "pattern": "arms",
+   "family": "triceps",
+   "level": 3,
+   "equipment": [
+    "dumbbell",
+    "bench"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-lying-triceps-extension-with-dumbbells"
+  },
+  {
+   "id": "band_external_rotation",
+   "name": "Band external rotation",
+   "pattern": "shoulder",
+   "family": "cuff",
+   "level": 1,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "rehab",
+    "posture"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Elbow at the side on a rolled towel",
+    "Rotate out slowly"
+   ],
+   "picture": "External_Rotation_with_Band"
+  },
+  {
+   "id": "side_lying_external_rotation",
+   "name": "Side-lying external rotation",
+   "pattern": "shoulder",
+   "family": "cuff",
+   "level": 1,
+   "equipment": [
+    "dumbbell"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": true,
+   "cues": [],
+   "picture": "External_Rotation"
+  },
+  {
+   "id": "scaption",
+   "name": "Scaption raise",
+   "pattern": "shoulder",
+   "family": "raise",
+   "level": 1,
+   "equipment": [
+    [
+     "dumbbell",
+     "band"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "rehab",
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Thumbs up, arms 30° forward of the side, to shoulder height"
+   ],
+   "picture": "Dumbbell_Scaption"
+  },
+  {
+   "id": "lateral_raise",
+   "name": "Lateral raise",
+   "pattern": "shoulder",
+   "family": "raise",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "band",
+     "cable"
+    ]
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "implement": "dumbbell",
+   "unilateral": false,
+   "cues": [
+    "Lead with the elbows, stop at shoulder height"
+   ],
+   "picture": "ek-lateral-dumbbell-raises"
+  },
+  {
+   "id": "wall_slide",
+   "name": "Wall slide",
+   "pattern": "shoulder",
+   "family": "scap",
+   "level": 1,
+   "equipment": [
+    "wall"
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "posture",
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Forearms on the wall, slide up, ribs down"
+   ],
+   "picture": null
+  },
+  {
+   "id": "chin_tuck",
+   "name": "Chin tuck",
+   "pattern": "shoulder",
+   "family": "neck",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "posture",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Glide the head back, make a double chin, hold 5 s"
+   ],
+   "picture": null
+  },
+  {
+   "id": "calf_raise",
+   "name": "Calf raise",
+   "pattern": "lower_acc",
+   "family": "calf",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [
+    "plantar"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hold a wall, 2 s up, 2 s down"
+   ],
+   "picture": "Standing_Calf_Raises"
+  },
+  {
+   "id": "single_leg_calf_raise",
+   "name": "Single-leg calf raise",
+   "pattern": "lower_acc",
+   "family": "calf",
+   "level": 2,
+   "equipment": [
+    [
+     "stairs",
+     "wall"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "strength",
+    "rehab"
+   ],
+   "stresses": [
+    "plantar",
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Standing_Calf_Raises"
+  },
+  {
+   "id": "towel_calf_raise",
+   "name": "Heavy slow calf raise, towel under the toes",
+   "pattern": "lower_acc",
+   "family": "calf",
+   "level": 3,
+   "equipment": [
+    "stairs",
+    "towel"
+   ],
+   "styles": [
+    "calisthenics",
+    "rehab"
+   ],
+   "purposes": [
+    "rehab",
+    "strength"
+   ],
+   "stresses": [
+    "plantar"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "3 s up, 2 s hold, 3 s down",
+    "Add a loaded backpack once 12 reps are easy"
+   ],
+   "notes": "Plantar fasciitis protocol (Rathleff 2015).",
+   "picture": "Standing_Calf_Raises"
+  },
+  {
+   "id": "seated_calf_raise",
+   "name": "Seated calf raise",
+   "pattern": "lower_acc",
+   "family": "calf",
+   "level": 2,
+   "equipment": [
+    [
+     "dumbbell",
+     "backpack"
+    ],
+    "chair"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "rehab",
+    "hypertrophy"
+   ],
+   "stresses": [
+    "plantar"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "notes": "Targets the soleus.",
+   "picture": "Seated_Calf_Raise"
+  },
+  {
+   "id": "tibialis_raise",
+   "name": "Tibialis raise",
+   "pattern": "lower_acc",
+   "family": "shin",
+   "level": 1,
+   "equipment": [
+    "wall"
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "injury_prevention"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Back on a wall, heels forward, lift the toes"
+   ],
+   "picture": null
+  },
+  {
+   "id": "side_lying_abduction",
+   "name": "Side-lying hip abduction",
+   "pattern": "lower_acc",
+   "family": "glute_med",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Side_Leg_Raises"
+  },
+  {
+   "id": "clamshell",
+   "name": "Clamshell",
+   "pattern": "lower_acc",
+   "family": "glute_med",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "lateral_band_walk",
+   "name": "Lateral band walk",
+   "pattern": "lower_acc",
+   "family": "glute_med",
+   "level": 2,
+   "equipment": [
+    "mini_band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "rehab",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "hip_hike",
+   "name": "Hip hike on a step",
+   "pattern": "lower_acc",
+   "family": "glute_med",
+   "level": 2,
+   "equipment": [
+    [
+     "stairs",
+     "box"
+    ]
+   ],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Stand on one leg on a step, drop and lift the other hip"
+   ],
+   "picture": null
+  },
+  {
+   "id": "terminal_knee_ext",
+   "name": "Terminal knee extension",
+   "pattern": "lower_acc",
+   "family": "knee",
+   "level": 1,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "unconventional"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Band behind the knee, straighten it fully"
+   ],
+   "picture": null
+  },
+  {
+   "id": "spanish_squat",
+   "name": "Spanish squat hold",
+   "pattern": "lower_acc",
+   "family": "knee",
+   "level": 2,
+   "equipment": [
+    "band"
+   ],
+   "styles": [
+    "isometric",
+    "unconventional"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "Heavy band behind both knees anchored in front",
+    "Sit back, shins vertical, hold 30–45 s"
+   ],
+   "notes": "Isometric for patellar-tendon and kneecap pain.",
+   "picture": null
+  },
+  {
+   "id": "straight_leg_raise",
+   "name": "Straight-leg raise",
+   "pattern": "lower_acc",
+   "family": "knee",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "leg_extension",
+   "name": "Leg extension machine",
+   "pattern": "lower_acc",
+   "family": "knee_machine",
+   "level": 2,
+   "equipment": [
+    "machine"
+   ],
+   "styles": [
+    "conventional"
+   ],
+   "purposes": [
+    "hypertrophy",
+    "rehab"
+   ],
+   "stresses": [
+    "knee_open"
+   ],
+   "unit": "reps",
+   "implement": "machine",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-leg-extensions"
+  },
+  {
+   "id": "reverse_nordic",
+   "name": "Reverse Nordic",
+   "pattern": "lower_acc",
+   "family": "knee",
+   "level": 3,
+   "equipment": [
+    "cushion"
+   ],
+   "styles": [
+    "calisthenics"
+   ],
+   "purposes": [
+    "injury_prevention"
+   ],
+   "stresses": [
+    "kneeling",
+    "knee_deep"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "side_lying_adduction",
+   "name": "Side-lying hip adduction",
+   "pattern": "lower_acc",
+   "family": "adductor",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "injury_prevention"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Band_Hip_Adductions"
+  },
+  {
+   "id": "split_squat_iso",
+   "name": "Split-squat hold",
+   "pattern": "lower_acc",
+   "family": "knee",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "isometric",
+    "calisthenics",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "bp"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Split_Squats"
+  },
+  {
+   "id": "handgrip_iso",
+   "name": "Handgrip hold",
+   "pattern": "grip",
+   "family": "grip_iso",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "isometric",
+    "wall_floor"
+   ],
+   "purposes": [
+    "bp",
+    "grip"
+   ],
+   "stresses": [],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [
+    "Squeeze a rolled towel or gripper at about a third of max",
+    "4 × 2 min per hand; breathe"
+   ],
+   "picture": null
+  },
+  {
+   "id": "wrist_extension_band",
+   "name": "Wrist extension",
+   "pattern": "grip",
+   "family": "wrist",
+   "level": 1,
+   "equipment": [
+    [
+     "band",
+     "dumbbell"
+    ]
+   ],
+   "styles": [
+    "rehab"
+   ],
+   "purposes": [
+    "rehab",
+    "grip"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Forearm on the bench, palm down, 3 s lowering"
+   ],
+   "picture": "Seated_Dumbbell_Palms-Down_Wrist_Curl"
+  },
+  {
+   "id": "wrist_flexion",
+   "name": "Wrist curl",
+   "pattern": "grip",
+   "family": "wrist",
+   "level": 1,
+   "equipment": [
+    [
+     "dumbbell",
+     "band"
+    ]
+   ],
+   "styles": [
+    "rehab"
+   ],
+   "purposes": [
+    "rehab",
+    "grip"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Seated_Dumbbell_Palms-Up_Wrist_Curl"
+  },
+  {
+   "id": "towel_wring",
+   "name": "Towel wring",
+   "pattern": "grip",
+   "family": "wrist",
+   "level": 1,
+   "equipment": [
+    "towel"
+   ],
+   "styles": [
+    "unconventional",
+    "rehab",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "grip"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Wring a rolled towel slowly in both directions"
+   ],
+   "picture": null
+  },
+  {
+   "id": "single_leg_stand",
+   "name": "Single-leg stand",
+   "pattern": "balance",
+   "family": "sl_balance",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance",
+    "rehab"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [
+    "Next to a wall or chair",
+    "Harder: eyes closed, or turn the head"
+   ],
+   "picture": null
+  },
+  {
+   "id": "tandem_stance",
+   "name": "Tandem stance",
+   "pattern": "balance",
+   "family": "tandem",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [
+    "Heel in front of the toes, next to a support"
+   ],
+   "picture": null
+  },
+  {
+   "id": "tandem_walk",
+   "name": "Heel-to-toe walk",
+   "pattern": "balance",
+   "family": "tandem",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "m",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "single_leg_reach",
+   "name": "Single-leg reach (clock)",
+   "pattern": "balance",
+   "family": "sl_balance",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance",
+    "athletic"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [
+    "Stand on one leg, tap the other foot to 3–5 points around you"
+   ],
+   "picture": null
+  },
+  {
+   "id": "single_leg_stand_soft",
+   "name": "Single-leg stand on a cushion",
+   "pattern": "balance",
+   "family": "sl_balance",
+   "level": 3,
+   "equipment": [
+    "cushion"
+   ],
+   "styles": [
+    "wall_floor"
+   ],
+   "purposes": [
+    "balance",
+    "rehab"
+   ],
+   "stresses": [
+    "balance"
+   ],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "cat_cow",
+   "name": "Cat-cow",
+   "pattern": "mobility",
+   "family": "spine_mob",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "warmup"
+   ],
+   "stresses": [
+    "kneeling",
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Slow, move through the whole spine"
+   ],
+   "picture": "Cat_Stretch"
+  },
+  {
+   "id": "open_book",
+   "name": "Open book",
+   "pattern": "mobility",
+   "family": "tspine",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "posture"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Side-lying, knees bent, rotate the top arm open"
+   ],
+   "picture": null
+  },
+  {
+   "id": "thread_the_needle",
+   "name": "Thread the needle",
+   "pattern": "mobility",
+   "family": "tspine",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "worlds_greatest_stretch",
+   "name": "World's greatest stretch",
+   "pattern": "mobility",
+   "family": "hip_mob",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "warmup"
+   ],
+   "stresses": [
+    "hip_deep",
+    "wrist_ext"
+   ],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": "Worlds_Greatest_Stretch"
+  },
+  {
+   "id": "half_kneeling_hip_flexor",
+   "name": "Half-kneeling hip-flexor stretch",
+   "pattern": "mobility",
+   "family": "hip_mob",
+   "level": 1,
+   "equipment": [
+    "cushion"
+   ],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "posture"
+   ],
+   "stresses": [
+    "kneeling"
+   ],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [
+    "Squeeze the back glute, tuck the pelvis"
+   ],
+   "picture": "Kneeling_Hip_Flexor"
+  },
+  {
+   "id": "hip_90_90",
+   "name": "90/90 hip switch",
+   "pattern": "mobility",
+   "family": "hip_mob",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility"
+   ],
+   "stresses": [
+    "hip_deep"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "deep_squat_hold",
+   "name": "Deep squat hold",
+   "pattern": "mobility",
+   "family": "hip_mob",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility"
+   ],
+   "stresses": [
+    "knee_deep",
+    "hip_deep"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "knee_to_wall",
+   "name": "Knee-to-wall ankle mobilisation",
+   "pattern": "mobility",
+   "family": "ankle_mob",
+   "level": 1,
+   "equipment": [
+    "wall"
+   ],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "couch_stretch",
+   "name": "Couch stretch",
+   "pattern": "mobility",
+   "family": "hip_mob",
+   "level": 2,
+   "equipment": [
+    [
+     "wall",
+     "chair"
+    ]
+   ],
+   "styles": [
+    "mobility"
+   ],
+   "purposes": [
+    "mobility"
+   ],
+   "stresses": [
+    "kneeling",
+    "end_stretch"
+   ],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "doorway_pec_stretch",
+   "name": "Doorway chest stretch",
+   "pattern": "mobility",
+   "family": "shoulder_mob",
+   "level": 1,
+   "equipment": [
+    "door"
+   ],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "posture"
+   ],
+   "stresses": [
+    "end_stretch"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Chest_And_Front_Of_Shoulder_Stretch"
+  },
+  {
+   "id": "shoulder_cars",
+   "name": "Shoulder circles (controlled)",
+   "pattern": "mobility",
+   "family": "shoulder_mob",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "mobility",
+    "warmup"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Shoulder_Circles"
+  },
+  {
+   "id": "sciatic_nerve_glide",
+   "name": "Sciatic nerve glide (seated)",
+   "pattern": "mobility",
+   "family": "nerve",
+   "level": 1,
+   "equipment": [
+    "chair"
+   ],
+   "styles": [
+    "mobility",
+    "rehab"
+   ],
+   "purposes": [
+    "rehab"
+   ],
+   "stresses": [],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Sit tall, straighten the knee while lifting the head, bend the knee as the head drops",
+    "Gentle; no tingling that lingers"
+   ],
+   "picture": null
+  },
+  {
+   "id": "childs_pose",
+   "name": "Child's pose",
+   "pattern": "mobility",
+   "family": "spine_mob",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "wall_floor"
+   ],
+   "purposes": [
+    "recovery",
+    "mobility"
+   ],
+   "stresses": [
+    "kneeling",
+    "spine_flex_end"
+   ],
+   "unit": "s",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Childs_Pose"
+  },
+  {
+   "id": "prone_press_up",
+   "name": "Prone press-up",
+   "pattern": "mobility",
+   "family": "spine_mob",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "mobility",
+    "rehab",
+    "wall_floor"
+   ],
+   "purposes": [
+    "rehab",
+    "mobility"
+   ],
+   "stresses": [
+    "prone",
+    "spine_ext_end"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [
+    "Hips stay down, press the chest up, relax the back"
+   ],
+   "picture": null
+  },
+  {
+   "id": "foam_roll_tspine",
+   "name": "Foam-roller upper-back extension",
+   "pattern": "mobility",
+   "family": "tspine",
+   "level": 1,
+   "equipment": [
+    "foam_roller"
+   ],
+   "styles": [
+    "mobility"
+   ],
+   "purposes": [
+    "mobility",
+    "posture",
+    "recovery"
+   ],
+   "stresses": [
+    "supine"
+   ],
+   "unit": "reps",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "pigeon_stretch",
+   "name": "Pigeon stretch",
+   "pattern": "mobility",
+   "family": "hip_mob",
+   "level": 2,
+   "equipment": [],
+   "styles": [
+    "mobility"
+   ],
+   "purposes": [
+    "mobility"
+   ],
+   "stresses": [
+    "hip_deep",
+    "end_stretch"
+   ],
+   "unit": "s",
+   "unilateral": true,
+   "cues": [],
+   "picture": null
+  },
+  {
+   "id": "brisk_walk",
+   "name": "Brisk walk",
+   "pattern": "conditioning",
+   "family": "walk",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "conditioning",
+    "wall_floor"
+   ],
+   "purposes": [
+    "conditioning",
+    "recovery",
+    "glucose",
+    "bp"
+   ],
+   "stresses": [],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [
+    "Breathing harder but able to talk"
+   ],
+   "picture": null
+  },
+  {
+   "id": "incline_walk",
+   "name": "Incline treadmill walk",
+   "pattern": "conditioning",
+   "family": "walk",
+   "level": 2,
+   "equipment": [
+    "treadmill"
+   ],
+   "styles": [
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning",
+    "glucose"
+   ],
+   "stresses": [
+    "plantar"
+   ],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Walking_Treadmill"
+  },
+  {
+   "id": "stair_climb",
+   "name": "Stair climbing",
+   "pattern": "conditioning",
+   "family": "stairs",
+   "level": 2,
+   "equipment": [
+    "stairs"
+   ],
+   "styles": [
+    "conditioning",
+    "wall_floor"
+   ],
+   "purposes": [
+    "conditioning",
+    "strength",
+    "bone"
+   ],
+   "stresses": [],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Power_Stairs"
+  },
+  {
+   "id": "bike_easy",
+   "name": "Bike, easy",
+   "pattern": "conditioning",
+   "family": "bike",
+   "level": 1,
+   "equipment": [
+    "bike"
+   ],
+   "styles": [
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning",
+    "recovery",
+    "glucose"
+   ],
+   "stresses": [],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "notes": "Joint- and back-friendly.",
+   "picture": "Recumbent_Bike"
+  },
+  {
+   "id": "bike_intervals",
+   "name": "Bike intervals",
+   "pattern": "conditioning",
+   "family": "bike",
+   "level": 3,
+   "equipment": [
+    [
+     "bike",
+     "air_bike"
+    ]
+   ],
+   "styles": [
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning"
+   ],
+   "stresses": [],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "picture": "ek-air-bike"
+  },
+  {
+   "id": "rower",
+   "name": "Rowing machine",
+   "pattern": "conditioning",
+   "family": "row",
+   "level": 2,
+   "equipment": [
+    "rower"
+   ],
+   "styles": [
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning"
+   ],
+   "stresses": [
+    "spine_flex_loaded"
+   ],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [
+    "Legs, then body, then arms; tall spine"
+   ],
+   "picture": "Rowing_Stationary"
+  },
+  {
+   "id": "elliptical",
+   "name": "Elliptical",
+   "pattern": "conditioning",
+   "family": "elliptical",
+   "level": 1,
+   "equipment": [
+    "elliptical"
+   ],
+   "styles": [
+    "conditioning"
+   ],
+   "purposes": [
+    "conditioning",
+    "recovery"
+   ],
+   "stresses": [],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Elliptical_Trainer"
+  },
+  {
+   "id": "jog",
+   "name": "Easy jog",
+   "pattern": "conditioning",
+   "family": "run",
+   "level": 3,
+   "equipment": [],
+   "styles": [
+    "conditioning",
+    "wall_floor"
+   ],
+   "purposes": [
+    "conditioning",
+    "bone"
+   ],
+   "stresses": [
+    "impact",
+    "plantar"
+   ],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "picture": "Running_Treadmill"
+  },
+  {
+   "id": "shadow_boxing",
+   "name": "Shadow boxing",
+   "pattern": "conditioning",
+   "family": "boxing",
+   "level": 1,
+   "equipment": [],
+   "styles": [
+    "conditioning",
+    "wall_floor"
+   ],
+   "purposes": [
+    "conditioning",
+    "athletic"
+   ],
+   "stresses": [],
+   "unit": "min",
+   "unilateral": false,
+   "cues": [],
+   "picture": null
+  }
+ ],
+ "mixes": [
+  {
+   "id": "full_body_strength",
+   "title": "Full-body strength",
+   "minutes": 50,
+   "use": "The default 2–3×/week session: one of each big pattern.",
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "push_h",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "hinge",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "lunge",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "core_rot",
+     "role": "rotate",
+     "purpose": "core"
+    },
+    {
+     "pattern": "carry",
+     "role": "rotate",
+     "purpose": "athletic"
+    }
+   ]
+  },
+  {
+   "id": "upper_lower_upper",
+   "title": "Upper body",
+   "minutes": 50,
+   "use": "Upper day of an upper/lower split.",
+   "slots": [
+    {
+     "pattern": "push_h",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "pull_v",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "push_v",
+     "role": "rotate",
+     "purpose": "hypertrophy"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "rotate",
+     "purpose": "hypertrophy"
+    },
+    {
+     "pattern": "arms",
+     "role": "rotate",
+     "purpose": "hypertrophy"
+    },
+    {
+     "pattern": "shoulder",
+     "role": "rotate",
+     "purpose": "posture"
+    },
+    {
+     "pattern": "core_lat",
+     "role": "rotate",
+     "purpose": "core"
+    }
+   ]
+  },
+  {
+   "id": "upper_lower_lower",
+   "title": "Lower body",
+   "minutes": 50,
+   "use": "Lower day of an upper/lower split.",
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "hinge",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "lunge",
+     "role": "rotate",
+     "purpose": "hypertrophy"
+    },
+    {
+     "pattern": "lower_acc",
+     "role": "rotate",
+     "purpose": "injury_prevention"
+    },
+    {
+     "pattern": "core_ext",
+     "role": "rotate",
+     "purpose": "core"
+    },
+    {
+     "pattern": "carry",
+     "role": "rotate",
+     "purpose": "grip"
+    }
+   ]
+  },
+  {
+   "id": "anywhere_20",
+   "title": "Anywhere, 20 minutes",
+   "minutes": 20,
+   "use": "Travel, hotel room, no gym: wall, floor, chair, towel, backpack.",
+   "equipment_only": [
+    "wall",
+    "chair",
+    "stairs",
+    "towel",
+    "backpack",
+    "door",
+    "stick",
+    "cushion"
+   ],
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "rotate",
+     "purpose": "endurance"
+    },
+    {
+     "pattern": "push_h",
+     "role": "rotate",
+     "purpose": "endurance"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "lunge",
+     "role": "rotate",
+     "purpose": "endurance"
+    },
+    {
+     "pattern": "core_ext",
+     "role": "rotate",
+     "purpose": "core"
+    }
+   ],
+   "format": "Circuit: 3 rounds, 40 s work / 20 s rest."
+  },
+  {
+   "id": "back_friendly",
+   "title": "Back-friendly strength",
+   "minutes": 45,
+   "use": "Disc or chronic low-back problems: neutral spine, trunk endurance.",
+   "avoid": [
+    "spine_flex_loaded",
+    "spine_rot_loaded",
+    "spine_axial",
+    "floor_lift"
+   ],
+   "slots": [
+    {
+     "pattern": "core_ext",
+     "role": "fixed",
+     "purpose": "core",
+     "exercise": "mcgill_curl_up"
+    },
+    {
+     "pattern": "core_lat",
+     "role": "fixed",
+     "purpose": "core",
+     "exercise": "side_plank"
+    },
+    {
+     "pattern": "core_rot",
+     "role": "fixed",
+     "purpose": "core",
+     "exercise": "bird_dog"
+    },
+    {
+     "pattern": "squat",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "hinge",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "push_h",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "carry",
+     "role": "rotate",
+     "purpose": "core"
+    }
+   ]
+  },
+  {
+   "id": "bp_friendly",
+   "title": "Blood-pressure-friendly",
+   "minutes": 40,
+   "use": "High blood pressure: no breath-holding, isometric finisher.",
+   "avoid": [
+    "high_pressure",
+    "inverted"
+   ],
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "push_h",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "lunge",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "conditioning",
+     "role": "rotate",
+     "purpose": "conditioning"
+    },
+    {
+     "pattern": "squat",
+     "role": "fixed",
+     "purpose": "bp",
+     "exercise": "wall_sit"
+    }
+   ],
+   "format": "Main lifts RPE ≤ 8, 8–15 reps; breathe out on every effort. Finish with 4 × 2 min wall sit or handgrip (Edwards 2023)."
+  },
+  {
+   "id": "knee_friendly_lower",
+   "title": "Knee-friendly lower body",
+   "minutes": 40,
+   "use": "Knee OA or kneecap pain.",
+   "avoid": [
+    "impact",
+    "kneeling"
+   ],
+   "caution": [
+    "knee_deep"
+   ],
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "fixed",
+     "purpose": "rehab",
+     "exercise": "wall_sit"
+    },
+    {
+     "pattern": "lunge",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "hinge",
+     "role": "main",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "lower_acc",
+     "role": "rotate",
+     "purpose": "rehab"
+    },
+    {
+     "pattern": "conditioning",
+     "role": "fixed",
+     "purpose": "conditioning",
+     "exercise": "bike_easy"
+    }
+   ]
+  },
+  {
+   "id": "bone_builder",
+   "title": "Bone builder",
+   "minutes": 45,
+   "use": "Low bone density (with a clinician's OK): heavy-ish weight-bearing lifts and balance.",
+   "avoid": [
+    "spine_flex_loaded",
+    "spine_rot_loaded"
+   ],
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "main",
+     "purpose": "bone"
+    },
+    {
+     "pattern": "hinge",
+     "role": "main",
+     "purpose": "bone"
+    },
+    {
+     "pattern": "push_v",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "carry",
+     "role": "rotate",
+     "purpose": "bone"
+    },
+    {
+     "pattern": "balance",
+     "role": "rotate",
+     "purpose": "balance"
+    }
+   ]
+  },
+  {
+   "id": "falls_prevention",
+   "title": "Strong and steady",
+   "minutes": 40,
+   "use": "Older adults or fall risk: balance + strength, near a support.",
+   "slots": [
+    {
+     "pattern": "squat",
+     "role": "fixed",
+     "purpose": "strength",
+     "exercise": "sit_to_stand"
+    },
+    {
+     "pattern": "lunge",
+     "role": "rotate",
+     "purpose": "balance"
+    },
+    {
+     "pattern": "balance",
+     "role": "rotate",
+     "purpose": "balance"
+    },
+    {
+     "pattern": "balance",
+     "role": "rotate",
+     "purpose": "balance"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "locomotion",
+     "role": "fixed",
+     "purpose": "balance",
+     "exercise": "get_up_floor"
+    },
+    {
+     "pattern": "carry",
+     "role": "rotate",
+     "purpose": "athletic"
+    }
+   ],
+   "format": "Balance work next to a wall or chair; 3+ hours a week of this kind of work cuts falls the most (Sherrington 2019)."
+  },
+  {
+   "id": "athletic_functional",
+   "title": "Functional and athletic",
+   "minutes": 45,
+   "use": "Real-life strength: carries, crawls, single-leg, rotation, power.",
+   "slots": [
+    {
+     "pattern": "power",
+     "role": "rotate",
+     "purpose": "power"
+    },
+    {
+     "pattern": "lunge",
+     "role": "main",
+     "purpose": "athletic"
+    },
+    {
+     "pattern": "pull_h",
+     "role": "rotate",
+     "purpose": "strength"
+    },
+    {
+     "pattern": "locomotion",
+     "role": "rotate",
+     "purpose": "athletic"
+    },
+    {
+     "pattern": "rotation",
+     "role": "rotate",
+     "purpose": "athletic"
+    },
+    {
+     "pattern": "carry",
+     "role": "rotate",
+     "purpose": "athletic"
+    }
+   ]
+  },
+  {
+   "id": "injury_prevention",
+   "title": "Injury-proofing add-on",
+   "minutes": 15,
+   "use": "Add to any session 1–2×/week, especially for running and field sports.",
+   "slots": [
+    {
+     "pattern": "hinge",
+     "role": "fixed",
+     "purpose": "injury_prevention",
+     "exercise": "nordic_curl"
+    },
+    {
+     "pattern": "core_lat",
+     "role": "fixed",
+     "purpose": "injury_prevention",
+     "exercise": "copenhagen_short"
+    },
+    {
+     "pattern": "lower_acc",
+     "role": "rotate",
+     "purpose": "injury_prevention"
+    },
+    {
+     "pattern": "shoulder",
+     "role": "rotate",
+     "purpose": "rehab"
+    }
+   ]
+  },
+  {
+   "id": "mobility_reset",
+   "title": "Mobility reset",
+   "minutes": 20,
+   "use": "Recovery days or desk-bound days.",
+   "slots": [
+    {
+     "pattern": "mobility",
+     "role": "rotate",
+     "purpose": "mobility"
+    },
+    {
+     "pattern": "mobility",
+     "role": "rotate",
+     "purpose": "mobility"
+    },
+    {
+     "pattern": "mobility",
+     "role": "rotate",
+     "purpose": "mobility"
+    },
+    {
+     "pattern": "shoulder",
+     "role": "rotate",
+     "purpose": "mobility"
+    },
+    {
+     "pattern": "conditioning",
+     "role": "fixed",
+     "purpose": "recovery",
+     "exercise": "brisk_walk"
+    }
+   ]
+  },
+  {
+   "id": "warmup_ramp",
+   "title": "Warm-up (RAMP)",
+   "minutes": 8,
+   "use": "Before any strength session: raise, activate, mobilise, prime.",
+   "slots": [
+    {
+     "pattern": "conditioning",
+     "role": "rotate",
+     "purpose": "warmup"
+    },
+    {
+     "pattern": "mobility",
+     "role": "rotate",
+     "purpose": "warmup"
+    },
+    {
+     "pattern": "core_rot",
+     "role": "rotate",
+     "purpose": "warmup"
+    },
+    {
+     "pattern": "lower_acc",
+     "role": "rotate",
+     "purpose": "warmup"
+    }
+   ]
+  },
+  {
+   "id": "conditioning_emom",
+   "title": "Conditioning EMOM",
+   "minutes": 20,
+   "use": "Short, hard conditioning when there's no time for cardio.",
+   "slots": [
+    {
+     "pattern": "hinge",
+     "role": "fixed",
+     "purpose": "conditioning",
+     "exercise": "kb_swing"
+    },
+    {
+     "pattern": "locomotion",
+     "role": "rotate",
+     "purpose": "conditioning"
+    },
+    {
+     "pattern": "squat",
+     "role": "rotate",
+     "purpose": "endurance"
+    },
+    {
+     "pattern": "conditioning",
+     "role": "rotate",
+     "purpose": "conditioning"
+    }
+   ],
+   "format": "Every minute on the minute, 20 min, rotate the four. Not for uncontrolled blood pressure or heart conditions."
+  }
+ ]
+}

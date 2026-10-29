@@ -1,0 +1,837 @@
+{
+  "_about": "Shared calibration (baseline) test catalogue. Each test: name, category, measure ('number' | 'score' | 'bp'), unit, sides (['L','R'] when measured per side), cap (stop there; the result is then '≥ cap'), rpe/pain (ask for them), flags (yes/no observations, per side), options (for 'score', best first), lib (exercise_lib id for pictures), how (protocol steps), cues, stop (when to stop the test early), gate (a condition that must hold before doing the test), why (what it informs), needs (equipment the test requires), implement (which load_steps list rounds its starting weight). No personal loads or body-specific notes here: the Coach puts those in the person's <data>/plans/calibration.json (field overrides per test, plus their own batteries), see coach/catalogue.py. The batteries below are templates: the Coach copies one, drops tests whose `needs` the person doesn't have or that their profile rules out, and sets loads. Keep test ids stable so retests compare. Rep tests and timed holds are submaximal: stopped at RPE 8 (two reps left, or 'hard but steady') or at the cap, never a max.",
+  "tests": {
+    "bp_rest": {
+      "name": "Resting blood pressure",
+      "category": "Body & vitals",
+      "measure": "bp",
+      "unit": "mmHg",
+      "sides": [
+        "1st",
+        "2nd"
+      ],
+      "how": [
+        "Sit 5 minutes, back supported, feet flat, arm resting at heart height.",
+        "Take two readings one minute apart."
+      ],
+      "stop": "160/100 or higher: rest 5 more minutes and measure again. Still 160/100 or higher: today only the tape measurements and the unloaded mobility tests, no strength tests or timed holds. 180/110 or higher: no exercise; contact your doctor.",
+      "why": "Session gate and your BP baseline.",
+      "needs": [
+        "bp_monitor"
+      ]
+    },
+    "waist": {
+      "name": "Waist",
+      "category": "Body & vitals",
+      "measure": "number",
+      "unit": "cm",
+      "how": [
+        "Tape level around the navel, standing relaxed, at the end of a normal breath out."
+      ],
+      "why": "Fat-loss trend; the best single tape measure.",
+      "needs": [
+        "tape"
+      ]
+    },
+    "hips": {
+      "name": "Hips",
+      "category": "Body & vitals",
+      "measure": "number",
+      "unit": "cm",
+      "how": [
+        "Tape around the widest part of the buttocks, feet together."
+      ],
+      "why": "Waist-to-hip ratio.",
+      "needs": [
+        "tape"
+      ]
+    },
+    "chest": {
+      "name": "Chest",
+      "category": "Body & vitals",
+      "measure": "number",
+      "unit": "cm",
+      "how": [
+        "Tape at nipple level, arms relaxed, at the end of a normal breath out."
+      ],
+      "why": "Chest growth.",
+      "needs": [
+        "tape"
+      ]
+    },
+    "arm_flexed": {
+      "name": "Upper arm, flexed",
+      "category": "Body & vitals",
+      "measure": "number",
+      "unit": "cm",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "how": [
+        "Raise the arm to shoulder height, bend the elbow and flex hard.",
+        "Tape around the peak of the biceps."
+      ],
+      "why": "Arm growth, the look you're after.",
+      "needs": [
+        "tape"
+      ]
+    },
+    "thigh": {
+      "name": "Thigh",
+      "category": "Body & vitals",
+      "measure": "number",
+      "unit": "cm",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "how": [
+        "Standing relaxed, tape 15 cm above the top of the kneecap."
+      ],
+      "why": "Leg muscle and side-to-side balance.",
+      "needs": [
+        "tape"
+      ]
+    },
+    "knee_to_wall": {
+      "name": "Ankle bend (knee to wall)",
+      "category": "Mobility",
+      "measure": "number",
+      "unit": "cm",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "how": [
+        "Face a wall in a half-lunge, front foot pointing at the wall.",
+        "Keeping the heel down, push the knee forward to touch the wall.",
+        "Move the foot back until the knee only just touches with the heel still down.",
+        "Measure big toe to wall."
+      ],
+      "cues": [
+        "Heel stays glued to the floor",
+        "Knee goes over the middle toes"
+      ],
+      "why": "Squat depth and foot health; under ~10 cm limits squatting.",
+      "needs": [
+        "tape",
+        "wall"
+      ]
+    },
+    "aslr": {
+      "name": "Straight-leg raise (active)",
+      "category": "Mobility",
+      "measure": "score",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "options": [
+        "Ankle passes the middle of the other thigh",
+        "Ankle between mid-thigh and knee",
+        "Ankle below the other knee"
+      ],
+      "flags": [
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Right leg first.",
+        "Lie on your back, legs straight, arms by your sides, head down.",
+        "Lift one straight leg slowly as high as it goes without bending the knee; the other leg stays flat. Don't pull the toes back or lift the head.",
+        "Note where the raised ankle is relative to the other leg. The side is the leg you raise."
+      ],
+      "stop": "Stop at the first stretch you can't hold calmly, or at any change in leg sensation (numbness, tingling, pain travelling down the leg): tick the flag, don't repeat it, and mention it in tomorrow's check-in.",
+      "why": "Hamstring and hip mobility, and whether this position irritates a nerve.",
+      "needs": []
+    },
+    "shoulder_flex_wall": {
+      "name": "Arm overhead against the wall",
+      "category": "Mobility",
+      "measure": "number",
+      "unit": "cm",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "pain": true,
+      "flags": [
+        "Shoulder click"
+      ],
+      "how": [
+        "Stand with heels about 15 cm from a wall; buttocks, upper back and head touching it, low back gently flat.",
+        "Raise one straight arm forward and up overhead, slowly, thumb leading.",
+        "Measure the gap from the thumb to the wall (0 if it touches) without the low back arching."
+      ],
+      "stop": "Move slowly and don't force the end of the range. Stop at pain.",
+      "why": "Readiness for overhead pressing. Pain on either side here means no overhead tests in the strength day.",
+      "needs": [
+        "wall"
+      ]
+    },
+    "back_scratch": {
+      "name": "Back scratch reach",
+      "category": "Mobility",
+      "measure": "number",
+      "unit": "cm",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "pain": true,
+      "flags": [
+        "Shoulder click"
+      ],
+      "how": [
+        "Reach one hand over the shoulder and down the back; the other hand up the back from below.",
+        "Measure the gap between the middle fingertips: a gap is negative, an overlap positive.",
+        "The side is the hand on top."
+      ],
+      "stop": "Move slowly and don't force it. Stop at pain.",
+      "why": "Shoulder rotation; differences between sides matter more than the number.",
+      "needs": [
+        "tape"
+      ]
+    },
+    "wrist_wall": {
+      "name": "Wrist extension on the wall",
+      "category": "Mobility",
+      "measure": "score",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "pain": true,
+      "options": [
+        "Palm flat, elbow straight, no discomfort",
+        "Palm flat but with some discomfort",
+        "Can't get the palm flat with the elbow straight"
+      ],
+      "how": [
+        "Stand facing a wall, arm straight at shoulder height.",
+        "Place the palm flat on the wall, fingers pointing down, without leaning into it.",
+        "Hold 10 seconds."
+      ],
+      "stop": "Stop at 3/10 discomfort.",
+      "why": "Readiness for loaded wrist extension: bench, push-ups, front rack.",
+      "needs": [
+        "wall"
+      ]
+    },
+    "squat_pattern": {
+      "name": "Bodyweight squat",
+      "category": "Mobility",
+      "measure": "score",
+      "lib": "Bodyweight_Squat",
+      "options": [
+        "About parallel or lower with a neutral back, heels down",
+        "Above parallel with a neutral back",
+        "Back rounds or heels lift before parallel"
+      ],
+      "flags": [
+        "Heels lift",
+        "Knees cave in",
+        "Low back rounds at the bottom",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Feet shoulder-width, arms straight out in front.",
+        "Three slow squats, stopping just above the point where the low back starts to round; no holding at the bottom.",
+        "Don't chase depth."
+      ],
+      "why": "Where goblet squats should stop.",
+      "needs": []
+    },
+    "hinge_pattern": {
+      "name": "Hip hinge with a stick",
+      "category": "Mobility",
+      "measure": "score",
+      "options": [
+        "Stick stays on head, upper back and tailbone",
+        "Loses one contact",
+        "Loses two or more"
+      ],
+      "how": [
+        "Hold a broomstick along your back with one hand at the neck and one at the low back.",
+        "Push the hips back and lean forward with soft knees, 5 slow reps, down to where the hamstrings tighten."
+      ],
+      "why": "Whether the Romanian deadlift can come in later.",
+      "needs": [
+        "broomstick"
+      ]
+    },
+    "sls_open": {
+      "name": "One-leg stand, eyes open",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "cap": 45,
+      "how": [
+        "Stand in a room corner or next to something sturdy to grab.",
+        "Training shoes, hands on hips.",
+        "Lift one foot; time until the foot touches down, the hands leave the hips, or you reach for support.",
+        "The side is the standing leg."
+      ],
+      "why": "Basic balance; a strong health marker at any age.",
+      "needs": []
+    },
+    "sls_closed": {
+      "name": "One-leg stand, eyes closed",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "cap": 30,
+      "how": [
+        "Same as eyes open, in a corner or next to something sturdy; close the eyes once steady."
+      ],
+      "why": "Balance without vision; very sensitive to change.",
+      "needs": []
+    },
+    "sls_pad": {
+      "name": "One-leg stand on the balance pad",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "cap": 30,
+      "how": [
+        "Eyes open, one foot on the balance pad, in a corner or next to something sturdy."
+      ],
+      "why": "Ankle stability; the starting point for the stability goal.",
+      "needs": [
+        "balance_pad"
+      ]
+    },
+    "step_down": {
+      "name": "Step-down control",
+      "category": "Balance & stability",
+      "measure": "score",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "pain": true,
+      "options": [
+        "Knee over the middle toes, hips level, smooth",
+        "Knee drifts in or a hip drops",
+        "Both, or needs the handrail"
+      ],
+      "how": [
+        "On the bottom step of a house stair, one hand near the handrail. Never use the bench as the step.",
+        "Stand on one leg, the other foot hanging off the side.",
+        "Slowly lower until the free heel touches the floor, then stand back up. 5 reps.",
+        "The side is the standing leg."
+      ],
+      "why": "Knee and hip control for split squats and step-ups.",
+      "needs": [
+        "step"
+      ]
+    },
+    "side_plank": {
+      "name": "Side plank hold",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "cap": 60,
+      "pain": true,
+      "lib": "ek-side-plank",
+      "flags": [
+        "Shoulder discomfort"
+      ],
+      "how": [
+        "Start from the knees: on the forearm, elbow under the shoulder, knees bent, hips up so knees, hips and shoulders line up. Use the feet version only if 60 s from the knees is already comfortable; write which version in the note.",
+        "Hold until it's hard but steady (RPE 8), at the first sag, or the cap. Breathe normally throughout.",
+        "The side is the one closest to the floor."
+      ],
+      "stop": "Shoulder pain 3/10 or more: stop.",
+      "why": "Lateral trunk endurance; protects the low back.",
+      "needs": []
+    },
+    "front_plank": {
+      "name": "Front plank hold",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "cap": 90,
+      "pain": true,
+      "lib": "Plank",
+      "how": [
+        "On the forearms and toes, body in one line.",
+        "Hold until it's hard but steady (RPE 8), at the first sag, or the cap. Breathe normally throughout."
+      ],
+      "stop": "Stop at the first sag, if the low back aches, or at any shoulder pain.",
+      "why": "Trunk endurance.",
+      "needs": []
+    },
+    "sl_bridge": {
+      "name": "One-leg bridge hold",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "cap": 30,
+      "lib": "Single_Leg_Glute_Bridge",
+      "flags": [
+        "Hamstring cramp",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "On your back, one foot on the floor, the other leg straight in line with the thigh.",
+        "Lift the hips level, ribs down; don't arch the back to keep the hips up.",
+        "Hold until the hips drop or tilt, or the cap. The side is the working (planted) leg."
+      ],
+      "stop": "Stop if leg sensation changes. Skip this test if the straight-leg raise changed it today.",
+      "why": "Glute strength, side to side.",
+      "needs": []
+    },
+    "polar_fitness": {
+      "name": "Resting fitness test (Polar)",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "VO2max",
+      "how": [
+        "On a rested morning this week: lie down, wear the Polar heart-rate strap, start the Fitness test in the Polar app, 5 minutes."
+      ],
+      "why": "Estimated VO2max; compares with earlier Polar fitness tests.",
+      "needs": [
+        "polar_hr_strap"
+      ]
+    },
+    "bench_rm": {
+      "name": "Bench press rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 15,
+      "rpe": true,
+      "pain": true,
+      "e1rm": true,
+      "lib": "ek-bench-press",
+      "flags": [
+        "Wrist discomfort",
+        "Shoulder click"
+      ],
+      "how": [
+        "Spotter arms or safety pins just below chest height. No safeties: do the dumbbell press test instead.",
+        "Warm-up: empty bar × 10, then a light set × 5.",
+        "Test with a load you could lift about 12–15 times. One set, stop with two reps left (RPE 8) or at 15.",
+        "If the warm-up already felt heavy or uncomfortable, test with that load. Enter the load you used."
+      ],
+      "cues": [
+        "Bar low in the palm, over the forearm",
+        "Breathe out on every press",
+        "Stop when a rep slows noticeably"
+      ],
+      "stop": "Joint discomfort 3/10 or more ends the test.",
+      "why": "Sets your bench starting weight.",
+      "implement": "barbell",
+      "needs": [
+        "barbell",
+        "bench",
+        "rack_safeties"
+      ]
+    },
+    "db_press": {
+      "name": "Seated dumbbell press rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 20,
+      "rpe": true,
+      "pain": true,
+      "e1rm": true,
+      "lib": "Dumbbell_Shoulder_Press",
+      "flags": [
+        "Shoulder click"
+      ],
+      "gate": "Only if the overhead and back-scratch tests were pain-free on both sides.",
+      "how": [
+        "Bench at 90°, back on the pad, a pair you could press about 12–15 times; palms facing each other is fine.",
+        "One set, stop with two reps left (RPE 8) or at 20. Enter the load you used."
+      ],
+      "stop": "Shoulder pain 3/10 or more ends the test.",
+      "why": "Shoulder strength and press starting weight.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells",
+        "bench"
+      ]
+    },
+    "row_cs": {
+      "name": "Chest-supported row rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "cap": 20,
+      "rpe": true,
+      "pain": true,
+      "e1rm": true,
+      "lib": "Dumbbell_Incline_Row",
+      "flags": [
+        "Shoulder click"
+      ],
+      "how": [
+        "Chest on the bench at 30–45°, one dumbbell you could row about 12–15 times, right arm first.",
+        "One set per arm, stop with two reps left (RPE 8) or at 20. Enter the load you used."
+      ],
+      "stop": "A click with shoulder pain 3/10 or more ends the test (a painless click is fine).",
+      "why": "Pulling strength, side to side.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells",
+        "adjustable_bench"
+      ]
+    },
+    "pushup_bar": {
+      "name": "Incline push-up rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 25,
+      "rpe": true,
+      "pain": true,
+      "lib": "Incline_Push-Up",
+      "flags": [
+        "Wrist discomfort"
+      ],
+      "gate": "Hands on a fixed bar or a sturdy bench. A rack that isn't bolted down: load it with heavy plates, lean on the bar gradually first, and use a bench instead if anything rocks.",
+      "how": [
+        "Hands on a bar at a low setting, or on a bench; write the height in the note so retests match.",
+        "One set, chest to the bar or bench, stop with two reps left or at 25."
+      ],
+      "why": "Pressing endurance with straight wrists. Comes after bench and dumbbell press: keep that order at every retest.",
+      "needs": []
+    },
+    "curl": {
+      "name": "Dumbbell curl rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "cap": 20,
+      "rpe": true,
+      "pain": true,
+      "e1rm": true,
+      "lib": "ek-biceps-curl-with-dumbbell",
+      "flags": [
+        "Elbow discomfort"
+      ],
+      "how": [
+        "Warm-up: a light dumbbell × 8 per arm. Then test with one you could curl about 12–15 times. Enter the load you used.",
+        "Standing, one arm at a time, elbow still, right arm first.",
+        "One set per arm, stop with two reps left (RPE 8) or at 20."
+      ],
+      "stop": "Elbow discomfort 3/10 or more ends the test.",
+      "why": "Arm strength, side to side.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells"
+      ]
+    },
+    "triceps_oh": {
+      "name": "Overhead triceps rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 25,
+      "rpe": true,
+      "pain": true,
+      "e1rm": true,
+      "lib": "Seated_Triceps_Press",
+      "flags": [
+        "Elbow discomfort",
+        "Shoulder click"
+      ],
+      "gate": "Only if the overhead and back-scratch tests were pain-free on both sides.",
+      "how": [
+        "Seated, back on the pad, one dumbbell in both hands that you could lift about 15 times.",
+        "One set, stop with two reps left (RPE 8) or at 25. Enter the load you used."
+      ],
+      "why": "Triceps strength.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells",
+        "bench"
+      ]
+    },
+    "lateral_raise": {
+      "name": "Lateral raise rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 25,
+      "rpe": true,
+      "pain": true,
+      "lib": "ek-lateral-dumbbell-raises",
+      "flags": [
+        "Shoulder click"
+      ],
+      "gate": "Only if the overhead and back-scratch tests were pain-free on both sides.",
+      "how": [
+        "A light pair (most people start with 2–6 kg), to shoulder height.",
+        "One set, stop with two reps left or at 25. Enter the load you used."
+      ],
+      "why": "Shoulder (side delt) endurance.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells"
+      ]
+    },
+    "suitcase_hold": {
+      "name": "Suitcase hold",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "s",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "cap": 60,
+      "rpe": true,
+      "pain": true,
+      "lib": "Farmers_Walk",
+      "flags": [
+        "Wrist discomfort"
+      ],
+      "how": [
+        "Stand tall holding a heavy dumbbell or kettlebell at your side (start around a quarter of body weight), slightly away from the feet, not leaning.",
+        "Time until the grip is hard (RPE 8) or 60 s. Breathe throughout. The side is the hand holding the weight. Enter the load you used."
+      ],
+      "why": "Grip and trunk, side to side. Until there's a grip dynamometer.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells"
+      ]
+    },
+    "goblet_squat": {
+      "name": "Goblet box squat rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 20,
+      "rpe": true,
+      "pain": true,
+      "e1rm": true,
+      "lib": "Goblet_Squat",
+      "flags": [
+        "Leg sensation changed",
+        "Low back felt it"
+      ],
+      "how": [
+        "Touch a bench or box behind you each rep, 2 s down, one dumbbell or kettlebell held at the chest that you could squat about 15 times.",
+        "One set, stop with two reps left (RPE 8) or at 20. Enter the load you used."
+      ],
+      "stop": "Any change in leg sensation ends the test and today's lower-body tests.",
+      "why": "Leg strength and the squat starting weight.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells",
+        "bench"
+      ]
+    },
+    "hip_thrust": {
+      "name": "Dumbbell hip thrust rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 25,
+      "rpe": true,
+      "pain": true,
+      "lib": "Barbell_Hip_Thrust",
+      "flags": [
+        "Low back felt it",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Sit against the bench, place a dumbbell or plate on the hips, then bend the knees and set the upper back on the bench (about 5 s, no long crouch).",
+        "Chin tucked, ribs down. One set, stop with two reps left or at 25. Enter the load you used."
+      ],
+      "stop": "Any change in leg sensation ends the test.",
+      "why": "Hip strength.",
+      "implement": "dumbbell",
+      "needs": [
+        "dumbbells",
+        "bench"
+      ]
+    },
+    "calf_raise": {
+      "name": "Calf raise rep test (both legs)",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 20,
+      "pain": true,
+      "lib": "Calf_Raise_On_A_Dumbbell",
+      "flags": [
+        "Heel discomfort"
+      ],
+      "how": [
+        "Both legs, flat floor, training shoes (the same shoes every retest), a hand on a wall for balance.",
+        "2 s up, 2 s down, full height each rep. Stop at 20 or when height drops."
+      ],
+      "stop": "Any heel or Achilles discomfort: stop and tick the flag.",
+      "why": "Calf strength; protects the heel and Achilles. Single-leg testing can follow after two weeks of double-leg raises.",
+      "needs": []
+    },
+    "wall_sit": {
+      "name": "Wall sit",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "s",
+      "cap": 120,
+      "rpe": true,
+      "how": [
+        "Back flat on the wall, thighs at a comfortable angle (note the angle if not level).",
+        "Time until it's hard (RPE 8) or 120 s. Breathe throughout."
+      ],
+      "why": "Leg endurance; isometric work like this also helps blood pressure.",
+      "needs": [
+        "wall"
+      ]
+    },
+    "split_squat": {
+      "name": "Split squat rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "sides": [
+        "L",
+        "R"
+      ],
+      "cap": 20,
+      "rpe": true,
+      "pain": true,
+      "lib": "Split_Squats",
+      "flags": [
+        "Needed a hand for balance",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Bodyweight, back knee lowers to just above the floor, a hand near support.",
+        "One set per leg, stop with two reps left or at 20. The side is the front leg."
+      ],
+      "why": "Single-leg strength and asymmetry.",
+      "needs": []
+    },
+    "inverted_row": {
+      "name": "Inverted row rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "cap": 20,
+      "rpe": true,
+      "pain": true,
+      "lib": "Inverted_Row",
+      "flags": [
+        "Shoulder click"
+      ],
+      "gate": "A bar at hip height or lower that can't move: a rack's J-hooks or safeties, a Smith machine, or sturdy rings. A rack that isn't bolted down: load it with heavy plates, lean on the bar gradually first, and skip the test if anything rocks.",
+      "how": [
+        "Bar at hip height or lower; write the height setting in the note so retests match.",
+        "One set, stop with two reps left or at 20."
+      ],
+      "why": "Bodyweight pulling, the road to a pull-up.",
+      "needs": [
+        "fixed_bar"
+      ]
+    }
+  },
+  "batteries": {
+    "calibration-1": {
+      "title": "Calibration 1: body, mobility, balance",
+      "duration": "45–55 min",
+      "coach_note": "Your baseline, part 1. Not within an hour of waking. Holds stop when they're hard but steady (RPE 8) or at the cap; nothing goes to failure. Measure the same way every time so retests compare: same time of day, same shoes, tape snug but not tight. Stop the session for dizziness, chest pain, or any change in leg sensation; stop any test that sends sensation further down the leg. Skip a test that hurts and write why in its note. Next morning: do the check-in.",
+      "warmup": [
+        "5 min easy walking or marching",
+        "Cat-cow × 8, bird dog × 5 / side"
+      ],
+      "tests": [
+        "bp_rest",
+        "waist",
+        "hips",
+        "chest",
+        "arm_flexed",
+        "thigh",
+        "knee_to_wall",
+        "aslr",
+        "shoulder_flex_wall",
+        "back_scratch",
+        "wrist_wall",
+        "squat_pattern",
+        "hinge_pattern",
+        "sls_open",
+        "sls_closed",
+        "sls_pad",
+        "step_down",
+        "side_plank",
+        "front_plank",
+        "sl_bridge",
+        "polar_fitness"
+      ]
+    },
+    "calibration-2": {
+      "title": "Calibration 2: upper-body strength",
+      "duration": "50–70 min",
+      "coach_note": "Your baseline, part 2: on a green recovery day, at least a day after part 1, not within an hour of waking. Wear a heart-rate strap if you have one. One test set per lift, stopped with two reps left (RPE 8): a rep that slows noticeably is RPE 8. One test set only; never try a heavier set the same day. Breathe out on every rep. Rest 2–3 min between tests. Respect each test's gate (some depend on part 1). Stop the session for dizziness, chest pain, or any change in leg sensation. Keep this order at every retest. Next morning: do the check-in. It counts as one of that week's sessions.",
+      "warmup": [
+        "5 min easy walking or marching",
+        "Cat-cow × 8, bird dog × 5 / side",
+        "Band pull-apart × 15, arm circles × 10"
+      ],
+      "tests": [
+        "bp_rest",
+        "bench_rm",
+        "db_press",
+        "row_cs",
+        "inverted_row",
+        "pushup_bar",
+        "curl",
+        "triceps_oh",
+        "lateral_raise",
+        "suitcase_hold"
+      ]
+    },
+    "calibration-3": {
+      "title": "Calibration 3: lower-body strength",
+      "duration": "25–35 min",
+      "coach_note": "Your baseline, part 3: on a different day from part 2, on a green recovery day, not within an hour of waking. One test set per lift, stopped with two reps left (RPE 8). Breathe throughout. Rest 2–3 min between tests. Any change in leg sensation ends the lower-body tests for the day. Keep this order at every retest. Next morning: check-in. It counts as one of that week's sessions. Rest at least a day before the next lower-body session.",
+      "warmup": [
+        "5 min easy walking or marching",
+        "Cat-cow × 8, bird dog × 5 / side, glute bridge × 10",
+        "Broomstick hip hinge × 8, bodyweight box squat × 8"
+      ],
+      "tests": [
+        "bp_rest",
+        "goblet_squat",
+        "hip_thrust",
+        "calf_raise",
+        "wall_sit"
+      ]
+    }
+  }
+}

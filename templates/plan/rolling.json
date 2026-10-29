@@ -1,0 +1,18 @@
+{
+  "_about": "Example only. The Coach writes the real one into <data>/plans/<plan>/rolling.json; see coach/rolling.py.",
+  "start": "2026-01-05",
+  "weekdays": ["mon", "wed", "fri"],
+  "rotation": ["a", "b"],
+  "optional": {"routine": "extra", "weekdays": ["sat"]},
+  "rest_day": {"title": "Rest or easy walk", "note": "30–45 min easy walk"},
+  "recovery_routine": "mobility",
+  "min_rest_days": 1,
+  "phases": [
+    {"name": "Learn", "weeks": 4, "rpe_cap": 7},
+    {"name": "Build", "weeks": 3, "rpe_cap": 8},
+    {"name": "Deload", "weeks": 1, "deload": true, "rpe_cap": 6},
+    {"name": "Strength", "weeks": 5, "rpe_cap": 8},
+    {"name": "Deload and review", "weeks": 1, "deload": true, "rpe_cap": 6}
+  ],
+  "rules": {"hard_rpe": 9, "easy_rpe": 7, "pain_stop": 3}
+}

@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sylvester setup</title>
+<style>
+  :root {
+    --bg: #f4f2ed; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e2dfd7; --field: #fbfaf7;
+    --accent: #2f6f5e; --accent-soft: #e3efe9; --accent-ink: #ffffff; --warn: #9a5b12; --warn-soft: #fbf0dd;
+    --danger: #b3412e; --body: #dcd8ce; --body-line: #c9c4b8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151514; --panel: #1e1e1c; --ink: #ecebe6; --muted: #9c9a93; --line: #33322e; --field: #252523;
+      --accent: #63b89e; --accent-soft: #1d332c; --accent-ink: #0f201a; --warn: #e3a857; --warn-soft: #33281a;
+      --danger: #e07a66; --body: #3a3935; --body-line: #4a4843;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .top { max-width: 760px; margin: 0 auto; padding: 12px 16px 10px; }
+  .brand { display: flex; align-items: baseline; gap: 10px; font-weight: 700; letter-spacing: .01em; }
+  .brand small { font-weight: 400; color: var(--muted); font-size: 13px; }
+  .brand .saved { margin-left: auto; font-weight: 400; color: var(--muted); font-size: 13px; }
+  .progress { display: flex; gap: 4px; margin-top: 10px; }
+  .progress button { flex: 1; min-width: 0; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; color: var(--muted); font: inherit; font-size: 11.5px; }
+  .progress button::before { content: ""; display: block; height: 4px; border-radius: 4px; background: var(--line); margin-bottom: 4px; }
+  .progress button.done::before { background: var(--accent); opacity: .45; }
+  .progress button.on::before { background: var(--accent); }
+  .progress button.on { color: var(--ink); font-weight: 600; }
+  .progress span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media (max-width: 520px) { .progress span { display: none; } }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 120px; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 8px; letter-spacing: -.01em; }
+  h2 { font-size: 18px; margin: 0 0 4px; }
+  p.lead { font-size: 17px; color: var(--muted); margin: 0 0 24px; max-width: 60ch; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+  .card > .hint, .hint { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+  .q { margin: 0 0 18px; }
+  .q:last-child { margin-bottom: 0; }
+  .q > .label { display: block; font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+  .q > .label small { font-weight: 400; color: var(--muted); }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); gap: 12px 16px; }
+  input[type=text], input[type=number], input[type=date], textarea, select {
+    font: inherit; color: var(--ink); background: var(--field); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; }
+  textarea { min-height: 76px; resize: vertical; }
+  input:focus, textarea:focus, select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .unit { display: flex; align-items: center; gap: 8px; }
+  .unit span { color: var(--muted); font-size: 14px; white-space: nowrap; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 999px; padding: 8px 14px; font: inherit; font-size: 15px; cursor: pointer; line-height: 1.2; }
+  .chip:hover { border-color: var(--accent); }
+  .chip[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .chip.small { padding: 6px 11px; font-size: 14px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); gap: 10px; }
+  .tile { border: 1px solid var(--line); background: var(--panel); border-radius: 12px; padding: 14px; text-align: left; font: inherit; color: var(--ink); cursor: pointer; min-height: 64px; position: relative; }
+  .tile b { display: block; font-size: 15px; }
+  .tile small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .tile[aria-pressed=true] { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+  .tile .rank { position: absolute; top: 10px; right: 10px; width: 24px; height: 24px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+  .detail { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; margin: 14px 0 6px; }
+  .detail h3 { font-size: 15px; margin: 0 0 10px; }
+  .yn { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .yn:last-child { border-bottom: 0; }
+  .yn .chips { flex-shrink: 0; flex-wrap: nowrap; }
+  .callout { border-radius: 12px; padding: 14px 16px; margin: 14px 0 0; background: var(--accent-soft); font-size: 15px; }
+  .callout.warn { background: var(--warn-soft); }
+  .callout.warn b { color: var(--warn); }
+  .disclaimer { border: 1px solid var(--line); border-radius: 14px; padding: 18px; background: var(--panel); margin-bottom: 16px; }
+  .disclaimer p { margin: 0 0 14px; }
+  .check { display: flex; gap: 10px; align-items: center; font-weight: 600; cursor: pointer; }
+  .check input { width: 22px; height: 22px; accent-color: var(--accent); }
+  ol.next { margin: 0; padding-left: 20px; color: var(--muted); }
+  ol.next li { margin: 4px 0; }
+  ol.next b { color: var(--ink); font-weight: 600; }
+  .bodywrap { display: grid; grid-template-columns: 220px 1fr; gap: 20px; align-items: start; }
+  @media (max-width: 640px) { .bodywrap { grid-template-columns: 1fr; } .figure { max-width: 220px; margin: 0 auto; } }
+  .figure { position: sticky; top: 92px; }
+  .figure svg { width: 100%; height: auto; display: block; }
+  .figure .sil { stroke: var(--body); stroke-linecap: round; fill: none; }
+  .figure .torso { fill: var(--body); }
+  .figure .spot { fill: var(--panel); stroke: var(--accent); stroke-width: 2.5; cursor: pointer; }
+  .figure .spot:hover { fill: var(--accent-soft); }
+  .figure .spot.on { fill: var(--accent); }
+  .figure .cap { text-align: center; color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+  .inj { border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 12px; background: var(--panel); }
+  .inj.flash { animation: flash 1s; }
+  @keyframes flash { from { box-shadow: 0 0 0 3px var(--accent); } to { box-shadow: 0 0 0 0 transparent; } }
+  .inj-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .inj-head b { font-size: 16px; }
+  .x { background: none; border: 0; color: var(--danger); cursor: pointer; font: inherit; font-size: 14px; padding: 4px; }
+  .slider { display: flex; align-items: center; gap: 12px; }
+  .slider input { flex: 1; accent-color: var(--accent); }
+  .slider output { min-width: 4.5em; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .plates { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+  .plates label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--muted); }
+  .preview { font-size: 14px; color: var(--muted); }
+  .preview b { color: var(--ink); }
+  .add { display: flex; gap: 8px; margin-top: 10px; }
+  .add input { flex: 1; }
+  .ghost { background: none; color: var(--accent); border: 1px solid var(--line); padding: 9px 14px; border-radius: 10px; font: inherit; font-size: 15px; cursor: pointer; }
+  .sum h2 { display: flex; justify-content: space-between; align-items: baseline; }
+  .sum h2 button { font-size: 14px; font-weight: 400; }
+  .sum dl { display: grid; grid-template-columns: minmax(110px, 30%) 1fr; gap: 6px 14px; margin: 10px 0 0; font-size: 15px; }
+  .sum dt { color: var(--muted); }
+  .sum dd { margin: 0; }
+  .missing { color: var(--warn); }
+  footer { position: fixed; left: 0; right: 0; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); }
+  footer .bar { max-width: 760px; margin: 0 auto; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); display: flex; gap: 10px; align-items: center; }
+  footer .msg { flex: 1; color: var(--muted); font-size: 14px; }
+  .btn { background: var(--accent); color: var(--accent-ink); border: 0; padding: 12px 22px; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer; }
+  .btn:disabled { opacity: .4; cursor: default; }
+  .back { background: none; border: 0; color: var(--muted); font: inherit; cursor: pointer; padding: 12px 8px; }
+  .done { text-align: center; padding-top: 48px; }
+  .done .tick { width: 72px; height: 72px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; margin: 0 auto 20px; font-size: 38px; }
+  .done p { max-width: 46ch; margin: 0 auto 14px; color: var(--muted); font-size: 17px; }
+  .done kbd { font: inherit; font-weight: 700; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 1px 8px; }
+  .err { color: var(--danger); }
+</style>
+</head>
+<body>
+<header><div class="top">
+  <div class="brand">Sylvester <small>setup</small><span class="saved" id="saved"></span></div>
+  <div class="progress" id="progress"></div>
+</div></header>
+<main id="main"><p class="hint">Loading…</p></main>
+<footer><div class="bar">
+  <button class="back" id="back">← Back</button>
+  <span class="msg" id="msg"></span>
+  <button class="btn" id="next">Next</button>
+</div></footer>
+
+<script>
+const DISCLAIMER = "Sylvester's Coach is a training assistant, not a doctor or a medical device. It works only from what you and your records tell it, and it can be wrong. Share your plan with your doctor or physio, and stop and get help if something feels wrong: chest pain, dizziness, new numbness or weakness.";
+const STEPS = [["welcome", "Welcome"], ["you", "You"], ["health", "Health"], ["body", "Aches"], ["gear", "Gear"], ["goals", "Goals"], ["devices", "Devices"], ["review", "Review"]];
+const INJURY_STATUS = [["active — hurts now", "Hurts now"], ["recovering", "Getting better"], ["healed, with limits", "Healed, with limits"], ["fully healed", "Fully healed"]];
+const SCREEN = [
+  ["heart", "Has a doctor ever said you have a heart condition or high blood pressure?"],
+  ["chest", "Do you get chest pain at rest, in daily life, or when you exercise?"],
+  ["dizzy", "In the past year, have you lost your balance because of dizziness, or passed out?"],
+  ["chronic", "Do you have another long-term medical condition, like diabetes, asthma or arthritis?"],
+  ["meds", "Do you take prescribed medicine for a long-term condition?"],
+  ["joints", "Do you have a bone, joint or muscle problem that more activity could make worse?"],
+  ["supervised", "Has a doctor said you should only exercise under medical supervision?"],
+];
+const SERIOUS = ["chest", "dizzy", "supervised"];
+const CONDITIONS = ["High blood pressure", "Heart condition", "Type 2 diabetes", "Type 1 diabetes", "Asthma", "Arthritis",
+  "Osteoporosis or low bone density", "Hypermobility", "Hernia", "Migraine", "Pregnant or gave birth in the last year", "Long COVID or chronic fatigue"];
+const TRIGGERS = ["Squatting", "Stairs", "Running", "Jumping", "Reaching overhead", "Pushing", "Pulling", "Bending forward",
+  "Lifting from the floor", "Twisting", "Kneeling", "Sitting long", "Standing long", "Gripping", "Lying on it"];
+const SPOTS = [ // back view: the person's left is on the left
+  ["neck", "Neck", "", 100, 66], ["upper_back", "Upper back", "", 100, 108], ["lower_back", "Lower back", "", 100, 188],
+  ["shoulder_l", "Shoulder", "left", 64, 84], ["shoulder_r", "Shoulder", "right", 136, 84],
+  ["elbow_l", "Elbow", "left", 46, 152], ["elbow_r", "Elbow", "right", 154, 152],
+  ["wrist_l", "Wrist or hand", "left", 38, 214], ["wrist_r", "Wrist or hand", "right", 162, 214],
+  ["hip_l", "Hip", "left", 80, 236], ["hip_r", "Hip", "right", 120, 236],
+  ["knee_l", "Knee", "left", 82, 308], ["knee_r", "Knee", "right", 118, 308],
+  ["ankle_l", "Ankle or foot", "left", 82, 388], ["ankle_r", "Ankle or foot", "right", 118, 388],
+];
+const GEAR = [
+  ["dumbbells", "Dumbbells", "Fixed or adjustable"], ["kettlebells", "Kettlebells", ""], ["barbell", "Barbell & plates", ""],
+  ["rack", "Rack or squat stands", ""], ["bench", "Bench", "Flat or adjustable"], ["pullup", "Pull-up bar", ""],
+  ["bands", "Resistance bands", ""], ["rings", "Rings or TRX", "Suspension trainer"], ["cable", "Cable machine", "Pulley or lat pulldown"],
+  ["cardio", "Cardio machine", "Bike, rower, treadmill…"], ["box", "Box or step", ""], ["recovery", "Mat & foam roller", "Mobility and recovery"],
+  ["dip", "Dip station", ""], ["vest", "Weight vest", ""], ["ball", "Medicine or slam ball", ""], ["landmine", "Landmine", ""],
+];
+const GOALS = [
+  ["strength", "Get stronger", "strength", "e.g. 10 strict push-ups; deadlift my bodyweight"],
+  ["muscle", "Build muscle", "muscle", "e.g. +3 kg lean mass; bigger shoulders"],
+  ["fat", "Lose fat", "fat loss", "e.g. −6 kg; waist down 5 cm"],
+  ["cardio", "Better stamina", "endurance / cardio", "e.g. run 5 km without stopping; resting HR under 60"],
+  ["pain", "Move without pain", "rehab / pain-free", "e.g. stairs without knee pain; sit 2 hours without back pain"],
+  ["mobility", "Mobility & flexibility", "mobility", "e.g. touch my toes; deep squat with heels down"],
+  ["event", "Train for something", "sport / event", "e.g. a 20 km hike in June; ski season; a half marathon"],
+  ["health", "Stay healthy & energetic", "general health", "e.g. train 3×/week for a year; lower blood pressure"],
+];
+const DEVICES = [
+  ["oura", "Oura ring", "Sleep, HRV, readiness", true], ["polar", "Polar strap or watch", "Heart rate in workouts", true],
+  ["apple", "Apple Watch or iPhone Health", "Steps, heart, medical records", true], ["garmin", "Garmin", "", false],
+  ["whoop", "WHOOP", "Recovery, HRV, sleep, strain", true], ["withings", "Withings", "Scale, BP monitor, watch or sleep mat", true],
+  ["fitbit", "Fitbit or Pixel Watch", "", false], ["bp", "Another blood pressure monitor", "", false], ["scale", "Another smart scale", "", false],
+];
+
+let S = {};          // health_profile, equipment, goals, settings
+let saved = {};      // last saved JSON per doc
+let step = 0;
+let finished = false;
+
+// ---------- helpers ----------
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  let value;
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (k === "class") el.className = v;
+    else if (k === "value") value = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (v === true) el.setAttribute(k, "");
+    else if (v !== false && v != null) el.setAttribute(k, v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) el.append(c.nodeType ? c : document.createTextNode(c));
+  if (value !== undefined) el.value = value ?? "";
+  return el;
+}
+const svg = (tag, attrs) => { const el = document.createElementNS("http://www.w3.org/2000/svg", tag); for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v); return el; };
+const today = () => new Date().toISOString().slice(0, 10);
+const r2 = x => Math.round(x * 100) / 100;
+const imperial = () => S.settings.units === "imperial";
+const W = () => imperial() ? "lb" : "kg";
+const toKg = x => imperial() ? r2(x * 0.45359237) : r2(x);
+const obj = (o, k) => (o[k] = o[k] && typeof o[k] === "object" ? o[k] : {});
+const arr = (o, k) => (o[k] = Array.isArray(o[k]) ? o[k] : []);
+
+function q(label, ...kids) { return h("div", { class: "q" }, label ? h("span", { class: "label" }, ...[].concat(label)) : null, ...kids); }
+
+function text(o, k, ph = "", multi = false) {
+  return h(multi ? "textarea" : "input", { type: "text", placeholder: ph, value: o[k] ?? "", oninput: e => { o[k] = e.target.value; } });
+}
+
+function num(o, k, unit, ph = "") {
+  return h("div", { class: "unit" },
+    h("input", { type: "number", inputmode: "decimal", step: "any", min: "0", placeholder: ph, value: o[k] ?? "",
+      oninput: e => { o[k] = e.target.value === "" ? null : +e.target.value; } }),
+    unit ? h("span", {}, unit) : null);
+}
+
+function chips(options, get, set, { multi = false, small = false, rerender = true } = {}) {
+  return h("div", { class: "chips" }, options.map(opt => {
+    const [val, label] = Array.isArray(opt) ? opt : [opt, opt];
+    const on = multi ? (get() || []).includes(val) : get() === val;
+    return h("button", { type: "button", class: "chip" + (small ? " small" : ""), "aria-pressed": String(on), onclick: () => {
+      if (multi) { const cur = get() || []; set(on ? cur.filter(x => x !== val) : [...cur, val]); }
+      else set(on ? "" : val);
+      rerender ? render() : null;
+    } }, label);
+  }));
+}
+
+function listOf(t) {
+  return [...new Set(String(t || "").split(/[\s,;]+/).map(parseFloat).filter(x => x > 0))].sort((a, b) => a - b);
+}
+function range(min, max, stepv) {
+  const out = [];
+  if (!(stepv > 0) || !(min > 0) || !(max >= min)) return out;
+  for (let v = min; v <= max + 1e-9 && out.length < 400; v += stepv) out.push(r2(v));
+  return out;
+}
+function barbell(bar, pairs) {
+  let totals = new Set([r2(bar)]);
+  for (const [size, n] of Object.entries(pairs || {})) {
+    const s = +size, c = Math.min(+n || 0, 12);
+    if (!s || !c) continue;
+    const next = new Set();
+    for (const t of totals) for (let k = 0; k <= c; k++) next.add(r2(t + 2 * s * k));
+    totals = next;
+  }
+  return [...totals].sort((a, b) => a - b);
+}
+const fmt = xs => xs.length ? `${xs[0]}–${xs[xs.length - 1]} ${W()} (${xs.length} steps)` : "—";
+
+// ---------- data ----------
+async function load() {
+  const get = n => fetch(`/api/${n}`).then(r => r.json());
+  const [hp, eq, goals, settings] = await Promise.all(["health_profile", "equipment", "goals", "settings"].map(get));
+  S = { health_profile: hp || {}, equipment: eq || {}, goals: goals || {}, settings: settings || {} };
+  for (const k in S) saved[k] = JSON.stringify(S[k]);
+  const ob = obj(S.health_profile, "onboarding");
+  step = Math.min(Math.max(+ob.wizard_step || 0, 0), STEPS.length - 1);
+  if (!ob.disclaimer_accepted) step = 0;
+}
+
+function compile() {
+  // equipment: the wizard's answers (setup) → items + load_steps the Coach uses
+  const eq = S.equipment, st = obj(eq, "setup"), g = obj(st, "gear"), where = st.where || [];
+  st.units = W();
+  const items = arr(eq, "items").filter(i => i.source !== "setup");
+  const steps = { dumbbell: new Set(), barbell: new Set(), kettlebell: new Set(), cable: new Set() };
+  const add = (key, xs) => xs.forEach(x => steps[key].add(toKg(x)));
+  const item = (kind, name, category, spec = "", notes = "", quantity = 1) => items.push({ name, category, quantity, spec, notes, source: "setup", kind });
+  if (where.includes("gym")) {
+    const gym = obj(st, "gym"), full = gym.type !== "small";
+    const dbStep = +gym.db_step || (imperial() ? 5 : 2), dbMax = +gym.db_max || (imperial() ? 100 : 50);
+    add("dumbbell", range(dbStep, dbMax, dbStep));
+    add("cable", imperial() ? range(10, 200, 10) : range(5, 100, 5));
+    if (full) {
+      add("barbell", imperial() ? range(45, 405, 5) : range(20, 200, 2.5));
+      add("kettlebell", imperial() ? [9, 13, 18, 26, 35, 44, 53, 62, 70] : [4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32]);
+    }
+    item("gym", full ? "Commercial gym" : "Small gym", "Other",
+      full ? `Racks, barbells, dumbbells to ${dbMax} ${W()}, cables, machines` : `Dumbbells to ${dbMax} ${W()}, a few machines`, gym.notes || "");
+  }
+  if (where.includes("home") || where.includes("outdoors")) {
+    for (const [id, name] of GEAR) {
+      const d = g[id];
+      if (!d || !d.on) continue;
+      if (id === "dumbbells") {
+        const xs = d.type === "adjustable" ? range(+d.min, +d.max, +d.step) : listOf(d.weights);
+        add("dumbbell", xs);
+        item(id, d.type === "adjustable" ? "Adjustable dumbbells" : "Dumbbell pairs", "Dumbbells & kettlebells",
+          d.type === "adjustable" ? `${d.min ?? "?"}–${d.max ?? "?"} ${W()} in ${d.step ?? "?"} ${W()} steps` : `${listOf(d.weights).join(", ")} ${W()}`, "", 2);
+      } else if (id === "kettlebells") {
+        add("kettlebell", listOf(d.weights));
+        item(id, "Kettlebells", "Dumbbells & kettlebells", `${listOf(d.weights).join(", ")} ${W()}`);
+      } else if (id === "barbell") {
+        const bar = +d.bar || (imperial() ? 45 : 20);
+        add("barbell", barbell(bar, d.plates));
+        const plates = Object.entries(d.plates || {}).filter(([, n]) => +n > 0).map(([s, n]) => `${n}×2 of ${s}`).join(", ");
+        item(id, `Barbell ${bar} ${W()}`, "Barbell & plates", plates ? `Plates (pairs): ${plates} ${W()}` : "No plates listed");
+      } else if (id === "rack") {
+        item(id, d.type || "Rack", "Rack & bench", [d.safeties === "yes" ? "with safeties" : d.safeties === "no" ? "no safeties" : ""].filter(Boolean).join(", "),
+          d.stable === "no" ? "Can tip: no heavy sideways loads" : d.safeties === "no" ? "No safeties: no heavy bench or squat to failure" : "");
+      } else if (id === "cable") {
+        const xs = range(+d.step || 5, +d.max || 0, +d.step || 5);
+        add("cable", xs);
+        item(id, "Cable machine", "Machines & cables", d.max ? `Stack to ${d.max} ${W()} in ${d.step || "?"} ${W()} steps` : "");
+      } else {
+        const spec = { bench: d.type, pullup: d.where, bands: (d.kinds || []).join(", "), rings: (d.kinds || []).join(", "),
+          cardio: (d.kinds || []).join(", "), box: d.height ? `${d.height} cm` : "", recovery: (d.kinds || []).join(", "),
+          vest: d.weight ? `${d.weight} ${W()}` : "", ball: d.weights ? `${d.weights} ${W()}` : "" }[id] || "";
+        const cat = { bench: "Rack & bench", pullup: "Rack & bench", dip: "Rack & bench", cardio: "Cardio", recovery: "Mobility & recovery",
+          landmine: "Machines & cables" }[id] || "Bodyweight & bands";
+        item(id, name, cat, spec);
+      }
+    }
+  }
+  eq.items = items;
+  const ls = obj(eq, "load_steps");
+  for (const k of Object.keys(steps)) {
+    const xs = [...steps[k]].sort((a, b) => a - b);
+    if (xs.length) ls[k] = xs; else delete ls[k];
+  }
+  const sp = obj(st, "space"), space = obj(eq, "space");
+  space.location = where.map(w => ({ home: "home", gym: "gym", outdoors: "outdoors / anywhere" }[w])).join(", ");
+  if (sp.overhead) space.overhead_ok = sp.overhead;
+  if (sp.drop) space.drop_ok = sp.drop;
+  if (sp.notes != null) space.notes = sp.notes;
+
+  // goals: one entry per chosen card, in the order picked
+  const goals = arr(S.goals, "goals"), keep = goals.filter(x => x.source !== "setup");
+  const picked = obj(S.health_profile, "onboarding").goal_order || [];
+  S.goals.goals = [...picked.map((id, i) => {
+    const def = GOALS.find(x => x[0] === id), prev = goals.find(x => x.source === "setup" && x.kind === id) || {};
+    return { ...prev, title: prev.title || def[1], type: def[2], status: prev.status || "active", priority: ["1 — main", "2", "3"][i] || "3",
+      created: prev.created || today(), source: "setup", kind: id };
+  }), ...keep];
+}
+
+async function save() {
+  compile();
+  obj(S.health_profile, "onboarding").wizard_step = step;
+  const out = [];
+  for (const n of ["settings", "health_profile", "equipment", "goals"]) {
+    const body = JSON.stringify(S[n]);
+    if (body === saved[n]) continue;
+    out.push(fetch(`/api/${n}`, { method: "POST", headers: { "Content-Type": "application/json" }, body })
+      .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(new Error(e.error || r.status))))
+      .then(d => { if (n !== "settings") S[n]._updated = d._updated; saved[n] = JSON.stringify(S[n]); }));
+  }
+  try {
+    await Promise.all(out);
+    if (out.length) document.getElementById("saved").textContent = "Saved " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return true;
+  } catch (e) {
+    document.getElementById("msg").innerHTML = "";
+    document.getElementById("msg").append(h("span", { class: "err" }, `Couldn't save (${e.message}). Is the setup window still running?`));
+    return false;
+  }
+}
+
+// ---------- steps ----------
+const VIEWS = {
+  welcome() {
+    const p = S.health_profile, b = obj(p, "basics"), ob = obj(p, "onboarding");
+    return [
+      h("h1", {}, "Hi, I'm Sylvester."),
+      h("p", { class: "lead" }, "I turn your body, your gear and your goals into a training plan that adjusts itself every day. This takes about 10 minutes. Everything you enter stays in your health-data folder on this computer."),
+      h("div", { class: "card" },
+        q("What should your Coach call you?", text(b, "name", "First name")),
+        q("Units", chips([["metric", "kg and cm"], ["imperial", "lb, ft and in"]], () => S.settings.units || "metric", v => { S.settings.units = v || "metric"; }))),
+      h("div", { class: "disclaimer" },
+        h("p", {}, h("b", {}, "Heads-up: "), DISCLAIMER),
+        h("label", { class: "check" },
+          h("input", { type: "checkbox", checked: !!ob.disclaimer_accepted, onchange: e => { ob.disclaimer_accepted = e.target.checked ? today() : ""; nav(); } }),
+          "Got it")),
+      h("div", { class: "card" }, h("h2", {}, "What happens next"),
+        h("ol", { class: "next" },
+          h("li", {}, h("b", {}, "This page: "), "you, your health, your gear and your goals."),
+          h("li", {}, h("b", {}, "A short chat with Claude "), "about anything that needs a second question."),
+          h("li", {}, h("b", {}, "A test session or two "), "so your starting weights fit you."),
+          h("li", {}, h("b", {}, "Your plan, on your phone, "), "rebuilt every day from how you're doing."))),
+    ];
+  },
+
+  you() {
+    const p = S.health_profile, b = obj(p, "basics"), tb = obj(p, "training_background"), ls = obj(p, "lifestyle");
+    const heightIn = imperial() ? h("div", { class: "row" },
+      h("div", { class: "unit" }, h("input", { type: "number", min: "0", value: b.height_cm ? Math.floor(b.height_cm / 30.48) : "",
+        oninput: e => setHeight(+e.target.value, null) }), h("span", {}, "ft")),
+      h("div", { class: "unit" }, h("input", { type: "number", min: "0", value: b.height_cm ? Math.round((b.height_cm / 2.54) % 12) : "",
+        oninput: e => setHeight(null, +e.target.value) }), h("span", {}, "in"))) : num(b, "height_cm", "cm");
+    function setHeight(ft, inch) {
+      const cur = b.height_cm ? b.height_cm / 2.54 : 0;
+      const f = ft ?? Math.floor(cur / 12), i = inch ?? Math.round(cur % 12);
+      b.height_cm = f || i ? Math.round((f * 12 + i) * 2.54) : null;
+    }
+    const weight = h("div", { class: "unit" }, h("input", { type: "number", min: "0", step: "any", inputmode: "decimal",
+      value: b.weight_kg ? (imperial() ? Math.round(b.weight_kg / 0.45359237) : b.weight_kg) : "",
+      oninput: e => { b.weight_kg = e.target.value === "" ? null : (imperial() ? r2(+e.target.value * 0.45359237) : +e.target.value); } }), h("span", {}, W()));
+    return [
+      h("h1", {}, "About you"),
+      h("p", { class: "lead" }, "The basics your Coach scales everything to."),
+      h("div", { class: "card" },
+        h("div", { class: "row" },
+          q("Date of birth", h("input", { type: "date", value: b.dob || "", max: today(), oninput: e => { b.dob = e.target.value; } })),
+          q("Height", heightIn), q("Weight", weight)),
+        q("Sex", chips([["female", "Female"], ["male", "Male"], ["other", "Other or rather not say"]], () => b.sex, v => { b.sex = v; })),
+        q(["Dominant side ", h("small", {}, "(the hand you write with)")], chips([["right", "Right"], ["left", "Left"], ["both", "Both"]], () => b.dominant_side, v => { b.dominant_side = v; }))),
+      h("div", { class: "card" },
+        q("How much have you lifted weights?", chips(["none", "beginner (< 1 yr)", "intermediate (1–3 yrs)", "advanced (3+ yrs)", "returning after a long break"]
+          .map(x => [x, x[0].toUpperCase() + x.slice(1)]), () => tb.experience, v => { tb.experience = v; })),
+        q("What does a normal week of activity look like now?", text(tb, "current", "e.g. walk the dog daily, football on Sundays, nothing structured", true)),
+        q(["Any numbers you know? ", h("small", {}, "(optional: old ones are fine, we'll test anyway)")], text(tb, "known_numbers", "e.g. squat 80 kg × 5; 5 km in 30 min; 8 pull-ups", true)),
+        q("Your day job is mostly…", chips(["desk / sedentary", "mixed", "on feet", "physical labour"].map(x => [x, x[0].toUpperCase() + x.slice(1)]), () => ls.job_activity, v => { ls.job_activity = v; }))),
+    ];
+  },
+
+  health() {
+    const p = S.health_profile, sc = obj(p, "screening"), ans = obj(sc, "answers"), conds = arr(p, "conditions"), meds = arr(p, "medications");
+    const yes = SCREEN.filter(([k]) => ans[k] === "yes").map(([k]) => k);
+    const ob = obj(p, "onboarding");
+    const condNames = conds.map(c => c.name);
+    const condCards = conds.map((c, i) => h("div", { class: "detail" },
+      h("div", { class: "inj-head" }, h("b", {}, c.name), h("button", { class: "x", type: "button", onclick: () => { conds.splice(i, 1); render(); } }, "Remove")),
+      q(null, chips(["active", "managed", "resolved"].map(x => [x, x === "managed" ? "Managed (meds, diet…)" : x[0].toUpperCase() + x.slice(1)]), () => c.status, v => { c.status = v; }, { small: true })),
+      q(null, text(c, "affects_training", "How does it affect training, if at all? (optional)"))));
+    const newCond = h("input", { type: "text", placeholder: "Something else?" });
+    const addCond = () => { const v = newCond.value.trim(); if (v) { conds.push({ name: v, status: "active", source: "setup" }); render(); } };
+    newCond.addEventListener("keydown", e => { if (e.key === "Enter") addCond(); });
+    return [
+      h("h1", {}, "Health check"),
+      h("p", { class: "lead" }, "Seven quick questions that gyms and physios ask before anyone starts training. A yes doesn't stop you; it tells your Coach where to be careful."),
+      h("div", { class: "card" },
+        SCREEN.map(([k, label]) => h("div", { class: "yn" }, h("span", {}, label),
+          chips([["no", "No"], ["yes", "Yes"]], () => ans[k], v => { ans[k] = v; sc.date = today(); }, { small: true }))),
+        yes.some(k => SERIOUS.includes(k))
+          ? h("div", { class: "callout warn" }, h("b", {}, "Please talk to your doctor before you start. "), "Chest pain, dizziness or fainting, or a doctor's advice to train only under supervision, need a doctor's go-ahead first. Sylvester will keep everything gentle until you've had that conversation.")
+          : yes.length ? h("div", { class: "callout" }, "Thanks, that's exactly what your Coach needs to know. A quick word with your doctor before hard training is still a good idea.") : null),
+      h("div", { class: "card" }, h("h2", {}, "Diagnosed conditions"),
+        h("p", { class: "hint" }, "Tap anything that applies. Skip if none."),
+        chips(CONDITIONS, () => condNames, v => {
+          const added = v.filter(x => !condNames.includes(x)), removed = condNames.filter(x => !v.includes(x));
+          added.forEach(name => conds.push({ name, status: "active", source: "setup" }));
+          removed.forEach(name => conds.splice(conds.findIndex(c => c.name === name), 1));
+        }, { multi: true, small: true }),
+        condCards,
+        h("div", { class: "add" }, newCond, h("button", { class: "ghost", type: "button", onclick: addCond }, "Add"))),
+      h("div", { class: "card" }, h("h2", {}, "Regular medication"),
+        h("p", { class: "hint" }, "Some medicines (beta-blockers, for example) change your heart rate, which changes how your Coach reads it."),
+        q(null, chips([["no", "None"], ["yes", "Yes, I take some"]], () => meds.length ? "yes" : ob.meds, v => {
+          ob.meds = v; if (v === "yes" && !meds.length) meds.push({ name: "", purpose: "", affects_hr: "" }); if (v !== "yes") meds.length = 0; })),
+        meds.map((m, i) => h("div", { class: "detail" },
+          h("div", { class: "row" }, q("Name", text(m, "name", "e.g. bisoprolol")), q("What for", text(m, "purpose", "e.g. blood pressure"))),
+          q("Does it affect heart rate or blood pressure?", chips([["no", "No"], ["yes", "Yes"], ["not sure", "Not sure"]], () => m.affects_hr, v => { m.affects_hr = v; }, { small: true })),
+          h("button", { class: "x", type: "button", onclick: () => { meds.splice(i, 1); render(); } }, "Remove"))),
+        meds.length ? h("button", { class: "ghost", type: "button", onclick: () => { meds.push({ name: "", purpose: "", affects_hr: "" }); render(); } }, "+ Another") : null),
+    ];
+  },
+
+  body() {
+    const p = S.health_profile, inj = arr(p, "injuries"), ob = obj(p, "onboarding"), rs = obj(p, "restrictions");
+    const fig = svg("svg", { viewBox: "0 0 200 410", role: "img", "aria-label": "Body, seen from behind" });
+    const sil = svg("g", { class: "sil" });
+    fig.append(svg("circle", { cx: 100, cy: 34, r: 22, class: "torso" }));
+    [[100, 54, 100, 70, 16], [64, 84, 46, 152, 20], [46, 152, 38, 212, 17], [136, 84, 154, 152, 20], [154, 152, 162, 212, 17],
+     [82, 238, 82, 308, 28], [82, 308, 82, 386, 22], [118, 238, 118, 308, 28], [118, 308, 118, 386, 22]]
+      .forEach(([x1, y1, x2, y2, w]) => sil.append(svg("line", { x1, y1, x2, y2, "stroke-width": w })));
+    fig.append(sil, svg("path", { class: "torso", d: "M62 72 Q100 64 138 72 Q146 76 144 96 L134 196 Q136 222 132 246 L68 246 Q64 222 66 196 L56 96 Q54 76 62 72 Z" }));
+    for (const [id, area, side, cx, cy] of SPOTS) {
+      const on = inj.some(x => x.spot === id);
+      const c = svg("circle", { cx, cy, r: 10, class: "spot" + (on ? " on" : ""), tabindex: 0, role: "button" });
+      const t = svg("title", {}); t.textContent = (side ? side[0].toUpperCase() + side.slice(1) + " " + area.toLowerCase() : area);
+      c.append(t);
+      const go = () => {
+        const i = inj.findIndex(x => x.spot === id);
+        if (i >= 0) { const el = document.getElementById("inj-" + i); el?.scrollIntoView({ behavior: "smooth", block: "center" }); el?.classList.add("flash"); setTimeout(() => el?.classList.remove("flash"), 1000); return; }
+        ob.no_injuries = false;
+        inj.push({ area, side, spot: id, status: "", pain_now: null, triggers: [], source: "setup" });
+        render(); setTimeout(() => document.getElementById("inj-" + (inj.length - 1))?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
+      };
+      c.addEventListener("click", go);
+      c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      fig.append(c);
+    }
+    const other = h("input", { type: "text", placeholder: "Somewhere else? e.g. ribs, jaw, groin" });
+    const addOther = () => { const v = other.value.trim(); if (v) { ob.no_injuries = false; inj.push({ area: v, side: "", spot: null, status: "", pain_now: null, triggers: [], source: "setup" }); render(); } };
+    other.addEventListener("keydown", e => { if (e.key === "Enter") addOther(); });
+    const cards = inj.map((x, i) => {
+      const name = (x.side ? x.side[0].toUpperCase() + x.side.slice(1) + " " + String(x.area).toLowerCase() : x.area);
+      const out = h("output", {}, x.pain_now == null ? "—" : `${x.pain_now} / 10`);
+      return h("div", { class: "inj", id: "inj-" + i },
+        h("div", { class: "inj-head" }, h("b", {}, name), h("button", { class: "x", type: "button", onclick: () => { inj.splice(i, 1); render(); } }, "Remove")),
+        q("Right now it's…", chips(INJURY_STATUS, () => x.status, v => { x.status = v; }, { small: true })),
+        q("Pain today", h("div", { class: "slider" }, h("input", { type: "range", min: 0, max: 10, step: 1, value: x.pain_now ?? 0,
+          oninput: e => { x.pain_now = +e.target.value; out.textContent = `${x.pain_now} / 10`; } }), out)),
+        q("What makes it worse?", chips(TRIGGERS, () => x.triggers, v => { x.triggers = v; }, { multi: true, small: true })),
+        q("What happened, and what did a doctor or physio say? (optional)", text(x, "what", "e.g. torn meniscus 2019, physio said avoid deep squats for now", true)));
+    });
+    return [
+      h("h1", {}, "Aches, pains and old injuries"),
+      h("p", { class: "lead" }, "Tap anywhere that hurts now or has been hurt before. Old injuries count too: they decide which exercises you get."),
+      h("div", { class: "bodywrap" },
+        h("div", { class: "figure" }, fig, h("div", { class: "cap" }, "Seen from behind: your left is on the left")),
+        h("div", {},
+          inj.length ? cards : h("div", { class: "card" },
+            h("p", { class: "hint" }, "Nothing marked yet."),
+            chips([[true, "Nothing hurts, no old injuries"]], () => ob.no_injuries, v => { ob.no_injuries = v === true; })),
+          h("div", { class: "add" }, other, h("button", { class: "ghost", type: "button", onclick: addOther }, "Add")))),
+      h("div", { class: "card", style: "margin-top:16px" },
+        q("Does your body warn you early when it's had enough?", h("p", { class: "hint" }, "e.g. a knee that aches the day after, tingling in a leg, a headache, a stiff back in the morning. Your Coach turns these into a daily check and eases off when they show up."),
+          text(ob, "warning_signs", "Describe it in your own words", true)),
+        q("Has a doctor or physio told you to avoid anything?", text(rs, "avoid", "e.g. no running for 3 months; no heavy overhead pressing", true))),
+    ];
+  },
+
+  gear() {
+    const st = obj(S.equipment, "setup"), g = obj(st, "gear"), where = st.where || [];
+    const gymCard = where.includes("gym") ? (() => {
+      const gym = obj(st, "gym");
+      return h("div", { class: "card" }, h("h2", {}, "Your gym"),
+        q(null, chips([["full", "Full gym: racks, barbells, cables, machines"], ["small", "Small or hotel gym: dumbbells and a few machines"]], () => gym.type || "", v => { gym.type = v; })),
+        h("div", { class: "row" },
+          q("Smallest dumbbell jump", chips(imperial() ? [[5, "5 lb"], [2.5, "2.5 lb"]] : [[2, "2 kg"], [2.5, "2.5 kg"], [1, "1 kg"]], () => gym.db_step, v => { gym.db_step = v; }, { small: true })),
+          q("Heaviest dumbbell", num(gym, "db_max", W(), imperial() ? "100" : "50"))),
+        q("Anything missing or special? (optional)", text(gym, "notes", "e.g. no squat rack, gets crowded after 6 pm")));
+    })() : null;
+    const homeCard = (where.includes("home") || where.includes("outdoors")) ? h("div", { class: "card" },
+      h("h2", {}, where.includes("home") ? "What do you have at home?" : "Anything you take with you?"),
+      h("p", { class: "hint" }, "Tap what you own. Your plan only ever uses what's here."),
+      h("div", { class: "tiles" }, GEAR.map(([id, name, sub]) => {
+        const on = !!g[id]?.on;
+        return h("button", { type: "button", class: "tile", "aria-pressed": String(on), onclick: () => { g[id] = { ...(g[id] || {}), on: !on }; render(); } },
+          h("b", {}, name), sub ? h("small", {}, sub) : null);
+      })),
+      GEAR.filter(([id]) => g[id]?.on).map(([id, name]) => gearDetail(id, name, g[id])).filter(Boolean),
+      where.includes("home") ? h("div", { class: "detail" }, h("h3", {}, "Your space"),
+        q("Room to press a weight overhead?", chips([["yes", "Yes"], ["only seated", "Only seated"], ["no", "No"]], () => obj(st, "space").overhead, v => { st.space.overhead = v; }, { small: true })),
+        q("OK to drop weights?", chips([["yes", "Yes"], ["no", "No"]], () => obj(st, "space").drop, v => { st.space.drop = v; }, { small: true })),
+        q("Anything else? (optional)", text(obj(st, "space"), "notes", "e.g. low ceiling, neighbours below, shared living room"))) : null) : null;
+    compile();
+    const ls = S.equipment.load_steps || {};
+    const back = xs => imperial() ? xs.map(x => Math.round(x / 0.45359237 * 2) / 2) : xs;
+    const prev = [["dumbbell", "Dumbbell"], ["barbell", "Barbell"], ["kettlebell", "Kettlebell"], ["cable", "Cable"]].filter(([k]) => ls[k]?.length)
+      .map(([k, label]) => h("div", {}, h("b", {}, label + ": "), fmt(back(ls[k]))));
+    return [
+      h("h1", {}, "Your gear"),
+      h("p", { class: "lead" }, "Your plan is built only from what you can actually use, so the details matter: weights, plates and steps."),
+      h("div", { class: "card" }, q("Where will you train?", chips([["home", "At home"], ["gym", "At a gym"], ["outdoors", "Outdoors or anywhere, bodyweight"]], () => where, v => { st.where = v; }, { multi: true }))),
+      gymCard, homeCard,
+      prev.length ? h("div", { class: "card preview" }, h("h2", {}, "Weights your plan can use"), prev) : null,
+    ];
+  },
+
+  goals() {
+    const p = S.health_profile, ob = obj(p, "onboarding"), order = arr(ob, "goal_order"), ls = obj(p, "lifestyle"), pr = obj(p, "preferences");
+    compile();
+    const mine = S.goals.goals.filter(x => x.source === "setup");
+    return [
+      h("h1", {}, "What do you want from training?"),
+      h("p", { class: "lead" }, "Pick up to three, most important first."),
+      h("div", { class: "tiles" }, GOALS.map(([id, label]) => {
+        const i = order.indexOf(id);
+        return h("button", { type: "button", class: "tile", "aria-pressed": String(i >= 0), onclick: () => {
+          if (i >= 0) order.splice(i, 1); else if (order.length < 3) order.push(id); else return;
+          render();
+        } }, h("b", {}, label), i >= 0 ? h("span", { class: "rank" }, String(i + 1)) : null);
+      })),
+      mine.map((x, i) => {
+        const def = GOALS.find(d => d[0] === x.kind);
+        return h("div", { class: "card", style: "margin-top:16px" }, h("h2", {}, `${i + 1}. ${def[1]}`),
+          q("What would success look like?", text(x, "target", def[3])),
+          h("div", { class: "row" },
+            q(["By when? ", h("small", {}, "(optional)")], h("input", { type: "date", value: x.deadline || "", min: today(), oninput: e => { x.deadline = e.target.value; } })),
+            q(["Why it matters ", h("small", {}, "(optional)")], text(x, "why", "e.g. keep up with my kids"))));
+      }),
+      h("div", { class: "card", style: "margin-top:16px" }, h("h2", {}, "Your week"),
+        q("Days a week you can train", chips([2, 3, 4, 5, 6].map(n => [n, String(n)]), () => ls.days_per_week, v => { ls.days_per_week = v || null; }, { small: true })),
+        q("Minutes per session", chips([20, 30, 45, 60, 75, 90].map(n => [n, String(n)]), () => ls.session_minutes, v => { ls.session_minutes = v || null; }, { small: true })),
+        q("Best time of day", chips(["early morning", "morning", "midday", "afternoon", "evening", "varies"].map(x => [x, x[0].toUpperCase() + x.slice(1)]), () => ls.preferred_time, v => { ls.preferred_time = v; }, { small: true }))),
+      h("div", { class: "card" }, h("h2", {}, "What you like"),
+        q("Training you enjoy", text(pr, "enjoy", "e.g. lifting, hiking, anything with a ball")),
+        q("…and what you'll never do", text(pr, "dislike", "e.g. burpees, treadmills, early mornings")),
+        q("How should your Coach talk to you?", chips([["just tell me what to do", "Just tell me what to do"], ["explain the why", "Explain the why"], ["detailed with options", "Details and options"]], () => pr.coaching_style, v => { pr.coaching_style = v; }, { small: true }))),
+    ];
+  },
+
+  devices() {
+    const ob = obj(S.health_profile, "onboarding"), dev = arr(ob, "devices");
+    const chosen = DEVICES.filter(d => dev.includes(d[0]));
+    return [
+      h("h1", {}, "Wearables and devices"),
+      h("p", { class: "lead" }, "Sleep and recovery data lets your Coach ease off on the days you need it. None of this is required."),
+      h("div", { class: "tiles" }, DEVICES.map(([id, name, sub]) => h("button", { type: "button", class: "tile", "aria-pressed": String(dev.includes(id)),
+        onclick: () => { const i = dev.indexOf(id); i >= 0 ? dev.splice(i, 1) : dev.push(id); render(); } }, h("b", {}, name), sub ? h("small", {}, sub) : null))),
+      chosen.length ? h("div", { class: "callout" },
+        chosen.some(d => d[3]) ? h("div", {}, h("b", {}, "Claude connects " + chosen.filter(d => d[3]).map(d => d[1]).join(", ") + " with you next. "), "A minute each: you sign in and click Allow.") : null,
+        chosen.some(d => !d[3]) ? h("div", {}, chosen.filter(d => !d[3]).map(d => d[1]).join(", ") + ": Sylvester can't read these directly yet. You can type the numbers in your daily check-in.") : null) : null,
+      h("div", { class: "card", style: "margin-top:16px" },
+        q("Your phone", h("p", { class: "hint" }, "Your daily plan lives on a private page on your phone."),
+          chips([["iphone", "iPhone"], ["android", "Android"]], () => ob.phone, v => { ob.phone = v; }))),
+    ];
+  },
+
+  review() {
+    const p = S.health_profile, b = p.basics || {}, ob = p.onboarding || {}, eq = S.equipment;
+    compile();
+    const missing = t => h("span", { class: "missing" }, t);
+    const sect = (title, i, rows) => h("div", { class: "card sum" },
+      h("h2", {}, title, h("button", { class: "ghost", type: "button", onclick: () => go(i) }, "Edit")),
+      h("dl", {}, rows.flatMap(([k, v]) => [h("dt", {}, k), h("dd", {}, v || missing("not filled in"))])));
+    const age = b.dob ? Math.floor((Date.now() - new Date(b.dob)) / 31557600000) : null;
+    const yes = SCREEN.filter(([k]) => (p.screening?.answers || {})[k] === "yes");
+    const cap = t => t ? t[0].toUpperCase() + t.slice(1) : t;
+    const inj = (p.injuries || []).map(x => cap(x.side ? x.side + " " + String(x.area).toLowerCase() : x.area) + (x.pain_now ? ` (${x.pain_now}/10)` : ""));
+    const items = (eq.items || []).map(i => i.name);
+    const goals = (S.goals.goals || []).filter(g => g.status === "active").map(g => g.title + (g.target ? `: ${g.target}` : ""));
+    const ls = p.lifestyle || {};
+    return [
+      h("h1", {}, "Check and finish"),
+      h("p", { class: "lead" }, "Anything blank is fine: your Coach will ask about it. You can change all of it later."),
+      sect("You", 1, [["Name", b.name], ["Age", age != null ? `${age}` : ""], ["Height, weight", b.height_cm && b.weight_kg ? `${b.height_cm} cm, ${b.weight_kg} kg` : ""], ["Experience", p.training_background?.experience]]),
+      sect("Health", 2, [["Health check", Object.keys(p.screening?.answers || {}).length ? (yes.length ? `yes to ${yes.length}: ` + yes.map(([k]) => ({ heart: "heart or BP", chest: "chest pain", dizzy: "dizziness", chronic: "long-term condition", meds: "medicine", joints: "joints", supervised: "supervision only" })[k]).join(", ") : "all no") : ""],
+        ["Conditions", (p.conditions || []).map(c => c.name).join(", ") || (Object.keys(p.screening?.answers || {}).length ? "none" : "")],
+        ["Medication", (p.medications || []).map(m => m.name).filter(Boolean).join(", ") || (ob.meds === "no" ? "none" : "")]]),
+      sect("Aches", 3, [["Marked", inj.join(", ") || (ob.no_injuries ? "none" : "")], ["Early warnings", ob.warning_signs]]),
+      sect("Gear", 4, [["Where", eq.space?.location], ["Equipment", items.join(", ")]]),
+      sect("Goals", 5, [["Goals", goals.length ? h("ol", { style: "margin:0;padding-left:18px" }, goals.map(g => h("li", {}, g))) : ""],
+        ["Week", ls.days_per_week ? `${ls.days_per_week} days × ${ls.session_minutes || "?"} min` : ""]]),
+      sect("Devices", 6, [["Using", (ob.devices || []).map(d => DEVICES.find(x => x[0] === d)?.[1]).join(", ") || "none"], ["Phone", ob.phone === "iphone" ? "iPhone" : ob.phone === "android" ? "Android" : ""]]),
+    ];
+  },
+};
+
+function gearDetail(id, name, d) {
+  const w = W();
+  const body = {
+    dumbbells: () => [
+      q(null, chips([["fixed", "Fixed pairs"], ["adjustable", "Adjustable"]], () => d.type || "fixed", v => { d.type = v || "fixed"; }, { small: true })),
+      d.type === "adjustable"
+        ? h("div", { class: "row" }, q("Lightest", num(d, "min", w)), q("Heaviest", num(d, "max", w)), q("Step", num(d, "step", w, imperial() ? "5" : "2.5")))
+        : q("Which weights? (one entry per pair)", text(d, "weights", imperial() ? "e.g. 10 15 20 25 35" : "e.g. 4 6 8 10 12.5")),
+    ],
+    kettlebells: () => [q("Which weights?", text(d, "weights", imperial() ? "e.g. 18 26 35" : "e.g. 8 12 16"))],
+    barbell: () => {
+      const pl = obj(d, "plates");
+      const sizes = imperial() ? [45, 35, 25, 10, 5, 2.5] : [25, 20, 15, 10, 5, 2.5, 1.25, 0.5];
+      return [
+        q("Bar weight", chips((imperial() ? [45, 35, 15] : [20, 15, 10, 7]).map(x => [x, `${x} ${w}`]), () => d.bar ?? (imperial() ? 45 : 20), v => { d.bar = v || (imperial() ? 45 : 20); }, { small: true })),
+        q("Plates: how many pairs of each?", h("div", { class: "plates" }, sizes.map(s => h("label", {}, `${s} ${w}`,
+          h("input", { type: "number", min: "0", step: "1", inputmode: "numeric", placeholder: "0", value: pl[s] ?? "", oninput: e => { pl[s] = +e.target.value || 0; } }))))),
+      ];
+    },
+    rack: () => [
+      q(null, chips(["Power rack", "Half rack", "Squat stands", "Folding wall rack"], () => d.type, v => { d.type = v; }, { small: true })),
+      q("Safety bars or spotter arms?", chips([["yes", "Yes"], ["no", "No"]], () => d.safeties, v => { d.safeties = v; }, { small: true })),
+      q("Bolted down, or heavy enough not to tip?", chips([["yes", "Yes"], ["no", "No"], ["not sure", "Not sure"]], () => d.stable, v => { d.stable = v; }, { small: true })),
+    ],
+    bench: () => [q(null, chips(["Flat", "Adjustable (incline)", "Adjustable (incline and decline)"], () => d.type, v => { d.type = v; }, { small: true }))],
+    pullup: () => [q("Where is it?", chips(["On the rack", "Doorway", "Wall or ceiling mounted", "Outdoors"], () => d.where, v => { d.where = v; }, { small: true }))],
+    bands: () => [q(null, chips(["Light", "Medium", "Heavy", "Extra heavy", "Mini bands", "Tube bands with handles"], () => d.kinds, v => { d.kinds = v; }, { multi: true, small: true }))],
+    rings: () => [q(null, chips(["Gymnastic rings", "TRX or suspension trainer"], () => d.kinds, v => { d.kinds = v; }, { multi: true, small: true }))],
+    cable: () => [h("div", { class: "row" }, q("Heaviest stack", num(d, "max", w)), q("Step", num(d, "step", w, imperial() ? "10" : "5")))],
+    cardio: () => [q(null, chips(["Bike", "Rower", "Treadmill", "Walking pad", "Air bike", "Elliptical", "Ski erg", "Jump rope"], () => d.kinds, v => { d.kinds = v; }, { multi: true, small: true }))],
+    box: () => [q("Height", num(d, "height", "cm"))],
+    recovery: () => [q(null, chips(["Yoga mat", "Foam roller", "Massage ball", "Massage gun", "Stretching strap"], () => d.kinds, v => { d.kinds = v; }, { multi: true, small: true }))],
+    vest: () => [q("Weight", num(d, "weight", w))],
+    ball: () => [q("Weights", text(d, "weights", imperial() ? "e.g. 10 20" : "e.g. 5 9"))],
+  }[id];
+  return body ? h("div", { class: "detail" }, h("h3", {}, name), ...body()) : null;
+}
+
+// ---------- shell ----------
+function canNext() { return step > 0 || !!S.health_profile.onboarding?.disclaimer_accepted; }
+
+function nav() {
+  const back = document.getElementById("back"), next = document.getElementById("next"), msg = document.getElementById("msg");
+  back.style.visibility = step > 0 && !finished ? "visible" : "hidden";
+  next.style.display = finished ? "none" : "";
+  next.disabled = !canNext();
+  next.textContent = step === STEPS.length - 1 ? "Finish" : "Next";
+  msg.textContent = step === 0 && !canNext() ? "Tick “Got it” to start." : "";
+  const pr = document.getElementById("progress");
+  pr.innerHTML = "";
+  STEPS.forEach(([, label], i) => pr.append(h("button", { type: "button", class: (i === step ? "on" : i < step ? "done" : ""), disabled: !canNext() || finished,
+    onclick: () => go(i), title: label }, h("span", {}, label))));
+}
+
+function render() {
+  const main = document.getElementById("main"), y = window.scrollY;
+  main.innerHTML = "";
+  main.append(...[VIEWS[STEPS[step][0]]()].flat(Infinity).filter(Boolean));
+  window.scrollTo(0, y);
+  nav();
+}
+
+async function go(i) {
+  if (!canNext()) return;
+  await save();
+  step = i;
+  render();
+  window.scrollTo(0, 0);
+}
+
+async function finish() {
+  const ob = obj(S.health_profile, "onboarding");
+  ob.wizard_completed = today();
+  if (!(await save())) return;
+  finished = true;
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+  main.append(h("div", { class: "done" },
+    h("div", { class: "tick" }, "✓"),
+    h("h1", {}, `That's everything${S.health_profile.basics?.name ? ", " + S.health_profile.basics.name : ""}.`),
+    h("p", {}, "It's saved in your health-data folder. Claude takes it from here: switch back to the Claude window."),
+    h("p", {}, "If it doesn't carry on by itself, type ", h("kbd", {}, "done"), " there."),
+    h("p", { class: "hint" }, "You can close this tab.")));
+  nav();
+  fetch("/api/finish", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" }).catch(() => {});
+}
+
+document.getElementById("next").addEventListener("click", () => step === STEPS.length - 1 ? finish() : go(step + 1));
+document.getElementById("back").addEventListener("click", () => go(Math.max(0, step - 1)));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && !finished) save(); });
+
+load().then(render).catch(e => {
+  document.getElementById("main").innerHTML = "";
+  document.getElementById("main").append(h("p", { class: "err" }, `Couldn't load your data (${e.message}). Start this page with: python sylvester.py setup`));
+});
+</script>
+</body>
+</html>

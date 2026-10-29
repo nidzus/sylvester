@@ -1,0 +1,9 @@
+#!/bin/sh
+# Privacy check before every commit (enabled by `python sylvester.py init`: git config core.hooksPath tools/hooks).
+for p in python3 python py; do
+  if command -v "$p" >/dev/null 2>&1 && "$p" -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >/dev/null 2>&1; then
+    exec "$p" tools/check_clean.py --staged
+  fi
+done
+echo "Privacy check: no working Python found, so the commit is blocked. Install Python 3 and try again."
+exit 1

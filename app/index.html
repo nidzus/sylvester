@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sylvester</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e2e0da;
+    --accent: #2f6f5e; --accent-ink: #ffffff; --danger: #b3412e;
+    --green: #2f7d4f; --amber: #b7791f; --red: #b3412e; --field: #fbfaf8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #161615; --panel: #1f1f1d; --ink: #ecebe6; --muted: #9c9a93; --line: #34332f;
+      --accent: #5fb39a; --accent-ink: #10201b; --danger: #e07a66;
+      --green: #5fbf85; --amber: #e0a850; --red: #e07a66; --field: #262624;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .bar { max-width: 960px; margin: 0 auto; padding: 12px 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  h1 { font-size: 17px; margin: 0 12px 0 0; }
+  nav { display: flex; gap: 4px; flex-wrap: wrap; }
+  nav button { background: none; border: 1px solid transparent; color: var(--muted); padding: 6px 12px; border-radius: 8px; cursor: pointer; font: inherit; }
+  nav button.on { color: var(--ink); border-color: var(--line); background: var(--panel); }
+  .spacer { flex: 1; }
+  #status { color: var(--muted); font-size: 13px; }
+  .btn { background: var(--accent); color: var(--accent-ink); border: 0; padding: 8px 16px; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; }
+  .btn:disabled { opacity: .45; cursor: default; }
+  .ghost { background: none; color: var(--accent); border: 1px solid var(--line); padding: 6px 12px; border-radius: 8px; font: inherit; cursor: pointer; }
+  .x { background: none; border: 0; color: var(--danger); cursor: pointer; font: inherit; font-size: 13px; }
+  main { max-width: 960px; margin: 0 auto; padding: 16px 16px 80px; }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  section > h2 { font-size: 15px; margin: 0 0 2px; }
+  section > p.hint { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 10px 14px; }
+  label { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--muted); }
+  label.wide { grid-column: 1 / -1; }
+  input, select, textarea { font: inherit; color: var(--ink); background: var(--field); border: 1px solid var(--line); border-radius: 7px; padding: 7px 9px; width: 100%; }
+  textarea { min-height: 62px; resize: vertical; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .item { border: 1px solid var(--line); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+  .item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 600; font-size: 13.5px; }
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+  .presets .cat { width: 100%; font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .chip { border: 1px solid var(--line); background: var(--field); color: var(--ink); border-radius: 999px; padding: 4px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  .chip:hover { border-color: var(--accent); }
+  .empty { color: var(--muted); font-size: 13px; margin: 4px 0 10px; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; color: #fff; font-size: 13px; }
+  .badge.green { background: var(--green); } .badge.amber { background: var(--amber); } .badge.red { background: var(--red); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .table-wrap { overflow-x: auto; }
+  ul.flags { margin: 8px 0 0; padding-left: 18px; }
+  .suggest { font-size: 12px; color: var(--accent); cursor: pointer; background: none; border: 0; padding: 0; text-align: left; }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <h1>Sylvester</h1>
+    <nav id="tabs"></nav>
+    <span class="spacer"></span>
+    <span id="status"></span>
+    <button class="btn" id="save" disabled>Save</button>
+  </div>
+</header>
+<main id="main"></main>
+
+<script>
+const INJURY_STATUS = ["active — hurts now", "recovering", "healed, with limits", "fully healed"];
+const SCHEMAS = {
+  health_profile: [
+    { key: "review", title: "Review", hint: "Entries marked “from medical records” were pre-filled from your Apple Health clinical records and devices. Check each one, fix what's wrong, fill the blanks (status, pain now, what aggravates it), then mark the profile reviewed.", type: "group", fields: [
+      ["status", "Profile reviewed?", ["", "not yet", "yes — reviewed and correct"]],
+    ]},
+    { key: "basics", title: "Basics", type: "group", fields: [
+      ["name", "Name"], ["dob", "Date of birth", "date"],
+      ["sex", "Sex", ["", "male", "female", "other"]],
+      ["height_cm", "Height (cm)", "number"], ["weight_kg", "Weight (kg)", "number"],
+      ["body_fat_pct", "Body fat %", "number"], ["waist_cm", "Waist (cm)", "number"],
+      ["dominant_side", "Dominant side", ["", "right", "left", "both"]],
+    ]},
+    { key: "build", title: "Build & movement", hint: "Anything about your frame that changes how you should lift: proportions, posture, mobility, asymmetries.", type: "group", fields: [
+      ["frame", "Frame", ["", "slight", "medium", "large", "very large"]],
+      ["mobility", "Overall mobility", ["", "very stiff", "below average", "average", "good"]],
+      ["proportions", "Proportions (e.g. long femurs, short arms)", "textarea", "wide"],
+      ["posture_asymmetries", "Posture / asymmetries", "textarea", "wide"],
+      ["mobility_limits", "Specific mobility limits (e.g. can't squat below parallel, tight hips, can't raise arm overhead)", "textarea", "wide"],
+    ]},
+    { key: "conditions", title: "Medical conditions", hint: "Diagnosed or suspected — blood pressure, heart, metabolic, joint, respiratory, anything a coach should know.", type: "list", itemName: "condition", fields: [
+      ["name", "Condition"], ["status", "Status", ["", "active", "managed", "resolved"]],
+      ["since", "Since (year)"], ["affects_training", "How it affects training", "textarea", "wide"],
+    ]},
+    { key: "injuries", title: "Injuries & pain", hint: "Past and present. The most important section for the Coach.", type: "list", itemName: "injury", fields: [
+      ["area", "Body area (e.g. lower back, left knee)"], ["side", "Side", ["", "left", "right", "both", "central"]],
+      ["status", "Status", ["", ...INJURY_STATUS]], ["when", "When (year / month)"],
+      ["pain_now", "Pain now (0–10)", "number"], ["what", "What happened / diagnosis", "textarea", "wide"],
+      ["aggravating", "Movements that hurt or you avoid", "textarea", "wide"],
+      ["ok_movements", "Movements that feel fine", "textarea", "wide"],
+      ["treatment", "Treatment / rehab done", "textarea", "wide"],
+    ]},
+    { key: "medications", title: "Medications & supplements", hint: "Especially anything that affects heart rate or blood pressure (e.g. beta-blockers) — it changes how HR zones are read.", type: "list", itemName: "medication", fields: [
+      ["name", "Name"], ["purpose", "For"], ["affects_hr", "Affects heart rate / BP?", ["", "no", "yes", "not sure"]],
+    ]},
+    { key: "restrictions", title: "Restrictions & red flags", type: "group", fields: [
+      ["avoid", "Exercises / movements to avoid entirely", "textarea", "wide"],
+      ["medical_advice", "What a doctor / physio has told you", "textarea", "wide"],
+      ["stop_signs", "Symptoms that should stop a session (e.g. chest pain, dizziness, numbness)", "textarea", "wide"],
+    ]},
+    { key: "training_background", title: "Training background", type: "group", fields: [
+      ["experience", "Lifting experience", ["", "none", "beginner (< 1 yr)", "intermediate (1–3 yrs)", "advanced (3+ yrs)", "returning after a long break"]],
+      ["current", "What you do now, weekly", "textarea", "wide"],
+      ["history", "Sports / training history", "textarea", "wide"],
+      ["known_numbers", "Known numbers (e.g. squat 100×5, 5 km in 32 min)", "textarea", "wide"],
+    ]},
+    { key: "lifestyle", title: "Schedule & lifestyle", type: "group", fields: [
+      ["days_per_week", "Training days / week", "number"], ["session_minutes", "Minutes per session", "number"],
+      ["preferred_time", "Preferred time", ["", "early morning", "morning", "midday", "afternoon", "evening", "varies"]],
+      ["job_activity", "Daily activity at work", ["", "desk / sedentary", "mixed", "on feet", "physical labour"]],
+      ["sleep_notes", "Sleep (schedule, issues)", "textarea", "wide"],
+      ["nutrition_notes", "Nutrition (diet, restrictions, what you'd change)", "textarea", "wide"],
+      ["other_constraints", "Other constraints (travel, family, kids, shift work)", "textarea", "wide"],
+    ]},
+    { key: "preferences", title: "Preferences", type: "group", fields: [
+      ["enjoy", "What you enjoy", "textarea"], ["dislike", "What you hate / won't do", "textarea"],
+      ["coaching_style", "How you want to be coached", ["", "just tell me what to do", "explain the why", "detailed with options"]],
+    ]},
+  ],
+  equipment: [
+    { key: "space", title: "Space", type: "group", fields: [
+      ["location", "Where (garage, basement, spare room)"], ["ceiling_cm", "Ceiling height (cm)", "number"],
+      ["floor", "Floor", ["", "concrete", "rubber mats", "wood", "carpet", "tile"]],
+      ["overhead_ok", "Room to press / jump overhead?", ["", "yes", "no", "only seated"]],
+      ["drop_ok", "Can you drop weights?", ["", "yes", "no"]],
+      ["outdoor", "Outdoor access (hills, track, park, pool nearby)", "textarea", "wide"],
+      ["notes", "Notes (noise limits, shared space)", "textarea", "wide"],
+    ]},
+    { key: "items", title: "Equipment", hint: "Tap a preset to add it, then fill in the specifics — weight ranges and increments matter most.", type: "list", itemName: "item", presets: true, fields: [
+      ["name", "Item"], ["category", "Category", ["", "Barbell & plates", "Dumbbells & kettlebells", "Rack & bench", "Machines & cables", "Cardio", "Bodyweight & bands", "Mobility & recovery", "Other"]],
+      ["quantity", "Qty", "number"], ["spec", "Specs (weights, range, increments, max load)", "text", "wide"],
+      ["notes", "Notes (condition, quirks)", "text", "wide"],
+    ]},
+  ],
+  goals: [
+    { key: "goals", title: "Goals", hint: "One entry per objective. The Coach plans for active goals: /coach plan <title>.", type: "list", itemName: "goal", fields: [
+      ["title", "Goal (short)"], ["type", "Type", ["", "strength", "muscle", "fat loss", "endurance / cardio", "rehab / pain-free", "mobility", "sport / event", "general health"]],
+      ["status", "Status", ["", "active", "paused", "done"]], ["priority", "Priority", ["", "1 — main", "2", "3"]],
+      ["deadline", "Target date", "date"], ["target", "Measurable target (e.g. 100 kg bodyweight; 20 km hike; 10 pain-free push-ups)", "text", "wide"],
+      ["why", "Why it matters", "textarea", "wide"], ["notes", "Constraints / notes for this goal", "textarea", "wide"],
+    ]},
+  ],
+};
+
+const PRESETS = {
+  "Barbell & plates": ["Olympic barbell 20 kg", "EZ curl bar", "Trap / hex bar", "Bumper plates", "Iron plates", "Fractional plates"],
+  "Dumbbells & kettlebells": ["Adjustable dumbbells", "Fixed dumbbell set", "Kettlebell"],
+  "Rack & bench": ["Power rack / squat stand", "Pull-up bar", "Adjustable bench", "Flat bench", "Dip station", "Safety spotter arms"],
+  "Machines & cables": ["Cable / pulley machine", "Lat pulldown / low row", "Leg extension / curl", "Smith machine", "Landmine attachment"],
+  "Cardio": ["Treadmill", "Stationary bike", "Rowing machine", "Air bike", "Elliptical", "Walking pad", "Jump rope"],
+  "Bodyweight & bands": ["Resistance bands (loop)", "Mini bands", "Gymnastic rings", "TRX / suspension trainer", "Plyo box", "Weight vest", "Ab wheel"],
+  "Mobility & recovery": ["Foam roller", "Massage gun", "Yoga mat", "Stretching strap", "Lacrosse ball"],
+};
+
+const TABS = [["log", "Log"], ["health_profile", "Health profile"], ["equipment", "Equipment"], ["goals", "Goals"], ["snapshot", "Snapshot"]];
+const SELF_SAVING = new Set(["snapshot", "log"]);  // these tabs have their own buttons
+let current = "health_profile", docs = {}, dirty = false, snap = null;
+let log = null;  // { recent, checkin, workout, planned }
+
+const $ = (tag, attrs = {}, ...kids) => {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "class") el.className = v;
+    else el.setAttribute(k, v);
+  }
+  for (const kid of kids.flat()) if (kid != null) el.append(kid);
+  return el;
+};
+
+function setDirty(d) {
+  dirty = d;
+  document.getElementById("save").disabled = !d || SELF_SAVING.has(current);
+  document.getElementById("status").textContent = d ? "Unsaved changes" : "";
+}
+
+function field(obj, [key, label, kind = "text", width], placeholder) {
+  const set = e => {
+    let v = e.target.value;
+    if (kind === "number") v = v === "" ? null : Number(v);
+    obj[key] = v; setDirty(true);
+  };
+  let input;
+  if (Array.isArray(kind)) {
+    input = $("select", { onchange: set }, kind.map(o => $("option", { value: o }, o || "—")));
+    if (obj[key] && !kind.includes(obj[key])) input.append($("option", { value: obj[key] }, obj[key]));
+    input.value = obj[key] ?? "";
+  } else if (kind === "textarea") {
+    input = $("textarea", { oninput: set }); input.value = obj[key] ?? "";
+  } else {
+    input = $("input", { type: kind, oninput: set, ...(kind === "number" ? { step: "any" } : {}) });
+    input.value = obj[key] ?? "";
+  }
+  if (placeholder != null) input.placeholder = placeholder;
+  return $("label", { class: width === "wide" ? "wide" : "" }, label, input);
+}
+
+function suggestions(docName, sectionKey) {
+  // Pre-fill hints from the wearable data, so you don't retype what Polar already knows.
+  if (docName !== "health_profile" || sectionKey !== "basics" || !snap?.body) return {};
+  return { height_cm: snap.body.height_cm, weight_kg: snap.body.weight_kg };
+}
+
+function renderSection(docName, doc, sec) {
+  const box = $("section", {}, $("h2", {}, sec.title), sec.hint ? $("p", { class: "hint" }, sec.hint) : null);
+  if (sec.type === "group") {
+    doc[sec.key] ??= {};
+    const sugg = suggestions(docName, sec.key);
+    box.append($("div", { class: "grid" }, sec.fields.map(f => field(doc[sec.key], f, sugg[f[0]] != null ? `${sugg[f[0]]} (from devices)` : null))));
+    const fill = Object.entries(sugg).filter(([k, v]) => v != null && (doc[sec.key][k] == null || doc[sec.key][k] === ""));
+    if (fill.length) box.append($("p", {}, $("button", { class: "suggest", onclick: () => {
+      fill.forEach(([k, v]) => doc[sec.key][k] = v); setDirty(true); render();
+    }}, `Use device values: ${fill.map(([k, v]) => `${k.replace("_", " ")} ${v}`).join(", ")}`)));
+    return box;
+  }
+  doc[sec.key] ??= [];
+  const list = doc[sec.key];
+  if (sec.presets) {
+    const p = $("div", { class: "presets" });
+    for (const [cat, names] of Object.entries(PRESETS)) {
+      p.append($("div", { class: "cat" }, cat));
+      names.forEach(n => p.append($("button", { class: "chip", onclick: () => {
+        list.push({ name: n, category: cat, quantity: 1 }); setDirty(true); render();
+      }}, "+ " + n)));
+    }
+    box.append(p);
+  }
+  if (!list.length) box.append($("p", { class: "empty" }, `No ${sec.itemName}s yet.`));
+  list.forEach((item, i) => {
+    const title = item.name || item.title || item.area || `${sec.itemName} ${i + 1}`;
+    box.append($("div", { class: "item" },
+      $("div", { class: "item-head" }, title,
+        $("button", { class: "x", onclick: () => { list.splice(i, 1); setDirty(true); render(); } }, "Remove")),
+      $("div", { class: "grid" }, sec.fields.map(f => field(item, f)))));
+  });
+  box.append($("button", { class: "ghost", onclick: () => {
+    list.push(sec.key === "goals" ? { status: "active", created: new Date().toISOString().slice(0, 10) } : {});
+    setDirty(true); render();
+  }}, `+ Add ${sec.itemName}`));
+  return box;
+}
+
+const fmt = v => v == null ? "–" : v;
+function renderSnapshot() {
+  const main = document.getElementById("main");
+  if (!snap) return main.replaceChildren($("p", {}, "Loading…"));
+  if (snap.error) return main.replaceChildren($("section", {}, $("h2", {}, "Snapshot failed"), $("p", {}, snap.error)));
+  const out = [];
+  const r = snap.recovery;
+  if (r) {
+    out.push($("section", {},
+      $("h2", {}, "Recovery ", $("span", { class: `badge ${r.status}` }, r.status.toUpperCase())),
+      $("p", { class: "hint" }, r.status_meaning),
+      $("p", {}, `Readiness ${fmt(r.readiness_today)} on ${r.latest_date}` +
+        (r.last_night ? ` · last full night ${r.last_night.sleep_h} h, HRV ${r.last_night.hrv} ms, lowest HR ${r.last_night.lowest_hr}` : "")),
+      $("div", { class: "table-wrap" }, $("table", {},
+        $("tr", {}, $("th", {}, "Metric"), $("th", { class: "num" }, "Last 7 d"), $("th", { class: "num" }, "60-d baseline"), $("th", { class: "num" }, "Δ")),
+        Object.values(r.metrics).map(m => $("tr", {}, $("td", {}, m.label), $("td", { class: "num" }, fmt(m.last_7d)),
+          $("td", { class: "num" }, fmt(m.baseline_60d)), $("td", { class: "num" }, m.delta_pct == null ? "–" : (m.delta_pct > 0 ? "+" : "") + m.delta_pct + "%"))))),
+      r.flags.length ? $("ul", { class: "flags" }, r.flags.map(f => $("li", {}, f))) : null));
+  }
+  const t = snap.training;
+  if (t) {
+    out.push($("section", {}, $("h2", {}, "Training load"),
+      $("p", { class: "hint" }, t.source),
+      $("p", {}, `7 d: ${t.last_7d.sessions} sessions, ${t.last_7d.minutes} min · 28 d: ${t.last_28d.sessions} sessions, ${t.last_28d.minutes} min · acute:chronic ${fmt(t.acute_chronic_ratio)}${t.acwr_note ? " (" + t.acwr_note + ")" : ""} · ${t.days_since_last_session} days since last session`),
+      $("div", { class: "table-wrap" }, $("table", {},
+        $("tr", {}, ["Date", "Sport", "Min", "Avg HR", "Load"].map((h, i) => $("th", { class: i > 1 ? "num" : "" }, h))),
+        t.recent.map(x => $("tr", {}, $("td", {}, x.date), $("td", {}, x.sport),
+          $("td", { class: "num" }, fmt(x.minutes)), $("td", { class: "num" }, fmt(x.hr_avg)), $("td", { class: "num" }, fmt(x.load))))))));
+  }
+  const wb = snap.wellbeing;
+  if (wb) {
+    out.push($("section", {}, $("h2", {}, "Check-ins"),
+      $("p", {}, `Logged ${wb.days_logged_7d} of the last 7 days · 7-day averages: mood ${fmt(wb.mood_7d)}, energy ${fmt(wb.energy_7d)}, stress ${fmt(wb.stress_7d)}, motivation ${fmt(wb.motivation_7d)}, soreness ${fmt(wb.soreness_7d)}, pain ${fmt(wb.pain_7d)}` + (wb.signals || []).map(g => `, ${g.label.toLowerCase()} ${fmt(wb[g.key + "_7d"])}`).join(""))));
+  }
+  const bp = snap.blood_pressure;
+  if (bp) {
+    const m = bp.last_30d_of_readings;
+    out.push($("section", {}, $("h2", {}, "Blood pressure (home)"),
+      $("p", {}, `Latest ${bp.latest.reading} on ${bp.latest.date} (${bp.latest.source}) · 30 days up to then: ${m.n} readings, average ${m.avg} (${m.category}), highest ${m.highest}`),
+      bp.latest_age_days > 21 ? $("p", { class: "hint" }, `Last reading is ${bp.latest_age_days} days old — type new readings into the daily check-in, or re-export Apple Health.`) : null));
+  }
+  const b = snap.body;
+  if (b?.weight_kg) {
+    const ch = b.weight_change_kg || {};
+    out.push($("section", {}, $("h2", {}, "Body"),
+      $("p", {}, `${b.weight_kg} kg on ${b.weight_date} (${b.weight_source}) · ${fmt(b.height_cm)} cm · BMI ${fmt(b.bmi)}` +
+        (ch["30d"] != null ? ` · change 30 d ${ch["30d"]}, 90 d ${fmt(ch["90d"])}, 12 mo ${fmt(ch["365d"])} kg` : "")),
+      $("p", {}, `Max HR: Polar setting ${fmt(b.max_hr_polar_setting)}, age estimate ${fmt(b.max_hr_age_estimate)}` +
+        (b.max_hr_observed_3y ? `, highest seen ${b.max_hr_observed_3y.bpm} (${b.max_hr_observed_3y.date})` : "")),
+      (b.fitness_tests_recent || []).length ? $("p", { class: "hint" }, "Fitness tests: " + b.fitness_tests_recent.map(f => `${f.date} → ${f.vo2max_estimate} (${f.class})`).join(" · ")) : null));
+  }
+  out.push($("p", { class: "hint" }, `Generated ${snap.generated.replace("T", " ")} — also saved to records/snapshot.md in your data folder for the Coach.`));
+  main.replaceChildren(...out);
+}
+
+const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const SCALE = ["", "1", "2", "3", "4", "5"];
+const PAIN = ["", ...Array.from({ length: 11 }, (_, i) => String(i))];
+let SIGNALS = [];  // the person's own check-in scales (profile → signals), from /api/signals
+const range = (lo, hi) => ["", ...Array.from({ length: hi - lo + 1 }, (_, i) => String(lo + i))];
+
+function blankCheckin(day) {
+  return log?.recent?.checkins.find(c => c.date === day) ?? { date: day };
+}
+
+function renderLog() {
+  const main = document.getElementById("main");
+  if (!log) return main.replaceChildren($("p", {}, "Loading…"));
+  const c = log.checkin, w = log.workout;
+  const note = (id, text) => $("span", { id, class: "hint", style: "margin-left:10px" }, text || "");
+  const flash = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+
+  const checkinBox = $("section", {},
+    $("h2", {}, "Daily check-in"),
+    $("p", { class: "hint" }, "30 seconds, once a day. 1 = very low, 5 = very high. The Coach uses it alongside your wearable to judge recovery and mood trends."),
+    $("div", { class: "grid" },
+      $("label", {}, "Date", (() => { const i = $("input", { type: "date", onchange: e => {
+        log.checkin = blankCheckin(e.target.value); renderLog(); } }); i.value = c.date; return i; })()),
+      field(c, ["mood", "Mood", SCALE]), field(c, ["energy", "Energy", SCALE]),
+      field(c, ["stress", "Stress", SCALE]), field(c, ["motivation", "Motivation to train", SCALE]),
+      field(c, ["soreness", "Muscle soreness", SCALE]), field(c, ["pain", "Pain (0–10)", PAIN]),
+      field(c, ["pain_where", "Where (if pain)"]),
+      ...SIGNALS.map(g => field(c, [g.key, `${g.label}${g.hint ? " (" + g.hint + ")" : ""}`, range(g.lo ?? 0, g.hi ?? 3)])),
+      field(c, ["bp", "Blood pressure if measured (e.g. 128/82)"]),
+      field(c, ["notes", "Anything else (sleep, illness, life)", "text", "wide"])),
+    $("p", {}, $("button", { class: "btn", onclick: async () => {
+      const res = await fetch("/api/checkin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(c) });
+      if (res.ok) { log.recent = await res.json(); setDirty(false); renderLog(); flash("ci-note", "Saved " + new Date().toLocaleTimeString()); }
+      else flash("ci-note", "Save failed: " + (await res.text()));
+    }}, "Save check-in"), note("ci-note")));
+
+  const exRows = w.exercises.map((e, i) => $("div", { class: "item" },
+    $("div", { class: "item-head" }, e.exercise || `Exercise ${i + 1}`,
+      $("button", { class: "x", onclick: () => { w.exercises.splice(i, 1); renderLog(); } }, "Remove")),
+    e.planned ? $("p", { class: "hint", style: "margin:-4px 0 8px" }, "Planned: " + e.planned) : null,
+    $("div", { class: "grid" },
+      field(e, ["exercise", "Exercise"]), field(e, ["sets", "Sets", "number"]), field(e, ["reps", "Reps (e.g. 10 or 10,10,8)"]),
+      field(e, ["load_kg", "Load kg (blank = bodyweight)"]), field(e, ["rpe", "RPE (1–10)", ["", "5", "6", "7", "7.5", "8", "8.5", "9", "9.5", "10"]]),
+      field(e, ["pain", "Pain 0–10", PAIN]), field(e, ["notes", "Notes", "text", "wide"]))));
+
+  const workoutBox = $("section", {},
+    $("h2", {}, "Workout"),
+    $("p", { class: "hint" }, "What you actually did. One row per exercise; RPE 10 = nothing left, 8 = two reps left."),
+    log.planned?.exercises?.length ? $("p", {}, $("button", { class: "suggest", onclick: () => {
+      w.session = w.session || log.planned.title;
+      w.exercises = log.planned.exercises.map(x => ({ ...x }));
+      renderLog();
+    }}, `Fill from today's plan: ${log.planned.title} (${log.planned.exercises.length} exercises)`)) : null,
+    $("div", { class: "grid" },
+      $("label", {}, "Date", (() => { const i = $("input", { type: "date", onchange: e => { w.date = e.target.value; } }); i.value = w.date; return i; })()),
+      field(w, ["session", "Session name (e.g. Strength A, Zone-2 bike)"]), field(w, ["duration_min", "Minutes", "number"])),
+    $("div", { style: "margin-top:12px" }, exRows),
+    $("p", {},
+      $("button", { class: "ghost", onclick: () => { w.exercises.push({}); renderLog(); } }, "+ Add exercise"), " ",
+      $("button", { class: "btn", onclick: async () => {
+        const res = await fetch("/api/workout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(w) });
+        if (res.ok) { log.recent = await res.json(); setDirty(false); renderLog(); flash("wo-note", "Saved " + new Date().toLocaleTimeString()); }
+        else flash("wo-note", "Save failed: " + (await res.text()));
+      }}, "Save workout"), note("wo-note")));
+
+  const sessions = {};
+  for (const r of log.recent.workouts) (sessions[r.date + " · " + r.session] ??= []).push(r);
+  const history = $("section", {}, $("h2", {}, "Last 6 weeks"),
+    log.recent.checkins.length ? $("div", { class: "table-wrap" }, $("table", {},
+      $("tr", {}, ["Date", "Mood", "Energy", "Stress", "Motiv.", "Sore", "Pain", ...SIGNALS.map(g => g.label), "BP", "Notes"].map(h => $("th", {}, h))),
+      log.recent.checkins.slice(0, 14).map(r => $("tr", {}, [r.date, r.mood, r.energy, r.stress, r.motivation, r.soreness,
+        r.pain ? r.pain + (r.pain_where ? " " + r.pain_where : "") : "", ...SIGNALS.map(g => r[g.key]), r.bp, r.notes].map(v => $("td", {}, v || "")))))) : $("p", { class: "empty" }, "No check-ins yet."),
+    Object.keys(sessions).length ? $("div", { style: "margin-top:12px" }, Object.entries(sessions).map(([k, rows]) =>
+      $("div", { class: "item" }, $("div", { class: "item-head" }, k,
+        $("button", { class: "suggest", onclick: () => {
+          log.workout = { date: rows[0].date, session: rows[0].session, duration_min: rows[0].duration_min,
+            exercises: rows.map(r => ({ exercise: r.exercise, sets: r.sets, reps: r.reps, load_kg: r.load_kg, rpe: r.rpe, pain: r.pain, notes: r.notes })) };
+          renderLog(); window.scrollTo(0, 0);
+        }}, "Edit")),
+        $("div", { class: "hint" }, rows.map(r => `${r.exercise} ${r.sets ? r.sets + "×" : ""}${r.reps}${r.load_kg ? " @ " + r.load_kg + " kg" : ""}${r.rpe ? " RPE " + r.rpe : ""}`).join(" · "))))) :
+      $("p", { class: "empty" }, "No workouts logged yet."));
+
+  main.replaceChildren(checkinBox, workoutBox, history);
+}
+
+async function loadLog() {
+  const [recent, planned, signals] = await Promise.all([
+    fetch("/api/log").then(r => r.json()), fetch("/api/planned").then(r => r.json()).catch(() => ({})),
+    fetch("/api/signals").then(r => r.json()).catch(() => [])]);
+  SIGNALS = Array.isArray(signals) ? signals : [];
+  log = { recent, planned, checkin: null, workout: { date: today(), session: "", duration_min: null, exercises: [] } };
+  log.checkin = blankCheckin(today());
+}
+
+function render() {
+  document.getElementById("tabs").replaceChildren(...TABS.map(([k, label]) =>
+    $("button", { class: k === current ? "on" : "", onclick: () => switchTab(k) }, label)));
+  if (current === "snapshot") return renderSnapshot();
+  if (current === "log") return renderLog();
+  const doc = docs[current];
+  const y = window.scrollY;
+  document.getElementById("main").replaceChildren(...SCHEMAS[current].map(sec => renderSection(current, doc, sec)));
+  window.scrollTo(0, y);
+}
+
+async function loadSnapshot() {
+  try { snap = await (await fetch("/api/snapshot")).json(); } catch (e) { snap = { error: String(e) }; }
+}
+
+async function switchTab(k) {
+  if (dirty && !SELF_SAVING.has(current)) await save();  // switching tabs never loses typing
+  current = k; setDirty(false);
+  history.replaceState(null, "", "#" + k);
+  if (k === "snapshot") { snap = null; render(); await loadSnapshot(); }
+  else if (k === "log") { log = null; render(); await loadLog(); }
+  else docs[k] = await (await fetch("/api/" + k)).json();
+  render(); window.scrollTo(0, 0);
+}
+
+async function save() {
+  if (SELF_SAVING.has(current)) return;
+  const name = current;
+  const res = await fetch("/api/" + name, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(docs[name]) });
+  if (res.ok) {
+    docs[name] = await res.json();
+    if (name === current) { setDirty(false); document.getElementById("status").textContent = "Saved " + new Date().toLocaleTimeString(); }
+  } else {
+    document.getElementById("status").textContent = "Save failed: " + (await res.text());
+  }
+}
+
+document.getElementById("save").addEventListener("click", save);
+document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key === "s") { e.preventDefault(); if (dirty) save(); } });
+window.addEventListener("beforeunload", e => { if (dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+(async () => {
+  await loadSnapshot();
+  docs.health_profile = await (await fetch("/api/health_profile")).json();
+  // Day to day this is a logging app; until the profile is confirmed, open there instead.
+  const wanted = location.hash.slice(1);
+  if (TABS.some(([k]) => k === wanted)) { await switchTab(wanted); return; }  // e.g. bookmark localhost:8765/#log
+  if ((docs.health_profile.review?.status || "").startsWith("yes")) { current = "log"; await loadLog(); }
+  render();
+})();
+</script>
+</body>
+</html>

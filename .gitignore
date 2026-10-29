@@ -1,0 +1,34 @@
+# Personal data never lives in the app folder. These patterns are a second line of defence.
+/health-data/
+/profile/
+/records/
+/sources/
+/imports/
+/secrets/
+/media/
+/phone/
+/logs/
+/plans/
+/data/
+/apple_health_export/
+*_tokens.json
+*_config.json
+*.csv
+*.jsonl
+export.xml
+export.zip
+lan_passcode.txt
+/settings.json
+.sylvester.json
+
+# Claude Code: local permissions (they name the person's data folder)
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db

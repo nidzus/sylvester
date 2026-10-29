@@ -1,0 +1,13 @@
+{
+  "onboarding": {"disclaimer_accepted": "", "completed": ""},
+  "review": {"status": ""},
+  "basics": {"dob": "", "sex": "", "height_cm": null, "weight_kg": null, "body_fat_pct": null},
+  "conditions": [],
+  "injuries": [],
+  "medications": [],
+  "restrictions": {"avoid": "", "medical_advice": "", "stop_signs": ""},
+  "signals": [],
+  "training_background": {"experience": "", "current": "", "history": "", "known_numbers": ""},
+  "lifestyle": {"days_per_week": null, "session_minutes": null, "other_constraints": ""},
+  "preferences": {"enjoy": "", "dislike": "", "coaching_style": ""}
+}
