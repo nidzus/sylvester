@@ -668,7 +668,8 @@
     "Sit back to touch the chair, don't rest on it",
     "Chest up, knees over the toes"
    ],
-   "picture": "Box_Squat"
+   "picture": "Box_Squat",
+   "picture_only": true
   },
   {
    "id": "wall_sit",
@@ -815,7 +816,8 @@
     "Weight at the chest, sit back to touch the box",
     "3 s down"
    ],
-   "picture": "Goblet_Squat"
+   "picture": "Goblet_Squat",
+   "picture_only": true
   },
   {
    "id": "goblet_squat",
@@ -1624,7 +1626,8 @@
     "Ribs down, squeeze the glutes",
     "Don't arch at the top"
    ],
-   "picture": "Barbell_Glute_Bridge"
+   "picture": "Barbell_Glute_Bridge",
+   "picture_only": true
   },
   {
    "id": "single_leg_glute_bridge",
@@ -1724,7 +1727,8 @@
    "implement": "dumbbell",
    "unilateral": false,
    "cues": [],
-   "picture": "Barbell_Hip_Thrust"
+   "picture": "Barbell_Hip_Thrust",
+   "picture_only": true
   },
   {
    "id": "barbell_hip_thrust",
@@ -2252,9 +2256,11 @@
    "unilateral": false,
    "cues": [
     "Body in a straight line",
-    "Chest to the wall, breathe out pushing away"
+    "Chest to the wall, breathe out pushing away",
+    "Make fists or grip an edge if the wrists complain"
    ],
-   "picture": "Incline_Push-Up"
+   "picture": "Incline_Push-Up",
+   "picture_only": true
   },
   {
    "id": "incline_push_up",
@@ -3100,10 +3106,13 @@
     "strength",
     "posture"
    ],
-   "stresses": [],
+   "stresses": [
+    "grip_heavy"
+   ],
    "unit": "reps",
    "unilateral": false,
    "cues": [
+    "Grip the frame itself, not the trim; feet close so you lean back only a little",
     "Hold both sides of a door frame, lean back",
     "Pull the chest to the frame"
    ],
@@ -3453,9 +3462,11 @@
    "unit": "reps",
    "unilateral": false,
    "cues": [
+    "Band anchored at face height in a closed door that opens away from you (door anchor), never on a free-standing rack",
     "Pull to the forehead, thumbs back"
    ],
-   "picture": "Face_Pull"
+   "picture": "Face_Pull",
+   "picture_only": true
   },
   {
    "id": "prone_ytw",
@@ -3532,7 +3543,8 @@
    "unilateral": false,
    "cues": [
     "Towel overhead, pull it apart and down to the chin",
-    "Hold 10–20 s"
+    "Hold at about 7/10 effort, not all-out",
+    "Keep breathing throughout; never hold your breath"
    ],
    "picture": null
   },
@@ -3668,7 +3680,8 @@
     "Bar at eye height, feet help only as needed",
     "3 s lowering"
    ],
-   "picture": "Chin-Up"
+   "picture": "Chin-Up",
+   "picture_only": true
   },
   {
    "id": "band_assisted_pull_up",
@@ -3869,7 +3882,8 @@
    "cues": [
     "One hand only, don't lean toward the weight"
    ],
-   "picture": "Farmers_Walk"
+   "picture": "Farmers_Walk",
+   "picture_only": true
   },
   {
    "id": "goblet_carry",
@@ -3894,8 +3908,12 @@
    "unit": "m",
    "implement": "dumbbell",
    "unilateral": false,
-   "cues": [],
-   "picture": "Farmers_Walk"
+   "cues": [
+    "Dumbbell vertical at the chest, elbows in",
+    "Stand tall, walk slowly, keep breathing"
+   ],
+   "picture": "Farmers_Walk",
+   "picture_only": true
   },
   {
    "id": "front_rack_carry",
@@ -4447,7 +4465,8 @@
    "unit": "s",
    "unilateral": true,
    "cues": [],
-   "picture": "ek-side-plank"
+   "picture": "ek-side-plank",
+   "picture_only": true
   },
   {
    "id": "side_plank",
@@ -5124,7 +5143,9 @@
    "stresses": [],
    "unit": "reps",
    "unilateral": false,
-   "cues": [],
+   "cues": [
+    "Light backpack by the top handle, elbows still, 3 s lowering"
+   ],
    "picture": null
   },
   {
@@ -5194,7 +5215,8 @@
    "implement": "dumbbell",
    "unilateral": false,
    "cues": [],
-   "picture": "Standing_Dumbbell_Triceps_Extension"
+   "picture": "Standing_Dumbbell_Triceps_Extension",
+   "picture_only": true
   },
   {
    "id": "close_grip_push_up",
@@ -5377,7 +5399,7 @@
   {
    "id": "chin_tuck",
    "name": "Chin tuck",
-   "pattern": "shoulder",
+   "pattern": "mobility",
    "family": "neck",
    "level": 1,
    "equipment": [],
@@ -5420,7 +5442,8 @@
    "cues": [
     "Hold a wall, 2 s up, 2 s down"
    ],
-   "picture": "Standing_Calf_Raises"
+   "picture": "Standing_Calf_Raises",
+   "picture_only": true
   },
   {
    "id": "single_leg_calf_raise",
@@ -5825,7 +5848,8 @@
    "equipment": [
     [
      "band",
-     "dumbbell"
+     "dumbbell",
+     "backpack"
     ]
    ],
    "styles": [
@@ -7171,5 +7195,6 @@
    ],
    "format": "Every minute on the minute, 20 min, rotate the four. Not for uncontrolled blood pressure or heart conditions."
   }
- ]
+ ],
+ "_about_picture_only": "picture_only: the picture shows a related exercise; its source's step-by-step describes that one, so the page shows the cues only."
 }

@@ -11,7 +11,7 @@ A personal training coach that runs in your own Claude Code: it reads your weara
 - **Plan (`/coach plan`):** a program built only from your equipment, around every condition and injury, checked by an independent safety reviewer.
 - **Rolling 14 days:** rebuilt daily from what happened. A hard session eases the next one, a poor recovery day moves the session, and loads go up one step when you reach the top of the range.
 - **Exercise library:** 228 exercises (calisthenics with just a wall and floor, conventional strength, functional and unconventional work, mobility, balance, conditioning), each tagged with what it trains, what it needs and what it loads. Main lifts stay put; accessories rotate every few weeks; bodyweight moves climb their progression ladder; a bad day swaps an exercise for a safe one instead of dropping it; and every session has a no-equipment version on the phone.
-- **Phone page:** today's session with pictures and set logging, the daily check-in, the 14-day strip and history, on your own claude.ai page.
+- **Phone page:** today's session with pictures and set logging, the daily check-in, a status page (recovery, sleep and HRV against your usual, with 14-day trends), the 14-day strip and history, on your own claude.ai page.
 - **Data:** Oura, WHOOP, Withings (scales, BP monitors) and Polar pulls, Apple Health import (including medical records), trends and analysis.
 
 ## Privacy: two folders

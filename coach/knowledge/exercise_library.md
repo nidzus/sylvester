@@ -81,9 +81,30 @@ In a routine:
   - `max_level`;
   - `every_weeks` (a number, or `"phase"`).
 
-  Each block of weeks picks a different family. Use `from` when only a few options are right for this person.
+  Each block takes the next of the best fits (`choices`, default 3, within `margin` 2 points of the best), one per family. With `from`, each listed exercise is its own choice, and a caution stress doesn't rule it out (the plan named it); avoid still does.
+
+**Choosing is by fit, never alphabetical and never by equipment.** `library.fit()` scores every candidate for this person:
+- the slot's purpose (+3);
+- their goals (`goals.json`: the main active goal's purposes count 2, others 1, paused ones 0.5);
+- `coaching.focus` (+1.5 per purpose): what the baseline showed needs work. Set it from the calibration report;
+- `coaching.emphasis` (+1 for a pattern the goal stresses, e.g. arms and shoulders);
+- the preferred exercises of their `limits.conditions` and `coaching.prefer` (+2), `coaching.dislike` (−6);
+- an adaptation they already use for it (+1);
+- level: the highest rung they're ready for fits best (−0.5 per level below it).
+
+A wall or floor exercise competes on equal terms with a barbell one and wins when it serves the goal better. "Household only" is just a filter: it applies to the phone's no-equipment version and to people without the gear. `python coach/library.py find <pattern> [purpose]` prints the scores.
+
+**Adaptations: the person's own way of doing an exercise.** These live in `health_profile.json` → `adaptations`, for example: bench press with feet up on the bench, back flat, no arch.
+- Each one leads the exercise's cues on the phone as "Your way: …".
+- It changes what the exercise is taken to load (`removes`, `adds`) for every limit, swap and ladder check.
+- `needs` says what gear the way of doing it depends on. Without that gear (the no-equipment version), the adaptation doesn't apply.
+- **Write them yourself, for every exercise the plan can show:** the fixed lifts, every rotation option and every no-equipment stand-in. Don't wait for the person to describe them. Derive each from their limits, injuries, equipment and baseline (e.g. disc findings → no arch; left-wrist injury → grip so the wrist stays straight; unbolted rack → the stability rules). Mark them `"source": "Coach … (confirm)"` and ask the person to confirm. What they tell you overrides yours (`"source": "you, <date>"`).
+- `python coach/library.py unadapted` lists any plan exercise or rotation option still without one. Run it after every plan change.
+- `"picture_only": true` on a library exercise means its picture shows a related exercise, so the page shows the cues and no step-by-step. An adaptation also suppresses the step-by-step, since the source describes the standard way.
+
+**The plan's own no-equipment stand-in:** `"anywhere_ex": "<id>"` on an exercise replaces the automatic swap.
 - **Bodyweight exercises** (no `implement`) progress along their family automatically. Set `"ladder": false` to pin one.
-- Check what a slot can pick: `python coach/library.py find <pattern> [purpose]`, `swap <id>`, `ladder <id>`. These use the person's equipment and limits.
+- Check what a slot can pick: `python coach/library.py find <pattern> [purpose]` (best fit first, with scores), `swap <id>`, `ladder <id>`. These use the person's equipment, limits and adaptations. Ladders never step into a caution stress the current exercise doesn't already carry, and a set logged without RPE never earns a step up.
 
 **Mixes.** `library.json` → `mixes` holds session shapes to start from:
 - `full_body_strength`;

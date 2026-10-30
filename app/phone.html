@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
 <style>
-/* Layout: one narrow column, sticky header with recovery state, three views (today / check-in / history). */
+/* Layout: one narrow column, sticky header with recovery state, four views (today / status / check-in / history). */
 :root {
   --bg: #eef1ef; --surface: #ffffff; --sunk: #e3e8e5; --fg: #1d2622; --muted: #5d6b65; --line: #cfd8d3;
   --accent: #0f7b8a; --accent-ink: #ffffff;
@@ -147,6 +147,33 @@ code { font-size: 14px; background: var(--sunk); padding: 1px 5px; border-radius
 .how { margin: 0; padding-left: 20px; display: grid; gap: 3px; font-size: 15px; }
 .stop { font-size: 14px; padding: 8px 10px; border-radius: 8px; background: var(--amber-bg); }
 .why { font-size: 13px; color: var(--muted); }
+
+/* Status tab: today's state, last night, the week against the usual with 14-day trend lines. */
+.state { display: grid; gap: 6px; padding: 16px; border-radius: var(--r); background: var(--sunk); border: 1px solid var(--line); }
+.state.green { background: var(--green-bg); } .state.amber { background: var(--amber-bg); } .state.red { background: var(--red-bg); }
+.state .big { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.state .word { font: 700 40px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+.state.green .word { color: var(--green); } .state.amber .word { color: var(--amber); } .state.red .word { color: var(--red); }
+.state .score { font: 600 22px/1 var(--display); font-variant-numeric: tabular-nums; }
+.state ul { margin: 0; padding-left: 18px; font-size: 15px; }
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile { background: var(--bg); border-radius: 8px; padding: 8px 10px; display: grid; gap: 2px; min-width: 0; align-content: start; }
+.tile .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; overflow-wrap: anywhere; }
+.tile .v { font: 600 22px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.tile .s { font-size: 12px; color: var(--muted); }
+.trend { display: grid; gap: 4px; padding-block: 10px; border-top: 1px solid var(--line); }
+.trend:first-child { border-top: 0; padding-top: 0; }
+.trend .head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.trend .label { font-weight: 600; }
+.trend .val { font: 600 20px/1 var(--display); font-variant-numeric: tabular-nums; }
+.trend .sub { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.delta { font-size: 14px; font-weight: 600; color: var(--muted); } .delta.good { color: var(--green); } .delta.bad { color: var(--red); }
+.spark { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.spark .line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.spark .usual { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.spark .dot { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.spark .cross { stroke: var(--muted); stroke-width: 1; }
+@media (max-width: 380px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .res { display: grid; gap: 8px; }
 .res-row { display: grid; grid-template-columns: 2.6em 1fr 4.4em 4.4em; gap: 8px; align-items: end; }
 .res-row.solo { grid-template-columns: 1fr 4.4em 4.4em; }
@@ -161,10 +188,11 @@ code { font-size: 14px; background: var(--sunk); padding: 1px 5px; border-radius
   <div class="wrap">
     <div class="top">
       <div class="brand">Sylvester<small id="today-label"></small></div>
-      <span id="rec-chip" class="chip" hidden><span class="dot"></span><span></span></span>
+      <a id="rec-chip" class="chip" href="#status" style="text-decoration:none" hidden><span class="dot"></span><span></span></a>
     </div>
     <nav>
       <a href="#today" data-view="today">Today</a>
+      <a href="#status" data-view="status">Status</a>
       <a href="#checkin" data-view="checkin">Check-in</a>
       <a href="#history" data-view="history">History</a>
     </nav>
@@ -182,6 +210,10 @@ code { font-size: 14px; background: var(--sunk); padding: 1px 5px; border-radius
         <div id="picker" class="picker" role="group" aria-label="Choose a session"></div>
         <div id="session"></div>
       </div>
+    </section>
+
+    <section id="view-status" hidden>
+      <div id="stat" style="display:grid;gap:16px"></div>
     </section>
 
     <section id="view-checkin" hidden>
@@ -238,7 +270,7 @@ document.getElementById("today-label").textContent =
   new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
 
 // ---------- views ----------
-const VIEWS = ["today", "checkin", "history"];
+const VIEWS = ["today", "status", "checkin", "history"];
 function show(view) {
   if (!VIEWS.includes(view)) view = "today";
   for (const v of VIEWS) document.getElementById("view-" + v).hidden = v !== view;
@@ -252,7 +284,7 @@ show(location.hash.slice(1));
 // ---------- recovery ----------
 function renderStatus() {
   const s = state.status, chip = document.getElementById("rec-chip"), box = document.getElementById("recovery");
-  if (!s || !s.recovery) { chip.hidden = true; box.hidden = true; return; }
+  if (!s || !s.recovery) { chip.hidden = true; box.hidden = true; renderState(); return; }
   const r = s.recovery;
   chip.className = "chip " + (r.status || "");
   chip.lastElementChild.textContent = (r.status || "").toUpperCase() + (r.readiness ? " · " + r.readiness : "");
@@ -263,8 +295,113 @@ function renderStatus() {
       r.readiness != null && $("span", {}, r.source === "WHOOP" ? "Recovery " : "Readiness ", $("b", { text: r.readiness })),
       r.sleep_h != null && $("span", {}, "Sleep ", $("b", { text: r.sleep_h + " h" })),
       r.hrv != null && $("span", {}, "HRV ", $("b", { text: r.hrv + " ms" }), r.hrv_baseline ? ` (usual ${r.hrv_baseline})` : "")),
-    $("p", { class: "small muted", text: "Updated " + (s.updated || "").replace("T", " ").slice(0, 16) }));
+    $("p", { class: "small muted" }, "Updated " + (s.updated || "").replace("T", " ").slice(0, 16) + " · ", $("a", { href: "#status", text: "Full status" })));
   box.hidden = false;
+  renderState();
+}
+
+// ---------- status tab ----------
+const dayName = d => new Date(d + "T12:00").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+const UNIT = { avg_hrv: " ms", lowest_hr: " bpm", total_sleep_h: " h" };
+const fmt = (key, v) => v == null ? "–" : key === "steps" ? Math.round(v).toLocaleString() : key === "total_sleep_h" ? (+v).toFixed(1) : String(Math.round(v * 10) / 10);
+const tile = (k, v, sub) => $("div", { class: "tile" }, $("span", { class: "k", text: k }), $("span", { class: "v", text: v }), sub && $("span", { class: "s", text: sub }));
+
+// 14-day trend line with the usual (60-day) level dashed; touching or hovering reads one day out into `readout`.
+function sparkline(days, key, usual, readout, idle) {
+  const W = 280, H = 48, P = 5, NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("class", "spark"); svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `last ${days.length} days`);
+  const vals = days.map(d => d[key]), seen = vals.filter(v => v != null);
+  if (seen.length < 2) return svg;
+  const known = usual != null ? [...seen, usual] : seen;
+  let lo = Math.min(...known), hi = Math.max(...known);
+  const pad = (hi - lo) * 0.12 || 1; lo -= pad; hi += pad;
+  const x = i => P + i * (W - 2 * P) / (days.length - 1), y = v => H - P - (v - lo) / (hi - lo) * (H - 2 * P);
+  const el = (tag, attrs) => { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); svg.append(e); return e; };
+  if (usual != null) el("line", { class: "usual", x1: P, x2: W - P, y1: y(usual), y2: y(usual) });
+  let d = "", pen = false;
+  vals.forEach((v, i) => { if (v == null) { pen = false; return; } d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); pen = true; });
+  el("path", { class: "line", d });
+  const last = vals.map((v, i) => [v, i]).filter(([v]) => v != null).pop();
+  const cross = el("line", { class: "cross", x1: 0, x2: 0, y1: P, y2: H - P, visibility: "hidden" });
+  const dot = el("circle", { class: "dot", r: 4, cx: x(last[1]), cy: y(last[0]) });
+  const reset = () => { cross.setAttribute("visibility", "hidden"); dot.setAttribute("cx", x(last[1])); dot.setAttribute("cy", y(last[0])); readout.textContent = idle; };
+  const pick = ev => {
+    const r = svg.getBoundingClientRect();
+    const i = Math.max(0, Math.min(days.length - 1, Math.round(((ev.clientX - r.left) / r.width * W - P) / ((W - 2 * P) / (days.length - 1)))));
+    cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+    if (vals[i] != null) { dot.setAttribute("cx", x(i)); dot.setAttribute("cy", y(vals[i])); }
+    readout.textContent = dayName(days[i].date) + ": " + (vals[i] == null ? "no data" : fmt(key, vals[i]) + (UNIT[key] || ""));
+  };
+  svg.addEventListener("pointermove", pick); svg.addEventListener("pointerdown", pick); svg.addEventListener("pointerleave", reset);
+  return svg;
+}
+
+function renderState() {
+  const box = document.getElementById("stat"), s = state.status;
+  if (!s || !s.recovery) {
+    box.replaceChildren($("div", { class: "empty" }, $("h3", { text: "No status yet" }),
+      $("p", { class: "muted", text: "It arrives with the next sync from the Coach (/coach sync)." })));
+    return;
+  }
+  const r = s.recovery, n = s.last_night, word = r.status || "–";
+  const parts = [$("div", { class: "state " + word },
+    $("div", { class: "big" }, $("span", { class: "word", text: word }),
+      r.readiness != null && $("span", { class: "score", text: (r.source === "WHOOP" ? "Recovery " : "Readiness ") + r.readiness })),
+    r.meaning && $("p", { text: r.meaning }),
+    r.why && r.why.length > 0 && $("ul", {}, r.why.map(w => $("li", { text: w[0].toUpperCase() + w.slice(1) }))),
+    $("p", { class: "small muted", text: `${r.source || ""}${r.date ? " · " + dayName(r.date) : ""} · updated ${(s.updated || "").replace("T", " ").slice(0, 16)}` }))];
+
+  if (n) parts.push($("div", { class: "card" }, $("h3", { text: "Last night" }),
+    $("div", { class: "tiles" },
+      tile("Sleep", n.sleep_h != null ? (+n.sleep_h).toFixed(1) + " h" : "–", [n.deep_h != null && `deep ${n.deep_h}`, n.rem_h != null && `REM ${n.rem_h}`].filter(Boolean).join(" · ")),
+      tile("HRV", n.hrv != null ? n.hrv + " ms" : "–", r.hrv_baseline ? `usual ${r.hrv_baseline}` : ""),
+      tile("Lowest HR", n.lowest_hr != null ? n.lowest_hr + " bpm" : "–"),
+      tile("Efficiency", n.efficiency != null ? n.efficiency + " %" : "–"),
+      r.temperature != null && tile("Temperature", (r.temperature > 0 ? "+" : "") + r.temperature + " °C", "vs your usual"),
+      r.resilience && tile("Resilience", r.resilience))));
+
+  if (s.metrics && s.metrics.length) {
+    const rows = s.metrics.map(m => {
+      const idle = `usual ${fmt(m.key, m.usual)}${UNIT[m.key] || ""} · last 14 days`, readout = $("span", { text: idle });
+      const d = m.delta_pct, near = d == null || Math.abs(d) < 3, good = !near && (m.better === "up" ? d > 0 : d < 0);
+      return $("div", { class: "trend" },
+        $("div", { class: "head" }, $("span", { class: "label", text: m.label.replace(/ \(.*\)$/, "") }),
+          $("span", {}, $("span", { class: "val", text: fmt(m.key, m.last_7d) + (UNIT[m.key] || "") }), " ",
+            d != null && $("span", { class: near ? "delta" : "delta " + (good ? "good" : "bad"), text: near ? "≈ usual" : `${d > 0 ? "▲ +" : "▼ "}${d}%` }))),
+        sparkline(s.days || [], m.key, m.usual, readout, idle),
+        $("div", { class: "sub" }, readout, $("span", { text: "7-day avg" })));
+    });
+    parts.push($("div", { class: "card" }, $("h3", { text: "This week vs your usual" }),
+      $("p", { class: "small muted", text: "Big number: your last 7 days. Dashed line: your usual (the 60 days before). Touch a line to read a day." }),
+      $("div", {}, rows)));
+  }
+
+  const since = localDay(new Date(Date.now() - 6 * 864e5));
+  const week = state.checkins.filter(c => c.date >= since), t = s.training || {};
+  const logged = new Set(state.workouts.filter(w => w.date >= since).map(w => w.date + w.session)).size;
+  const next = ((state.plan && state.plan.days) || []).find(d => d.date >= TODAY && (d.kind === "session" || d.kind === "optional"));
+  const nums = k => week.map(c => parseFloat(c[k])).filter(v => !isNaN(v));
+  const top = k => nums(k).length ? String(Math.max(...nums(k))) : null;
+  const mean = k => nums(k).length ? (nums(k).reduce((a, b) => a + b, 0) / nums(k).length).toFixed(1) : null;
+  const bp = week.find(c => c.bp);
+  parts.push($("div", { class: "card" }, $("h3", { text: "Last 7 days" }),
+    $("div", { class: "tiles" },
+      tile("Logged here", String(logged), logged === 1 ? "session" : "sessions"),
+      t.wearable_7d != null && tile("HR-tracked", String(t.wearable_7d), `${t.wearable_minutes_7d || 0} min · ${t.wearable_28d ?? 0} in 28 d`),
+      t.days_since != null && tile("Since last", t.days_since + " d", "HR-tracked session"),
+      tile("Check-ins", `${week.length}/7`),
+      mean("energy") && tile("Energy", mean("energy"), "average, 1–5"),
+      top("soreness") && tile("Soreness", top("soreness"), "highest, 1–5"),
+      top("pain") && tile("Pain", top("pain"), "highest, 0–10"),
+      ...(state.config.signals || []).map(g => top(g.key) && tile(g.label, top(g.key), `highest, ${g.lo}–${g.hi}`)),
+      bp && tile("Blood pressure", bp.bp, "latest, " + dayName(bp.date))),
+    next && $("p", { class: "small" }, "Next: ", $("b", { text: next.title }), " · " + dayName(next.date) + (state.plan.phase ? ` · ${state.plan.phase}` : ""))));
+
+  if (r.flags && r.flags.length > 0) parts.push($("div", { class: "card" }, $("h3", { text: "Watch" }),
+    $("ul", { style: "margin:0;padding-left:18px" }, r.flags.map(f => $("li", { text: f })))));
+  box.replaceChildren(...parts);
 }
 
 // ---------- sessions ----------
@@ -286,9 +423,11 @@ function sortSessions(list) {
 function pickerList() { return (state.sorted && state.sorted.shown) || []; }
 function select(id) { state.selected = id; store.set("hgc.selected", id); renderStrip(); renderPicker(); renderSession(); }
 
-// How today should go, from the morning check-in and recovery: null | "easy" | "recovery".
+// How today should go, from the morning check-in and recovery: null | "easy" | "recovery" (+ the signals' notes,
+// RPE caps and stop text). A recovery day offers no lifting at all: the back routine (or other recovery routine) and a walk.
 function todayMode() {
-  const rank = { easy: 1, recovery: 2, rest: 2 }, why = [];
+  const rank = { easy: 1, recovery: 2, rest: 2 }, why = [], notes = [], stops = [];
+  let rpe = null, routine = null, signal = false;
   let mode = null;
   const bump = (m, reason) => { if (!m) return; if (!mode || rank[m] > rank[mode]) mode = m; why.push(reason); };
   const r = state.status && state.status.recovery;
@@ -305,10 +444,30 @@ function todayMode() {
       const v = parseFloat(c[sig.key]);
       if (isNaN(v)) continue;
       const lvl = Object.keys(sig.levels || {}).map(Number).filter(l => v >= l).sort((a, b) => b - a)[0];
-      if (lvl != null) bump(sig.levels[String(lvl)], `${sig.label.toLowerCase()} ${v}`);
+      if (lvl == null) continue;
+      const act = typeof sig.levels[String(lvl)] === "string" ? { day: sig.levels[String(lvl)] } : sig.levels[String(lvl)];
+      bump(act.day, `${sig.label.toLowerCase()} ${v}`);
+      signal = true;
+      if (act.note) notes.push(act.note);
+      if (act.rpe_cap) rpe = Math.min(rpe ?? 10, act.rpe_cap);
+      if (act.add_routine) routine = act.add_routine;
+      if (act.day === "recovery" || act.day === "rest") { if (sig.stop) stops.push(sig.stop); }
     }
   }
-  return { mode, why };
+  return { mode, why, notes, stops, rpe, routine, signal };
+}
+
+// Recovery day: what to do instead of the session, and the session's own routine for it.
+function recoveryCard(t, s) {
+  const back = state.sessions.find(x => x.id === "routine-" + (t.routine || "back")) || state.sessions.find(x => !x.date && /back/i.test(x.title || ""));
+  return $("div", { class: "card" },
+    $("h2", { text: s.kind === "assessment" ? "Postpone today's calibration" : "Recovery day" }),
+    $("p", { text: "Today: " + t.why.join("; ") + "." }),
+    $("p", { text: s.kind === "assessment" ? "Move it to the next good day (its note says where); calibration needs a normal day to be a fair baseline."
+                                            : "No lifting today. Do your back routine and an easy 20–30 min walk, or rest." }),
+    t.notes.length > 0 && $("ul", { style: "margin:0;padding-left:18px" }, t.notes.map(n => $("li", { text: n }))),
+    t.stops.length > 0 && $("p", { class: "stop", text: t.stops.join(" ") }),
+    back && $("button", { type: "button", class: "primary", text: "Open " + back.title, onclick: () => select(back.id) }));
 }
 
 function renderStrip() {
@@ -384,16 +543,26 @@ function renderSession() {
       $("p", { class: "muted" }, "Sessions appear here when the Coach writes them. In Claude Code, run ", $("code", { text: "/coach today" }), ".")));
     return;
   }
+  // A recovery day (red recovery, pain 6+, a signal at its recovery level) replaces today's session or calibration,
+  // and any lifting routine opened by hand; the recovery routine itself stays open. A personal signal at any level
+  // postpones today's calibration (a baseline needs a normal day).
+  {
+    const t = todayMode(), recovery = t.mode === "recovery" || t.mode === "rest";
+    const isRecoveryRoutine = !s.date && (s.id === "routine-" + (t.routine || "back") || /back/i.test(s.title || ""));
+    if (recovery && (s.date === TODAY || (!s.date && s.kind !== "assessment" && !isRecoveryRoutine))) { box.replaceChildren(recoveryCard(t, s)); return; }
+    if (s.kind === "assessment" && s.date === TODAY && t.signal) { box.replaceChildren(recoveryCard(t, s)); return; }
+  }
   if (s.kind === "assessment") return renderAssessment(s, box);
   // Today's check-in or recovery can switch a planned session to its easier version.
   let adjust = null;
   if (s.date === TODAY && s.easy) {
-    const { mode, why } = todayMode();
+    const { mode, why, notes, rpe, routine } = todayMode();
     if (mode) {
       const planned = state.asPlanned[s.id];
       if (!planned) s = { ...s, ...s.easy, variant: "easy" };
-      const lead = mode === "recovery" ? "Today looks like a recovery day (" + why.join("; ") + "). If you still train, keep it to this easier version, or walk and do your mobility work instead."
-                                       : "Easier version today: " + why.join("; ") + ".";
+      const first = routine && state.sessions.find(x => x.id === "routine-" + routine);
+      const lead = "Easier version today: " + why.join("; ") + "." + (rpe ? ` Keep every set at RPE ≤ ${rpe}.` : "")
+        + (first ? ` Do your ${first.title} first.` : "") + (notes.length ? " " + notes.join(" ") : "");
       adjust = $("div", { class: "adjust" }, $("span", { text: planned ? "Showing the session as planned. " + lead : lead }),
         $("button", { type: "button", text: planned ? "Use easier" : "As planned",
           onclick: () => { state.asPlanned[state.selected] = !planned; renderSession(); } }));
@@ -715,6 +884,7 @@ function renderHistory() {
 // ---------- data ----------
 renderSession();
 renderHistory();
+renderState();
 state.selected = store.get("hgc.selected");
 (async () => {
   const db = await window.claude?.use?.("db");
@@ -727,7 +897,7 @@ state.selected = store.get("hgc.selected");
   let lastMode = modeKey();
   const modeChanged = () => { const m = modeKey(); if (m !== lastMode) { lastMode = m; renderSession(); } };
   db.doc("status/current").onSnapshot(s => { state.status = s.exists ? s.data() : null; renderStatus(); modeChanged(); }, fail);
-  db.doc("plan/current").onSnapshot(s => { state.plan = s.exists ? s.data() : null; renderStrip(); }, fail);
+  db.doc("plan/current").onSnapshot(s => { state.plan = s.exists ? s.data() : null; renderStrip(); renderState(); }, fail);
   db.doc("config/checkin").onSnapshot(s => {
     state.config = s.exists ? { signals: [], ...s.data() } : { signals: [] };
     if (!document.getElementById("checkin").contains(document.activeElement)) fillCheckin(ciDate.value);
@@ -741,10 +911,10 @@ state.selected = store.get("hgc.selected");
   db.collection("checkins").orderBy("date", "desc").limit(30).onSnapshot(q => {
     state.checkins = q.docs.map(d => d.data());
     if (!document.getElementById("checkin").contains(document.activeElement)) fillCheckin(ciDate.value);
-    renderHistory(); modeChanged();
+    renderHistory(); renderState(); modeChanged();
   }, fail);
   db.collection("workouts").orderBy("date", "desc").limit(30).onSnapshot(q => {
-    state.workouts = q.docs.map(d => d.data()); renderHistory();
+    state.workouts = q.docs.map(d => d.data()); renderHistory(); renderState();
   }, fail);
   db.collection("assessments").orderBy("date", "desc").limit(20).onSnapshot(q => {
     state.assessments = q.docs.map(d => d.data()); renderHistory();

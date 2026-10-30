@@ -5,9 +5,10 @@ The page keeps its data in the artifact's database; Claude moves documents with 
 ArtifactData tool. This script prepares what goes up and files away what comes down.
 
     python coach/phone.py plan                 # rolling 14 days -> outbox: sessions/day-*, plan/current, config/checkin
-    python coach/phone.py status               # -> outbox/status/current.json (recovery only)
+    python coach/phone.py status               # -> outbox/status/current.json (recovery, 14-day trend, training volume)
     python coach/phone.py session <spec.json>  # one routine or session -> outbox/sessions/<id>.json
     python coach/phone.py battery <id>         # calibration battery -> outbox/sessions/<id>.json
+                                               # (a plan day whose override names a "battery" gets its tests too)
     python coach/phone.py sync                 # inbox/{checkins,workouts,assessments}/*.json -> CSVs
 
 Every command lists pictures not yet on the page as `UPLOAD <path>`; Claude uploads them
@@ -28,6 +29,7 @@ import json
 import os
 import shutil
 import sys
+from datetime import date, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -43,30 +45,76 @@ PHONE_DIR = str(paths.PHONE)
 OUTBOX = os.path.join(PHONE_DIR, "outbox")
 INBOX = os.path.join(PHONE_DIR, "inbox")
 ASSETS = str(paths.MEDIA / "phone_assets.json")
-PRIVATE_KEYS = ("tags", "implement", "routine", "ex", "slot", "ladder")  # planning detail the page doesn't need
+PRIVATE_KEYS = ("tags", "implement", "routine", "ex", "slot", "ladder", "anywhere_ex", "anywhere_note")  # planning detail the page doesn't need
 
 
 def write_json(path, data):
     return str(paths.write_json(path, data))
 
 
+# The Status tab's rows: snapshot metric, which way is better, and the daily column its trend line uses.
+STATUS_METRICS = [("readiness_score", "up"), ("avg_hrv", "up"), ("lowest_hr", "down"),
+                  ("total_sleep_h", "up"), ("steps", "up")]
+SLEEP_COLUMNS = ("avg_hrv", "lowest_hr", "total_sleep_h")  # only meaningful on nights with real sleep
+
+
+def r1(v):
+    return round(v, 1) if isinstance(v, float) else v
+
+
+def trend_days(snapshot, today, n=14):
+    """The last n days of the recovery wearable, one row per calendar day (None where nothing was recorded)."""
+    src = snapshot.recovery_source()
+    if not src:
+        return []
+    rows = {r["date"]: r for r in src[1]}
+    out = []
+    for i in range(n - 1, -1, -1):
+        d = (date.fromisoformat(today) - timedelta(days=i)).isoformat()
+        r = rows.get(d) or {}
+        real = (snapshot.num(r.get("total_sleep_h")) or 0) >= snapshot.MIN_REAL_SLEEP_H
+        out.append({"date": d, **{k: r1(snapshot.num(r.get(k))) if real or k not in SLEEP_COLUMNS else None
+                                  for k, _ in STATUS_METRICS}})
+    return out
+
+
 def status():
+    """Recovery numbers, their 14-day trend and training volume for the page's Today card and Status tab."""
     import snapshot
     s = snapshot.build(write=True)
     r = s.get("recovery") or {}
     m = r.get("metrics") or {}
     hrv = m.get("avg_hrv") or {}
     night = r.get("last_night") or {}
+    t = s.get("training") or {}
+    week_ago = (date.fromisoformat(s["generated"][:10]) - timedelta(days=6)).isoformat()
+    logged = [w for w in s.get("logged_workouts") or [] if w["date"] >= week_ago]
     doc = {
         "updated": s["generated"][:16],
         "recovery": {
             "status": r.get("status"),
             "meaning": r.get("status_meaning"),
+            "why": r.get("status_why") or [],
             "readiness": r.get("readiness_today"),
             "source": r.get("source"),
+            "date": r.get("latest_date"),
             "sleep_h": round(night["sleep_h"], 1) if night.get("sleep_h") else None,
             "hrv": night.get("hrv"),
             "hrv_baseline": round(hrv["baseline_60d"]) if hrv.get("baseline_60d") else None,
+            "temperature": r.get("temperature_deviation"),
+            "resilience": r.get("resilience"),
+            "flags": r.get("flags") or [],
+        },
+        "last_night": {k: r1(v) for k, v in night.items()} if night else None,
+        "metrics": [{"key": k, "label": m[k]["label"], "last_7d": m[k]["last_7d"], "usual": m[k]["baseline_60d"],
+                     "delta_pct": m[k]["delta_pct"], "better": better} for k, better in STATUS_METRICS if k in m],
+        "days": trend_days(snapshot, s["generated"][:10]) if r else [],
+        "training": {
+            "wearable_7d": (t.get("last_7d") or {}).get("sessions"),
+            "wearable_minutes_7d": (t.get("last_7d") or {}).get("minutes"),
+            "wearable_28d": (t.get("last_28d") or {}).get("sessions"),
+            "days_since": t.get("days_since_last_session"),
+            "logged_7d": len(logged),  # sessions logged on the phone page in the last 7 days
         },
     }
     print(write_json(os.path.join(OUTBOX, "status", "current.json"), doc))
@@ -80,8 +128,10 @@ def with_pictures(items, lib, assets, missing, instructions=True):
         item = {k: v for k, v in e.items() if k != "lib" and k not in PRIVATE_KEYS}
         if ex:
             item.setdefault("name", ex["name"])
-            if instructions:
+            if instructions and item.get("instructions") is not False:
                 item.setdefault("instructions", ex.get("instructions", []))
+            if item.get("instructions") is False:  # the plan's cues say how; the picture's steps describe another way
+                item.pop("instructions")
             item["credit"] = ex["license"]
             urls = []
             for path in exercise_lib.fetch(ex["id"], lib):
@@ -116,16 +166,19 @@ def session(spec_path):
     report_missing(missing)
 
 
-def battery(battery_id, date=""):
+def battery_doc(battery_id, date, missing):
     """A calibration battery as a phone session (kind "assessment"): the page shows typed inputs per test."""
     cat = catalogue.load()
     b = cat["batteries"][battery_id]
     tests = [{"id": t, **{k: v for k, v in cat["tests"][t].items() if k not in ("needs", "implement")}} for t in b["tests"]]
+    return {"kind": "assessment", "battery": battery_id, "title": b["title"], "date": date, "order": 0,
+            "duration": b.get("duration", ""), "coach_note": b.get("coach_note", ""), "warmup": b.get("warmup", []),
+            "tests": with_pictures(tests, exercise_lib.load(), read_assets(), missing, instructions=False)}
+
+
+def battery(battery_id, date=""):
     missing = []
-    doc = {"kind": "assessment", "battery": battery_id, "title": b["title"], "date": date, "order": 0,
-           "duration": b.get("duration", ""), "coach_note": b.get("coach_note", ""), "warmup": b.get("warmup", []),
-           "tests": with_pictures(tests, exercise_lib.load(), read_assets(), missing, instructions=False)}
-    print(write_json(os.path.join(OUTBOX, "sessions", battery_id + ".json"), doc))
+    print(write_json(os.path.join(OUTBOX, "sessions", battery_id + ".json"), battery_doc(battery_id, date, missing)))
     report_missing(missing)
 
 
@@ -134,7 +187,10 @@ def checkin_config():
     out = []
     for s in signals.personal():
         doc = {k: s[k] for k in ("key", "label", "lo", "hi", "hint", "help") if k in s}
-        doc["levels"] = {lvl: a.get("day") for lvl, a in (s.get("levels") or {}).items() if a.get("day")}
+        doc["levels"] = {lvl: {k: a[k] for k in ("day", "note", "rpe_cap", "add_routine") if a.get(k)}
+                         for lvl, a in (s.get("levels") or {}).items() if a.get("day")}
+        if s.get("stop"):
+            doc["stop"] = s["stop"]  # shown on a recovery day this signal caused
         out.append(doc)
     return {"signals": out}
 
@@ -153,6 +209,13 @@ def plan():
         strip.append({k: d[k] for k in ("date", "weekday", "kind", "title", "intensity", "reasons", "note", "phase") if d.get(k)})
         s = d.get("session")
         if not s:
+            continue
+        if s.get("battery"):  # a day the Coach set to a calibration battery: the page shows its tests
+            doc = {**battery_doc(s["battery"], d["date"], missing), "optional": d["kind"] == "optional"}
+            if s.get("note"):
+                doc["coach_note"] = (s["note"] + " " + doc["coach_note"]).strip()
+            write_json(os.path.join(sessions_dir, s["id"] + ".json"), doc)
+            ids.append(s["id"])
             continue
         doc = {k: v for k, v in s.items() if k not in ("id", "exercises", "easy", "anywhere") and k not in PRIVATE_KEYS}
         doc["optional"] = d["kind"] == "optional"

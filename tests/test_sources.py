@@ -203,6 +203,16 @@ class WhoopWithings(unittest.TestCase):
         self.assertEqual(s["body"]["weight_kg"], 88.35)
         self.assertIn("Withings", s["body"]["weight_source"])
         self.assertIn("138/87", json.dumps(s["blood_pressure"]))
+        self.assertEqual(s["recovery"]["status_why"][:2], ["temperature +0.7 °C", "recovery 31 is under 34"])
+
+    def test_phone_status_has_trend_days_and_no_profile(self):
+        import phone
+        quiet(phone.status)
+        doc = json.loads((DATA / "phone/outbox/status/current.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(doc["days"]), 14)
+        self.assertEqual([m["key"] for m in doc["metrics"]], ["readiness_score", "avg_hrv", "lowest_hr", "total_sleep_h", "steps"])
+        self.assertIn("recovery 31 is under 34", doc["recovery"]["why"])
+        self.assertFalse({"body", "blood_pressure", "conditions"} & set(doc))
 
     def test_trends_read_both(self):
         import trends

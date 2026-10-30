@@ -69,6 +69,45 @@ class Library(unittest.TestCase):
         self.assertGreater(len(picks), 1)
 
 
+class Fit(unittest.TestCase):
+    def test_equipment_never_counts(self):
+        who = library.person()
+        bench = dict(library.get("db_bench_press"), id="x")
+        floor = dict(bench, equipment=[], styles=["wall_floor"])
+        self.assertEqual(library.fit(floor, who), library.fit(bench, who))
+
+    def test_rotation_follows_fit_not_the_alphabet(self):
+        who = library.person()
+        slot = {"pattern": "pull_h", "purpose": "posture"}
+        first = library.pick(slot, 0, who["equipment"], who["avoid"], who["max_level"], who["caution"], who)
+        best = max(library.fit(e, who, slot) for e in library.candidates("pull_h", who["equipment"], who["avoid"],
+                                                                         who["max_level"], caution=who["caution"], who=who))
+        self.assertEqual(library.fit(first, who, slot), best)
+
+    def test_named_choices_take_turns_and_may_carry_caution(self):
+        who = library.person()  # knee_deep is a caution for this person; the plan naming goblet_squat allows it
+        slot = {"pattern": "squat", "from": ["goblet_squat", "wall_sit"]}
+        picks = {library.pick(slot, b, who["equipment"], who["avoid"], who["max_level"], who["caution"], who)["id"] for b in range(2)}
+        self.assertEqual(picks, {"goblet_squat", "wall_sit"})
+
+    def test_adaptation_changes_stresses_only_with_its_gear(self):
+        way = {"match": {"families": ["push_up"]}, "how": "Hands on handles", "removes": ["wrist_ext"], "needs": ["dumbbell"]}
+        who = {**library.person(), "adaptations": [way]}
+        push = library.get("push_up")
+        self.assertNotIn("wrist_ext", library.stresses(push, who, {"dumbbell"}))
+        self.assertIn("wrist_ext", library.stresses(push, who, {"wall"}))
+        e = rolling.use_exercise({"ex": "push_up"}, push, who=who, equipment={"dumbbell"})
+        self.assertEqual(e["cues"][0], "Your way: Hands on handles")
+
+    def test_equipment_words_match_whole_words(self):
+        kept = library.paths.read_json(library.paths.PROFILE / "equipment.json")
+        write("profile/equipment.json", {"items": [{"name": "Polar H10 heart-rate strap"}, {"name": "Adjustable dumbbells"}]})
+        try:
+            self.assertEqual(library.equipment_owned(), {"dumbbell"})
+        finally:
+            write("profile/equipment.json", kept)
+
+
 class Plan(unittest.TestCase):
     def tearDown(self):
         remove("records/checkins.csv")

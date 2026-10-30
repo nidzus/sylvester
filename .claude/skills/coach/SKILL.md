@@ -17,6 +17,7 @@ The app (this folder) and the person's data are separate. Run `python sylvester.
 |---|---|
 | Health profile, equipment, goals | `<data>/profile/health_profile.json`, `equipment.json`, `goals.json` |
 | Personal check-in signals and what they change | `health_profile.json` → `signals` (format in `core/signals.py`) |
+| How they do exercises, focus from the baseline, emphasis | `health_profile.json` → `adaptations`, `coaching` (see `coach/knowledge/exercise_library.md`) |
 | Snapshot, trends, baseline, analysis, check-ins, workouts | `<data>/records/` |
 | Medical records summary (from Apple Health) | `<data>/records/clinical_summary.md` |
 | Plans | `<data>/plans/<plan>/` (`program.md`, `rolling.json`, `routines/`, `schedule.md`, `overrides/`) |
@@ -39,6 +40,8 @@ You work alone for everyday questions, drawing on five knowledge modules, and ca
 | Stress, mood, motivation, sustainability | `coach/knowledge/balance.md` |
 | Checking a new or changed plan for safety | **safety-reviewer** agent (give it the data folder path) |
 | Multi-month analysis, "what affects my X?" | **health-analyst** agent (writes `<data>/records/analysis.md`) |
+
+**Every exercise is adjusted to this person.** Whenever you write or change a plan, give each exercise it can show (fixed, rotation options, no-equipment stand-ins) the person's own way of doing it: an `adaptations` entry derived from their limits, injuries, equipment and baseline (see `coach/knowledge/exercise_library.md`), then check with `python coach/library.py unadapted`. Ask them to confirm yours, and record theirs whenever they mention one.
 
 Read only the modules the task needs: `/coach today` usually needs recovery (+ medical if pain or BP is involved); `/coach plan` needs all five.
 
@@ -150,6 +153,7 @@ Run the health-analyst agent with the data folder path and the question; relay i
 The person's own claude.ai artifact (`settings.json` → `phone_url`), published from `app/phone.html` during setup. It shows:
 - the 14-day strip;
 - each day's session with start/end pictures and set logging;
+- a Status tab: today's recovery colour and why, last night, the 7-day averages against their usual with 14-day trend lines, and the week's training and check-ins (from `status/current`, refreshed on every sync);
 - the daily check-in with their own signals;
 - 14 days of history.
 
@@ -159,7 +163,7 @@ Its data lives in the artifact's database (owner-only); move it with the `Artifa
 1. Run `coach/phone.py clear-inbox`.
 2. ArtifactData `list` the `checkins`, `workouts` and `assessments` collections with `out_dir` `<data>/phone/inbox`.
 3. Run `coach/phone.py sync`. It is idempotent.
-4. If calibration results came in, also run `coach/baseline.py`.
+4. If calibration results came in, also run `coach/baseline.py`. After the first full baseline, write the report (strengths, weak spots, left/right gaps, results that disagree with the profile), then set `coaching.focus` to the purposes that need work, so rotations pick for them.
 
 **Push:**
 1. For every `UPLOAD <path>` line any phone.py command printed, upload the files (Artifact publish, `url` = the phone page, `asset: true`, `file_paths`). Add each returned url to `<data>/media/phone_assets.json` under its path relative to `<data>/media/`, then re-run the command.

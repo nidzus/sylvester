@@ -19,8 +19,13 @@ This script re-lays the next 14 days every time it runs (the daily task and ever
 - Library (coach/library.json, coach/library.py): an exercise may name a library id ("ex") instead of
   spelling everything out; it then gets its name, picture, cues and stresses from the library.
   * Rotating slots: {"slot": {"pattern": "core_rot", "purpose": "core", "every_weeks": 3}, "sets", "reps"}
-    picks a different exercise family every few weeks ("every_weeks": "phase" = once per phase),
-    from what the person owns and their limits allow. Main lifts stay fixed: name them with "ex".
+    takes turns among the best fits for this person every few weeks ("every_weeks": "phase" = once per phase):
+    library.fit() ranks by goals, baseline focus, emphasis, their conditions' preferred exercises, their own
+    adaptations and level, never by equipment. Main lifts stay fixed: name them with "ex".
+  * Adaptations (health_profile.json "adaptations"): the person's own way of doing an exercise ("feet up on the
+    bench, back flat") leads its cues and changes what it's taken to load, for every check above.
+  * "anywhere_ex": the plan's own no-equipment stand-in for an exercise ("skip" leaves it out there), used
+    instead of an automatic swap; "anywhere_note" adds a line to the no-equipment version only.
     A slot's "reps" may be a dict by unit, e.g. {"reps": "8–12", "s": "20–30", "m": "30"}, since the
     pick can be a hold or a carry.
   * Swaps instead of drops: when a signal or the person's limits rule an exercise out, the closest
@@ -42,8 +47,10 @@ Plan folder (<data>/plans/<plan>/):
   routines/*.json session templates (format in coach/phone.py); exercises may carry
                   "implement" ("barbell" | "dumbbell" | ... keys of equipment.json load_steps)
                   and "tags" (e.g. "spine_load") that signals can avoid.
+  phases may set "sets_max" (e.g. 2 in a first week).
   overrides/YYYY-MM-DD.json  a day the Coach set by hand (a session spec, or {"kind": "rest", "title", "note"});
                   used as written. "routine" names the rotation routine it stands in for.
+                  "battery" (a calibration battery id) makes the day that battery's tests on the phone.
 """
 
 import csv
@@ -215,8 +222,9 @@ def last_performance(name, hist, before):
 UNIT_REPS = {"reps": "8–12", "s": "20–40", "m": "20–30", "min": "10–20"}
 
 
-def use_exercise(e, ex, swapped=False):
-    """Fill an exercise entry from a library exercise, or replace it (keeping sets, rest and the plan's intent)."""
+def use_exercise(e, ex, swapped=False, who=None, equipment=None):
+    """Fill an exercise entry from a library exercise, or replace it (keeping sets, rest and the plan's intent).
+    The person's own way of doing it (an adaptation) leads the cues."""
     e["ex"] = ex["id"]
     if swapped or not e.get("name"):
         e["name"] = ex["name"]
@@ -229,13 +237,20 @@ def use_exercise(e, ex, swapped=False):
         if ex.get("cues"):
             e["cues"] = list(ex["cues"])
     if swapped:
-        for k in ("load_kg", "implement", "note"):
+        for k in ("load_kg", "implement", "note", "instructions"):
             e.pop(k, None)
         if (ex.get("unit") or "reps") != (e.get("unit") or "reps"):
             e["reps"] = UNIT_REPS.get(ex.get("unit") or "reps", e.get("reps"))
-        e["tags"] = list(ex.get("stresses") or [])
+        e["tags"] = sorted(library.stresses(ex, who, equipment))
     else:
-        e["tags"] = sorted(set(e.get("tags") or []) | set(ex.get("stresses") or []))
+        e["tags"] = sorted(set(e.get("tags") or []) | library.stresses(ex, who, equipment))
+    ways = library.adaptations_for(ex, who, equipment)
+    for a in ways:
+        cue = "Your way: " + a["how"]
+        if a.get("how") and cue not in (e.get("cues") or []):
+            e["cues"] = [cue, *(e.get("cues") or [])]
+    if ways or ex.get("picture_only"):
+        e["instructions"] = False  # the picture source's step-by-step describes another way of doing it
     if ex.get("implement") and not e.get("implement"):
         e["implement"] = ex["implement"]
     if (ex.get("unit") or "reps") != "reps":
@@ -280,11 +295,12 @@ def ladder_now(ex, e, hist, day, rules, cap, who):
     if (pain is not None and pain >= rules["pain_stop"]) or (rpe is not None and rpe >= rules["regress_rpe"]):
         move = -1
     elif rng and reps and len(reps) >= max(1, int(num(e.get("sets")) or 1)) and min(reps) >= rng[1] \
-            and (rpe or 0) <= min(rules["progress_rpe"], cap):
+            and rpe is not None and rpe <= min(rules["progress_rpe"], cap):  # no RPE logged: hold
         move = +1
     if move:
         # earned by performance, so a rung above the level cap is fine (one at a time)
-        nxt = library.step_rung(cur["id"], move, who["equipment"], who["avoid"], max(who["max_level"], cur["level"] + 1))
+        nxt = library.step_rung(cur["id"], move, who["equipment"], who["avoid"], max(who["max_level"], cur["level"] + 1),
+                                who["caution"], who)
         if nxt:
             return nxt, ("a rung harder: top of the range last time" if move > 0 else "a rung easier: last time was too hard")
     return cur, ""
@@ -307,11 +323,11 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
         if e.get("slot"):
             slot = e.pop("slot")
             # picked against standing limits only, so a bad day swaps the pick rather than reshuffling the rotation
-            ex = library.pick(slot, slot_block(plan, slot, day), equipment, who["avoid"], who["max_level"], who["caution"])
+            ex = library.pick(slot, slot_block(plan, slot, day), equipment, who["avoid"], who["max_level"], who["caution"], who)
             if not ex:
                 notes.append(f"Nothing for the {slot.get('pattern', '')} slot fits today.")
                 continue
-            use_exercise(e, ex)
+            use_exercise(e, ex, who=who, equipment=equipment)
             unit = ex.get("unit") or "reps"
             if isinstance(e.get("reps"), dict):
                 e["reps"] = e["reps"].get(unit) or UNIT_REPS.get(unit)
@@ -320,7 +336,7 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
         elif e.get("ex"):
             ex = library.get(e["ex"])
             if ex:
-                use_exercise(e, ex)
+                use_exercise(e, ex, who=who, equipment=equipment)
         name = e.get("name") or (lib.get(e.get("lib", "")) or {}).get("name") or e.get("lib", "")
         e["name"] = name
         why = rung = ""
@@ -329,25 +345,37 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
             cur, rung = ladder_now(ex, e, hist, day, rules, cap, who)
             if cur["id"] != ex["id"]:
                 ex = cur
-                use_exercise(e, ex, swapped=True)
+                use_exercise(e, ex, swapped=True, who=who, equipment=equipment)
             if intensity == "easy":
-                easier = library.step_rung(ex["id"], -1, equipment, avoid, who["max_level"])
+                easier = library.step_rung(ex["id"], -1, equipment, avoid, who["max_level"], who["caution"], who)
                 if easier:
                     ex, rung = easier, "a rung easier today"
-                    use_exercise(e, ex, swapped=True)
+                    use_exercise(e, ex, swapped=True, who=who, equipment=equipment)
+            name = e["name"]
+        stand_in_id, anywhere_note = e.pop("anywhere_ex", ""), e.pop("anywhere_note", "")
+        if anywhere and stand_in_id == "skip":
+            notes.append(f"Without equipment: {name} is left out.")
+            continue
+        if anywhere and anywhere_note:
+            e["note"] = (e.get("note", "") + " " if e.get("note") else "") + anywhere_note
+        stand_in = library.get(stand_in_id or "")
+        if anywhere and stand_in and stand_in["id"] != (ex or {}).get("id"):
+            notes.append(f"Without equipment: {name} → {stand_in['name']}.")
+            ex = stand_in
+            use_exercise(e, ex, swapped=True, who=who, equipment=equipment)
             name = e["name"]
         # Ruled out today (a signal's avoid_tags, the person's limits) or impossible without equipment: swap, don't drop.
         blocked = set(e.get("tags") or []) & avoid
         mine = blocked and blocked <= set(who["avoid"])  # the person's standing limits, not just today's check-in
         missing = anywhere and ((ex and not library.has_equipment(ex, equipment)) or (not ex and e.get("implement")))
         if blocked or missing:
-            alt = library.substitute(ex["id"], equipment, avoid, who["max_level"], who["caution"]) if ex else None
+            alt = library.substitute(ex["id"], equipment, avoid, who["max_level"], who["caution"], who=who) if ex else None
             if alt:
                 notes.append(f"{'Swapped for your limits' if mine else 'Swapped today' if blocked else 'Without equipment'}: {name} → {alt['name']}.")
                 same_tool = alt["family"] == ex["family"] and alt.get("implement") and alt.get("implement") == e.get("implement")
                 kept = e.get("load_kg") if same_tool else None  # same family, same tool: the weight carries over
                 ex = alt
-                use_exercise(e, ex, swapped=True)
+                use_exercise(e, ex, swapped=True, who=who, equipment=equipment)
                 if kept is not None:
                     e["load_kg"] = kept
                 name = e["name"]
@@ -380,7 +408,9 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
                 load, why = step(load, st, -1), f"down a step: pain {pain:g} last time"
             elif rpe is not None and rpe >= rules["regress_rpe"]:
                 why = f"same load: RPE {rpe:g} last time"
-            elif rng and reps and len(reps) >= max(1, want) and min(reps) >= rng[1] and (rpe or 0) <= min(rules["progress_rpe"], cap):
+            elif rng and reps and len(reps) >= max(1, want) and min(reps) >= rng[1] and rpe is None:
+                why = "same load: log the RPE so the plan can move it up"
+            elif rng and reps and len(reps) >= max(1, want) and min(reps) >= rng[1] and rpe <= min(rules["progress_rpe"], cap):
                 load, why = step(load, st, +1), "up a step: top of the range last time"
             elif rng and reps and min(reps) < rng[0]:
                 why = "same load: reps below the range last time"
@@ -390,6 +420,8 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
                 load = step(load, st, -rules["easy_day"]["load_steps_down"])
         if intensity == "deload":
             e["sets"] = max(1, round((num(e.get("sets")) or 1) * rules["deload"]["sets_pct"] / 100))
+        if ph.get("sets_max") and num(e.get("sets")):
+            e["sets"] = min(int(num(e["sets"])), int(ph["sets_max"]))
         if load is not None:
             e["load_kg"] = int(load) if float(load).is_integer() else round(load, 1)
         elif e.get("implement"):  # a rotated-in or newly reached loaded exercise with nothing logged yet
@@ -559,6 +591,9 @@ def to_markdown(s):
         L += ["", f"## {d['date']} · {x['title']} ({x['intensity']})", ""]
         if x.get("coach_note"):
             L += [x["coach_note"], ""]
+        if x.get("battery"):
+            L += [f"Calibration battery `{x['battery']}`: the tests are on the phone page.", ""]
+            continue
         L += ["| Exercise | Sets × reps | Load | Note |", "|---|---|---|---|"]
         for e in x["exercises"]:
             L.append(f"| {e['name']} | {e.get('sets', '')} × {e.get('reps', '')}{' s' if e.get('unit') == 's' else ''} | "

@@ -10,7 +10,7 @@ snapshot reports it, and the rolling plan reacts to it through "levels":
      "levels": {"2": {"day": "easy", "avoid_tags": ["knee_dominant"], "add_routine": "knee-care",
                       "rpe_cap": 6, "note": "Knee-friendly day."},
                 "3": {"day": "recovery", "note": "Easy walking and the knee routine only."}},
-     "stop": "When to stop and see a professional (for the Coach; not shown on the phone)."}
+     "stop": "When to stop and see a professional (shown on the phone on a recovery day this signal causes)."}
 
 Level actions (all optional): day "easy" | "recovery" | "rest"; avoid_tags (drop exercises
 carrying any of these tags); add_routine (a routine file name in the plan's routines/);

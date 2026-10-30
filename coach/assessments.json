@@ -732,8 +732,8 @@
         "Leg sensation changed"
       ],
       "how": [
-        "Bodyweight, back knee lowers to just above the floor, a hand near support.",
-        "One set per leg, stop with two reps left or at 20. The side is the front leg."
+        "First time: bodyweight, a hand on something sturdy for balance. Torso upright, ribs down; the back knee lowers to just above the floor.",
+        "One set per leg, stop with two reps left or at the cap. The side is the front leg."
       ],
       "why": "Single-leg strength and asymmetry.",
       "needs": []
@@ -759,13 +759,263 @@
       "needs": [
         "fixed_bar"
       ]
+    },
+    "hip_90_90": {
+      "name": "Hip rotation (90/90 sit)",
+      "category": "Mobility",
+      "measure": "score",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "options": [
+        "Sit tall, both knees close to the floor, no hands",
+        "Sit tall only with a hand behind you",
+        "Can't sit tall in the position; the back knee or hip lifts well off the floor"
+      ],
+      "flags": [
+        "Hip pinch at the front",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Sit on the floor: front leg bent 90° in front of you, back leg bent 90° out to the side, both knees bent.",
+        "Try to sit tall without hands for 10 s. The side is the FRONT leg.",
+        "Swap sides through the middle, slowly."
+      ],
+      "stop": "A pinch in the front of the hip or any change in leg sensation: stop that side and tick the flag.",
+      "why": "Hip rotation both ways; stiff hips push movement into the low back.",
+      "needs": []
+    },
+    "thomas_test": {
+      "name": "Hip-flexor length (lying on the bench end)",
+      "category": "Mobility",
+      "measure": "score",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "options": [
+        "Thigh rests at or below the bench, knee bends about 90°",
+        "Thigh level with the bench but the knee straightens",
+        "Thigh stays above the bench"
+      ],
+      "flags": [
+        "Low back arched off the bench",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Sit in the middle of the flat bench, lower yourself onto your side and forearm, roll onto your back, then slide down until your hips are at the end.",
+        "Bring one knee towards your chest only until the low back is flat on the bench, not hard to the chest. Let the other leg hang and relax 5–10 s. Look (or film with the phone) where the hanging thigh rests. The side is the HANGING leg.",
+        "To get up: put the hugged foot on the bench, bring the hanging leg up and set that foot on the bench too, roll onto your side and push up with your arms. Never sit straight up."
+      ],
+      "stop": "Back pain or any change in leg sensation: stop and tick the flag.",
+      "why": "Tight hip flexors tilt the pelvis and arch the low back in standing and squats.",
+      "needs": [
+        "bench"
+      ]
+    },
+    "tspine_rotation": {
+      "name": "Upper-back rotation (seated)",
+      "category": "Mobility",
+      "measure": "score",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "options": [
+        "Shoulders turn past 45° from the knees' line",
+        "About 45°",
+        "Clearly less than 45°"
+      ],
+      "flags": [
+        "Pain or pinch",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Sit on the bench, knees and feet together and squeezing a rolled towel between the knees so the hips stay still.",
+        "Hold a broomstick across the front of the shoulders. Turn slowly as far as is easy, breathing out; no bouncing.",
+        "Film from above or have a mirror: compare the stick to the line of your knees. The side is the way you turn."
+      ],
+      "stop": "Any pain or change in leg sensation: stop.",
+      "why": "Upper-back rotation; when it's missing, the lumbar spine twists instead.",
+      "needs": [
+        "bench",
+        "broomstick"
+      ]
+    },
+    "shoulder_er": {
+      "name": "Shoulder rotation outwards (arm at the side)",
+      "category": "Mobility",
+      "measure": "score",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "options": [
+        "Forearm turns 70° or more out from straight ahead",
+        "45–70°",
+        "Less than 45°"
+      ],
+      "flags": [
+        "Click",
+        "Pain"
+      ],
+      "how": [
+        "Stand with your back to a wall, elbow against your side and bent 90°, forearm pointing straight ahead.",
+        "Keep the elbow touching your side and rotate the forearm outwards as far as it goes, slowly. Right arm first."
+      ],
+      "stop": "Pain 3/10 or more: stop that side.",
+      "why": "Rotator-cuff range; side-to-side difference after the 2026 fall and the reported clicks.",
+      "needs": [
+        "wall"
+      ]
+    },
+    "trunk_flexor_hold": {
+      "name": "Trunk front hold (lean-back at 60°)",
+      "category": "Balance & stability",
+      "measure": "number",
+      "unit": "s",
+      "cap": 90,
+      "pain": true,
+      "flags": [
+        "Back discomfort",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Sit on the floor, knees bent 90°, feet flat under the bench (check it doesn't lift; if it does, skip the test).",
+        "Hands on the floor behind you, lean back to about 60° from the floor (a third of the way from upright to lying), back straight, not curled. Then cross your arms on your chest.",
+        "Hold, breathing normally, until it's hard but steady (RPE 8), at the first drift back or rounding, or at 90 s.",
+        "To finish, put your hands back on the floor behind you and push yourself up to sitting. Never lie back and sit up."
+      ],
+      "stop": "Any back pain or change in leg sensation: hands down, push up to sitting, tick the flag. Not a sit-up: no curling, never sit up from lying.",
+      "why": "Front trunk endurance; with the side and front planks, the trunk endurance profile that protects the low back.",
+      "needs": [
+        "bench"
+      ],
+      "rpe": true
+    },
+    "sit_to_stand_30": {
+      "name": "30-second chair stand",
+      "category": "Fitness",
+      "measure": "number",
+      "unit": "reps",
+      "pain": true,
+      "flags": [
+        "Used hands",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "A sturdy chair against a wall; write its seat height in the note so retests match. Arms crossed on the chest, feet flat.",
+        "Stand fully and sit fully for 30 s at a quick pace you could keep up, not a sprint. Sit down under control, don't drop onto the chair; breathe out as you stand.",
+        "Count full stands."
+      ],
+      "stop": "Back pain, dizziness or any change in leg sensation: stop.",
+      "why": "Leg strength and stamina; one of the best predictors of long-term function.",
+      "needs": [
+        "chair"
+      ],
+      "gate": "Resting BP below 160/100."
+    },
+    "floor_rise": {
+      "name": "Down to the floor and back up",
+      "category": "Fitness",
+      "measure": "number",
+      "unit": "points (0–10)",
+      "flags": [
+        "Left wrist uncomfortable",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "Barefoot, on a mat or carpet, with clear space. From standing, sit down on the floor cross-legged, then stand back up.",
+        "Start with 10 points (5 for going down, 5 for getting up). Take off 1 point for each support you use: a hand, a forearm, a knee, the side of a leg, or a hand on your own knee. Take off half a point for a clear wobble.",
+        "Use supports freely: this is a score, not a challenge. Move slowly, don't twist to get up; a hand on a bench counts as one support. One try; a second only if the first felt easy."
+      ],
+      "stop": "Left wrist pain 3/10 or more, back pain or any change in leg sensation: stop, write what happened.",
+      "why": "Strength, flexibility and balance in one move (sitting-rising test); linked with long-term health.",
+      "needs": [],
+      "gate": "Resting BP below 160/100."
+    },
+    "walk_mile": {
+      "name": "1-mile brisk walk: time",
+      "category": "Fitness",
+      "measure": "number",
+      "unit": "min",
+      "flags": [
+        "Breathless beyond normal",
+        "Heel discomfort",
+        "Leg sensation changed"
+      ],
+      "how": [
+        "A flat, measured 1.6 km (1 mile): a known loop, or track it in the phone or watch app. Wear the heart-rate strap and your usual walking shoes.",
+        "5 min easy walk first. Then walk the mile as briskly as you can while still able to speak in short sentences (RPE 7). No running.",
+        "Write the time to the nearest 0.1 min (e.g. 14.5)."
+      ],
+      "stop": "Chest pain or pressure, dizziness, palpitations or breathlessness out of proportion: stop, sit down, and get medical help if it doesn't settle.",
+      "gate": "Not on a red recovery day, and resting BP below 160/100.",
+      "why": "Aerobic fitness you can retest without a lab: the time and heart rate at the same easy-to-repeat effort are your own markers (with the next two values).",
+      "needs": [
+        "hr_monitor"
+      ]
+    },
+    "walk_mile_hr": {
+      "name": "1-mile walk: heart rate at the finish",
+      "category": "Fitness",
+      "measure": "number",
+      "unit": "bpm",
+      "how": [
+        "Read the heart rate on the strap the moment you finish the mile."
+      ],
+      "why": "Effort at that pace; with the time, an aerobic estimate.",
+      "needs": [
+        "hr_monitor"
+      ]
+    },
+    "hr_recovery_1min": {
+      "name": "1-mile walk: heart-rate drop after 1 minute",
+      "category": "Fitness",
+      "measure": "number",
+      "unit": "bpm",
+      "how": [
+        "Stand still after the finish and read the heart rate again at exactly 1 minute. Write the DROP (finish minus 1-minute value). If you feel light-headed, sit down and note it."
+      ],
+      "why": "Heart-rate recovery; a bigger drop means a fitter heart and nervous system.",
+      "needs": [
+        "hr_monitor"
+      ]
+    },
+    "single_leg_calf": {
+      "name": "Single-leg calf raise rep test",
+      "category": "Strength",
+      "measure": "number",
+      "unit": "reps",
+      "sides": [
+        "R",
+        "L"
+      ],
+      "cap": 15,
+      "pain": true,
+      "lib": "Calf_Raise_On_A_Dumbbell",
+      "flags": [
+        "Heel discomfort",
+        "Needed more than a fingertip for balance"
+      ],
+      "how": [
+        "Flat floor, training shoes, fingertips on the wall for balance only. Right leg first.",
+        "2 s up, 2 s down, full height. Stop at 15, when height drops, or at the first heel discomfort."
+      ],
+      "stop": "Any heel or Achilles discomfort: stop, tick the flag, skip the other side if it's the heel side.",
+      "gate": "Only if first-step heel pain this morning was 0–1 and the both-legs calf test caused no heel discomfort.",
+      "why": "Left/right calf strength; a weak side loads the plantar fascia.",
+      "needs": [
+        "wall"
+      ]
     }
   },
   "batteries": {
     "calibration-1": {
       "title": "Calibration 1: body, mobility, balance",
-      "duration": "45–55 min",
-      "coach_note": "Your baseline, part 1. Not within an hour of waking. Holds stop when they're hard but steady (RPE 8) or at the cap; nothing goes to failure. Measure the same way every time so retests compare: same time of day, same shoes, tape snug but not tight. Stop the session for dizziness, chest pain, or any change in leg sensation; stop any test that sends sensation further down the leg. Skip a test that hurts and write why in its note. Next morning: do the check-in.",
+      "duration": "60–75 min",
+      "coach_note": "Your baseline, part 1. Not within an hour of waking. Holds stop when they're hard but steady (RPE 8) or at the cap; nothing goes to failure. Measure the same way every time so retests compare: same time of day, same shoes, tape snug but not tight. Stop the session for dizziness, chest pain, or any change in leg sensation; stop any test that sends sensation further down the leg. Skip a test that hurts and write why in its note. Next morning: do the check-in. Rest 1–2 min between the trunk holds (side plank, front plank, trunk front hold, one-leg bridge).",
       "warmup": [
         "5 min easy walking or marching",
         "Cat-cow × 8, bird dog × 5 / side"
@@ -779,17 +1029,22 @@
         "thigh",
         "knee_to_wall",
         "aslr",
+        "hip_90_90",
         "shoulder_flex_wall",
         "back_scratch",
         "wrist_wall",
         "squat_pattern",
         "hinge_pattern",
+        "thomas_test",
+        "tspine_rotation",
+        "shoulder_er",
         "sls_open",
         "sls_closed",
         "sls_pad",
         "step_down",
         "side_plank",
         "front_plank",
+        "trunk_flexor_hold",
         "sl_bridge",
         "polar_fitness"
       ]
@@ -831,6 +1086,23 @@
         "hip_thrust",
         "calf_raise",
         "wall_sit"
+      ]
+    },
+    "calibration-4": {
+      "title": "Calibration 4: fitness markers",
+      "duration": "35–45 min",
+      "coach_note": "Your baseline, part 4: how well your body handles everyday effort. Not on a red recovery day. Steady efforts, never all-out; keep breathing on every rep. Stop for chest pain, dizziness or breathlessness out of proportion.",
+      "warmup": [
+        "5 min easy walking",
+        "Bodyweight squat to a chair × 5, slow"
+      ],
+      "tests": [
+        "bp_rest",
+        "sit_to_stand_30",
+        "floor_rise",
+        "walk_mile",
+        "walk_mile_hr",
+        "hr_recovery_1min"
       ]
     }
   }

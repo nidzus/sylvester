@@ -134,9 +134,19 @@ def recovery(today):
         status = "green"
     else:
         status = "amber"
+    # Why, in the words the phone shows: the score against its bands, then what the flags add.
+    name = metrics["readiness_score"]["label"].lower()
+    why = []
+    if temp is not None and temp >= 0.5:
+        why.append(f"temperature +{temp} °C")
+    if score is not None:
+        why.append(f"{name} {score:g} is under {red_below}" if score < red_below else
+                   f"{name} {score:g} (green from {green_from})" if score < green_from else f"{name} {score:g}")
+    why += [f[0].lower() + f[1:] for f in hard_flags if not f.startswith("Body temperature")]
 
     return {
         "status": status,
+        "status_why": why,
         "status_meaning": {
             "green": "Train as planned; a hard session is fine.",
             "amber": "Train, but cap intensity (RPE ≤ 7) or trim volume ~20–30%.",
