@@ -30,6 +30,7 @@ BLOCKED_PATH = re.compile(
     r"|\.sylvester\.json$|settings\.local\.json$|\.(jpe?g|png|gif|webp|heic|mp4|mov|svg)$",
     re.I)
 TEMPLATE_OK = re.compile(r"^templates/")
+APP_ART_OK = re.compile(r"^mobile/assets/icon\.png$")  # the iPhone app's icon, drawn by mobile/scripts/make-icon.py
 
 CONTENT = [
     ("secret value", re.compile(r'"(access_token|refresh_token|client_secret|api_key)"\s*:\s*"(?!\.\.\.|…|<)[^"]{8,}"')),
@@ -71,7 +72,7 @@ def main():
     for f in files(staged):
         if f.startswith("tools/check_clean.py"):
             continue  # holds the patterns themselves
-        if BLOCKED_PATH.search(f) and not TEMPLATE_OK.match(f):
+        if BLOCKED_PATH.search(f) and not TEMPLATE_OK.match(f) and not APP_ART_OK.match(f):
             problems.append(f"{f}: this kind of file belongs in a data folder, not the app")
             continue
         data = staged_text(f, staged)

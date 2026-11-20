@@ -126,7 +126,9 @@
   "hip_deep": "Deep hip bend (deep squats, knee-to-chest).",
   "ballistic": "Fast or explosive: swings, throws, jumps.",
   "end_stretch": "Long, passive end-range stretching.",
-  "neck": "Load through the neck or head."
+  "neck": "Load through the neck or head.",
+  "step": "Stepping up onto a step or stairs: knee load through a single leg and the stair motion itself.",
+  "side_lying": "Lying on one side, the weight on that shoulder and hip (side planks, side-lying work)."
  },
  "equipment": {
   "wall": "a wall",
@@ -209,11 +211,19 @@
   },
   "lumbar_stenosis": {
    "label": "Lumbar spinal stenosis",
-   "avoid": [],
+   "avoid": [
+    "spine_flex_loaded",
+    "spine_rot_loaded"
+   ],
    "caution": [
-    "spine_ext_end",
+    "ballistic",
+    "floor_lift",
+    "high_pressure",
+    "impact",
+    "overhead",
     "spine_axial",
-    "overhead"
+    "spine_ext_end",
+    "spine_shear"
    ],
    "prefer": [
     "bike_easy",
@@ -1421,7 +1431,9 @@
     "rehab",
     "balance"
    ],
-   "stresses": [],
+   "stresses": [
+    "step"
+   ],
    "unit": "reps",
    "unilateral": true,
    "cues": [
@@ -1454,7 +1466,8 @@
     "athletic"
    ],
    "stresses": [
-    "balance"
+    "balance",
+    "step"
    ],
    "unit": "reps",
    "unilateral": true,
@@ -1485,7 +1498,8 @@
    ],
    "stresses": [
     "balance",
-    "grip_heavy"
+    "grip_heavy",
+    "step"
    ],
    "unit": "reps",
    "implement": "dumbbell",
@@ -4461,7 +4475,9 @@
     "core",
     "rehab"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "s",
    "unilateral": true,
    "cues": [],
@@ -4483,7 +4499,9 @@
     "core",
     "rehab"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "s",
    "unilateral": true,
    "cues": [
@@ -4510,7 +4528,9 @@
     "injury_prevention",
     "core"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "s",
    "unilateral": true,
    "cues": [
@@ -4538,7 +4558,9 @@
     "injury_prevention",
     "core"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "s",
    "unilateral": true,
    "cues": [],
@@ -5306,7 +5328,9 @@
    "purposes": [
     "rehab"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "reps",
    "implement": "dumbbell",
    "unilateral": true,
@@ -5572,7 +5596,9 @@
    "purposes": [
     "rehab"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "reps",
    "unilateral": true,
    "cues": [],
@@ -5593,7 +5619,9 @@
     "rehab",
     "warmup"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "reps",
    "unilateral": true,
    "cues": [],
@@ -6052,7 +6080,9 @@
    ],
    "stresses": [
     "kneeling",
-    "wrist_ext"
+    "wrist_ext",
+    "spine_flex_end",
+    "spine_ext_end"
    ],
    "unit": "reps",
    "unilateral": false,
@@ -6076,7 +6106,9 @@
     "mobility",
     "posture"
    ],
-   "stresses": [],
+   "stresses": [
+    "side_lying"
+   ],
    "unit": "reps",
    "unilateral": false,
    "cues": [
@@ -6488,7 +6520,9 @@
     "strength",
     "bone"
    ],
-   "stresses": [],
+   "stresses": [
+    "step"
+   ],
    "unit": "min",
    "unilateral": false,
    "cues": [],

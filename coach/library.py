@@ -57,6 +57,8 @@ KIND = {
     "pullup": ["pullup_bar"], "bands": ["band"], "rings": ["rings"], "cable": ["cable"], "box": ["box"],
     "recovery": ["foam_roller"], "dip": ["dip"], "vest": ["vest"], "ball": ["medball"], "landmine": ["landmine"],
 }
+# Stresses a bodyweight ladder never climbs into on its own: a plan has to name such a rung.
+RISKY = {"impact", "ballistic", "high_pressure", "inverted"}
 # Where a swap may look when nothing in the same pattern is safe (closest first).
 FALLBACK = {"core_flex": ["core_ext", "core_lat", "core_rot"], "rotation": ["core_rot", "core_lat"],
             "push_v": ["shoulder", "push_h"], "pull_v": ["pull_h"], "power": ["squat", "hinge"],
@@ -142,7 +144,7 @@ def person():
         "limits": lim,
         "avoid": set(lim.get("avoid") or []),
         "caution": set(lim.get("caution") or []),
-        "max_level": int(lim.get("max_level") or LEVEL_BY_EXPERIENCE.get(exp, 3)),
+        "max_level": int(lim.get("max_level") or LEVEL_BY_EXPERIENCE.get(exp, 2)),
         "equipment": (equipment_owned() - set(lim.get("unused") or [])) | household(prof),
         "household": household(prof),
         "purposes": goal_purposes(),
@@ -258,7 +260,8 @@ def step_rung(ex_id, direction, equipment, avoid, max_level=5, caution=(), who=N
     caution = set(caution) - stresses(ex, who, equipment)
     rungs = [e for e in ladder(ex_id) if e["id"] != ex_id and usable(e, equipment, avoid, max_level, caution, who)]
     if direction > 0:
-        up = [e for e in rungs if e["level"] > ex["level"]]
+        own = stresses(ex, who, equipment)
+        up = [e for e in rungs if e["level"] > ex["level"] and not (stresses(e, who, equipment) - own) & RISKY]
         new = lambda e: len(stresses(e, who, equipment) - stresses(ex, who, equipment))  # prefer the step that loads nothing new
         return min(up, key=lambda e: (e["level"], new(e), e.get("picture") is None, e["id"])) if up else None
     down = [e for e in rungs if e["level"] < ex["level"]]
@@ -272,8 +275,10 @@ def pick(slot, block, equipment, avoid, max_level=5, caution=(), who=None):
     never equipment). Each block takes the next of the top choices: at most slot "choices" (default 3), only
     those within slot "margin" (default 2) points of the best, one per family unless the slot lists them in
     "from". Exercises in "from" were chosen by the plan (and its safety review), so a caution stress or the level
-    cap doesn't rule them out; avoid always does."""
+    cap doesn't rule them out; avoid always does. A slot may add its own "avoid" and "caution" stresses."""
     named = set(slot.get("from") or [])
+    avoid = set(avoid) | set(slot.get("avoid") or [])
+    caution = set(caution) | set(slot.get("caution") or [])
     level = min(max_level, slot.get("max_level", 5))
     pool = [e for e in load()["exercises"] if e["pattern"] == slot["pattern"] and (
         usable(e, equipment, avoid, 5, (), who) if e["id"] in named else

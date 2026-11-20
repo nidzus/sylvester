@@ -45,7 +45,7 @@ Everything the wizard wrote is marked `"source": "setup"`; the wizard rewrites t
 Read what they entered and ask only what needs a second question. Keep it short and warm; use their name.
 
 - **Screening** (`health_profile.screening.answers`):
-  - A "yes" to `chest`, `dizzy` or `supervised` means they should see a doctor before training. Say so plainly, plan only gentle sessions until they confirm clearance, and record it in `restrictions.medical_advice`.
+  - A "yes" to `chest`, `dizzy` or `supervised` (and a heart condition or pregnancy) means they should see a doctor before training. Say so plainly: no plan at all until a doctor's go-ahead is recorded for each reason (`restrictions.cleared_on` with a date, `restrictions.cleared_for` listing what it covers: chest, dizzy, supervised, heart, pregnancy). `coach/rolling.py` lays out no sessions until then. When they have it, record `cleared_on`, `cleared_for` and what the doctor said in `restrictions.medical_advice`.
   - For other yeses, ask one question each: what it is and whether it's controlled.
 - **Conditions and medication:** for anything that changes heart rate or blood pressure (beta-blockers, for example), note that heart-rate zones need RPE instead.
 - **Injuries:** for each one marked "hurts now" or "getting better", ask:

@@ -1,0 +1,178 @@
+{
+  "_about": "Inputs for the parity test: tools/parity.py runs coach/rolling.py and coach/snapshot.py on each case, the TypeScript engine runs the same, and every day must match. Made-up people only.",
+  "scenarios": [
+    {
+      "id": "beginner",
+      "_about": "The Python test suite's person (tests/__init__.py): dumbbells, bench, bands, pull-up bar; avoids loaded spinal bending and twisting; careful with deep knee bends; tracks a knee.",
+      "health_profile": {
+        "training_background": {"experience": "beginner (< 1 yr)"},
+        "limits": {"avoid": ["spine_flex_loaded", "spine_rot_loaded"], "caution": ["knee_deep"]},
+        "signals": [{"key": "knee", "label": "Knee ache", "lo": 0, "hi": 3,
+                     "levels": {"2": {"day": "easy", "avoid_tags": ["knee_deep", "kneeling"], "note": "Knee-friendly day."}}}]
+      },
+      "equipment": {
+        "items": [{"name": "Adjustable dumbbells", "kind": "dumbbells", "spec": "2.5-24 kg"},
+                  {"name": "Bench", "kind": "bench", "spec": "Adjustable (incline)"},
+                  {"name": "Resistance bands", "kind": "bands", "spec": "Light, Medium, Mini bands"},
+                  {"name": "Pull-up bar", "kind": "pullup", "spec": "Doorway"}],
+        "load_steps": {"dumbbell": [2.5, 5, 7.5, 10, 12.5, 15, 17.5, 20, 22.5]}
+      },
+      "goals": {},
+      "plan": {
+        "name": "test",
+        "rolling": {"start": "2026-11-02", "weekdays": ["mon", "wed", "fri"], "rotation": ["a", "b"],
+                    "phases": [{"name": "Learn", "weeks": 4, "rpe_cap": 7}, {"name": "Build", "weeks": 4, "rpe_cap": 8}]},
+        "routines": {
+          "a": {"title": "Full body A", "exercises": [
+            {"ex": "goblet_squat", "sets": 3, "reps": "8–12", "load_kg": 12.5},
+            {"ex": "push_up", "sets": 3, "reps": "6–12"},
+            {"ex": "chest_supported_db_row", "sets": 3, "reps": "10–15", "load_kg": 10},
+            {"ex": "crunch", "sets": 2, "reps": "15"},
+            {"slot": {"pattern": "core_rot", "purpose": "core", "every_weeks": 3}, "sets": 2, "reps": "6–10"},
+            {"slot": {"pattern": "carry", "every_weeks": 3}, "sets": 3, "reps": "30"}]},
+          "b": {"title": "Full body B", "exercises": [
+            {"ex": "db_rdl", "sets": 3, "reps": "8–12", "load_kg": 12.5},
+            {"ex": "seated_db_press", "sets": 3, "reps": "8–12", "load_kg": 7.5},
+            {"slot": {"pattern": "lunge", "purpose": "strength", "every_weeks": 3}, "sets": 3, "reps": "8–10"},
+            {"slot": {"pattern": "pull_v", "every_weeks": "phase"}, "sets": 3, "reps": "5–8"},
+            {"slot": {"pattern": "core_lat", "every_weeks": 3}, "sets": 2, "reps": "20–30"}]},
+          "c": {"title": "Plain", "exercises": [
+            {"name": "Goblet squat", "lib": "Goblet_Squat", "sets": 3, "reps": "8–12", "load_kg": 10, "implement": "dumbbell"}]}
+        },
+        "overrides": {}
+      },
+      "workouts": [
+        {"date": "2026-11-02", "session": "Full body A", "duration_min": "50", "exercise": "Goblet squat", "sets": "3", "reps": "12;12;12", "load_kg": "12.5", "rpe": "7", "pain": "", "notes": ""},
+        {"date": "2026-11-02", "session": "Full body A", "duration_min": "50", "exercise": "Push-up", "sets": "3", "reps": "12;12;12", "load_kg": "", "rpe": "7", "pain": "", "notes": ""},
+        {"date": "2026-11-02", "session": "Full body A", "duration_min": "50", "exercise": "Chest-supported dumbbell row", "sets": "3", "reps": "15;15;14", "load_kg": "10", "rpe": "8", "pain": "", "notes": ""},
+        {"date": "2026-11-04", "session": "Full body B", "duration_min": "50", "exercise": "Dumbbell Romanian deadlift", "sets": "3", "reps": "10;10;9", "load_kg": "12.5", "rpe": "8", "pain": "", "notes": ""}
+      ],
+      "cases": [
+        {"id": "friday", "today": "2026-11-06"},
+        {"id": "three-weeks-on", "today": "2026-11-23"},
+        {"id": "build-phase", "today": "2026-12-07"},
+        {"id": "before-start", "today": "2026-10-30"},
+        {"id": "start-day", "today": "2026-11-02"},
+        {"id": "logged-today", "today": "2026-11-04"},
+        {"id": "knee-signal", "today": "2026-11-06", "checkins": [{"date": "2026-11-06", "mood": "3", "energy": "3", "stress": "2", "pain": "1", "knee": "2"}]},
+        {"id": "pain-6", "today": "2026-11-06", "checkins": [{"date": "2026-11-05", "pain": "6", "energy": "3"}]},
+        {"id": "low-energy", "today": "2026-11-06", "checkins": [{"date": "2026-11-06", "pain": "4", "energy": "1"}]},
+        {"id": "red-recovery", "today": "2026-11-06", "snapshot_recovery": {"latest_date": "2026-11-06", "status": "red"}},
+        {"id": "amber-recovery", "today": "2026-11-06", "snapshot_recovery": {"latest_date": "2026-11-05", "status": "amber"}},
+        {"id": "stale-recovery", "today": "2026-11-06", "snapshot_recovery": {"latest_date": "2026-11-03", "status": "red"}},
+        {"id": "fever", "today": "2026-11-06", "snapshot_recovery": {"latest_date": "2026-11-06", "status": "red", "temperature_deviation": 0.6}}
+      ]
+    },
+    {
+      "id": "home-gym",
+      "_about": "A fuller home gym and every plan feature: adaptations (one needing gear), focus and emphasis, condition preferences, unused gear, skipped household items, a first week capped at 2 sets, a deload, an optional day, overrides (rest, battery, a stand-in session), no-equipment stand-ins, a signal with an extra routine, and a log with hard, missing-RPE and painful sessions.",
+      "health_profile": {
+        "training_background": {"experience": "returning after a long break"},
+        "limits": {"avoid": ["spine_flex_loaded", "spine_rot_loaded", "spine_axial", "floor_lift", "impact", "spine_shear"],
+                   "caution": ["high_pressure", "overhead", "wrist_ext", "grip_heavy", "knee_deep", "hanging"],
+                   "max_level": 3, "conditions": ["lumbar_disc", "hypertension"], "no_household": ["stairs"], "unused": ["rings"]},
+        "coaching": {"focus": ["balance"], "emphasis": ["arms", "shoulder", "push_h"], "prefer": ["side_plank"], "dislike": ["bear_crawl"]},
+        "adaptations": [
+          {"match": {"ids": ["db_bench_press"]}, "how": "Feet up on the bench, back flat, no arch.", "removes": ["spine_ext_end"], "source": "example"},
+          {"match": {"families": ["push_up"]}, "how": "Hands on dumbbell handles, wrists straight.", "removes": ["wrist_ext"], "needs": ["dumbbell"], "source": "example"},
+          {"match": {"ids": ["goblet_box_squat"]}, "how": "Stay upright, sit back to the box.", "source": "example"},
+          {"match": {"patterns": ["carry"]}, "how": "Tall posture, slow steps.", "source": "example"}
+        ],
+        "signals": [
+          {"key": "leg", "label": "Leg sensation", "lo": 0, "hi": 3,
+           "levels": {"1": {"day": "easy", "avoid_tags": ["spine_axial", "hip_deep"], "add_routine": "back", "rpe_cap": 6, "note": "Back-friendly day."},
+                      "3": {"day": "recovery", "note": "Walk and the back routine only."}},
+           "stop": "New weakness or numbness: see a doctor."}
+        ]
+      },
+      "equipment": {
+        "items": [{"name": "Adjustable dumbbells", "kind": "dumbbells", "spec": "2-24 kg"},
+                  {"name": "Barbell & plates", "kind": "barbell", "spec": "20 kg bar"},
+                  {"name": "Squat stands", "kind": "rack", "spec": ""},
+                  {"name": "Bench", "kind": "bench", "spec": "Adjustable"},
+                  {"name": "Resistance bands", "kind": "bands", "spec": "Light, heavy"},
+                  {"name": "Gymnastic rings", "kind": "rings", "spec": ""},
+                  {"name": "Rowing machine", "kind": "cardio", "spec": "Air rower"},
+                  {"name": "Polar H10 heart-rate strap", "spec": ""}],
+        "load_steps": {"dumbbell": [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24],
+                       "barbell": [20, 25, 30, 35, 40, 45, 50, 55, 60]}
+      },
+      "goals": {"goals": [{"title": "Build muscle and strength", "type": "muscle", "status": "active"},
+                          {"title": "Mobility", "type": "mobility", "status": "active"},
+                          {"title": "Balance", "type": "balance", "status": "paused"}]},
+      "plan": {
+        "name": "strength",
+        "rolling": {"start": "2026-11-02", "weekdays": ["mon", "wed", "fri"], "rotation": ["a", "b"],
+                    "optional": {"routine": "extra", "weekdays": ["sat"]},
+                    "rest_day": {"title": "Rest or easy walk", "note": "30–45 min easy walk"},
+                    "recovery_routine": "back", "min_rest_days": 1,
+                    "phases": [{"name": "Learn", "weeks": 1, "rpe_cap": 7, "sets_max": 2},
+                               {"name": "Build", "weeks": 2, "rpe_cap": 8},
+                               {"name": "Deload", "weeks": 1, "deload": true, "rpe_cap": 6},
+                               {"name": "Strength", "weeks": 2, "rpe_cap": 8}],
+                    "rules": {"hard_rpe": 9, "easy_rpe": 7, "pain_stop": 3}},
+        "routines": {
+          "a": {"title": "Strength A", "focus": "Push, squat", "duration": "50 min", "coach_note": "Breathe out on every effort.",
+                "warmup": ["Cat-cow × 8", "Band pull-apart × 15"], "exercises": [
+            {"ex": "db_bench_press", "sets": 3, "reps": "8–12", "load_kg": 14, "rest": "2 min"},
+            {"ex": "goblet_box_squat", "sets": 3, "reps": "8–12", "load_kg": 12, "anywhere_ex": "chair_squat"},
+            {"ex": "push_up", "sets": 3, "reps": "6–12", "anywhere_note": "On the floor or against a wall."},
+            {"ex": "barbell_rdl", "sets": 3, "reps": "8–10", "load_kg": 30},
+            {"slot": {"pattern": "pull_h", "purpose": "posture", "every_weeks": 2}, "sets": 3, "reps": "10–15"},
+            {"slot": {"pattern": "arms", "every_weeks": 2, "from": ["db_curl", "hammer_curl", "band_curl"]}, "sets": 2, "reps": "10–15"},
+            {"slot": {"pattern": "carry", "every_weeks": 3}, "sets": 3, "reps": {"m": "20–30", "s": "30"}}]},
+          "b": {"title": "Strength B", "focus": "Pull, hinge", "duration": "50 min", "exercises": [
+            {"ex": "chest_supported_db_row", "sets": 3, "reps": "10–15", "load_kg": 12},
+            {"ex": "db_hip_thrust", "sets": 3, "reps": "10–15", "load_kg": 16, "anywhere_ex": "skip"},
+            {"ex": "seated_db_press", "sets": 3, "reps": "8–12", "load_kg": 8},
+            {"ex": "incline_push_up", "sets": 2, "reps": "8–15"},
+            {"slot": {"pattern": "pull_v", "every_weeks": "phase"}, "sets": 3, "reps": "8–12"},
+            {"slot": {"pattern": "core_lat", "purpose": "core", "every_weeks": 2}, "sets": 2, "reps": {"reps": "8–12", "s": "20–30"}},
+            {"slot": {"pattern": "balance", "every_weeks": 2}, "sets": 2, "reps": {"s": "30"}}]},
+          "extra": {"title": "Arms and shoulders", "exercises": [
+            {"slot": {"pattern": "shoulder", "every_weeks": 2}, "sets": 2, "reps": "12–15"},
+            {"ex": "hammer_curl", "sets": 2, "reps": "10–12", "load_kg": 8},
+            {"ex": "band_pushdown", "sets": 2, "reps": "12–15"}]},
+          "back": {"title": "Back care", "exercises": [
+            {"ex": "mcgill_curl_up", "sets": 2, "reps": "6"},
+            {"ex": "bird_dog", "sets": 2, "reps": "6"},
+            {"ex": "side_plank_knees", "sets": 2, "reps": "20 s"}]}
+        },
+        "overrides": {
+          "2026-11-07": {"kind": "session", "title": "Calibration 1: body, mobility, balance", "battery": "calibration-1"},
+          "2026-11-10": {"kind": "rest", "title": "Travel", "note": "Walk at the airport."},
+          "2026-11-18": {"kind": "session", "title": "Strength A (short)", "routine": "a", "coach_note": "Short on time.",
+                         "exercises": [{"ex": "db_bench_press", "name": "Dumbbell bench press", "sets": 2, "reps": "8–12", "load_kg": 14}]}
+        }
+      },
+      "workouts": [
+        {"date": "2026-11-02", "session": "Strength A", "exercise": "Dumbbell bench press", "sets": "2", "reps": "12;12", "load_kg": "14", "rpe": "7", "pain": "", "notes": ""},
+        {"date": "2026-11-02", "session": "Strength A", "exercise": "Goblet box squat", "sets": "3", "reps": "12;12;12", "load_kg": "12", "rpe": "", "pain": "", "notes": ""},
+        {"date": "2026-11-02", "session": "Strength A", "exercise": "Push-up", "sets": "2", "reps": "12;12", "load_kg": "", "rpe": "7", "pain": "", "notes": ""},
+        {"date": "2026-11-04", "session": "Strength B", "exercise": "Chest-supported dumbbell row", "sets": "2", "reps": "15;15", "load_kg": "12", "rpe": "9", "pain": "", "notes": ""},
+        {"date": "2026-11-04", "session": "Strength B", "exercise": "Seated dumbbell press", "sets": "2", "reps": "9;8", "load_kg": "8", "rpe": "8", "pain": "3", "notes": ""},
+        {"date": "2026-11-04", "session": "Strength B", "exercise": "Dumbbell hip thrust", "sets": "3", "reps": "12;12;12", "load_kg": "16", "rpe": "7", "pain": "4", "notes": ""},
+        {"date": "2026-11-04", "session": "Strength B", "exercise": "Incline push-up", "sets": "2", "reps": "15;15", "load_kg": "", "rpe": "10", "pain": "", "notes": ""},
+        {"date": "2026-11-06", "session": "Strength A", "exercise": "Dumbbell bench press", "sets": "3", "reps": "12;12;12", "load_kg": "16", "rpe": "9.5", "pain": "", "notes": ""},
+        {"date": "2026-11-06", "session": "Strength A", "exercise": "Goblet box squat", "sets": "3", "reps": "8;7;7", "load_kg": "12", "rpe": "8", "pain": "", "notes": ""},
+        {"date": "2026-11-11", "session": "Arms and shoulders", "exercise": "Hammer curl", "sets": "2", "reps": "12;12", "load_kg": "8", "rpe": "6", "pain": "", "notes": ""}
+      ],
+      "daily": "synthetic",
+      "cases": [
+        {"id": "first-week", "today": "2026-11-03"},
+        {"id": "after-hard", "today": "2026-11-05"},
+        {"id": "two-hard", "today": "2026-11-07"},
+        {"id": "override-week", "today": "2026-11-09"},
+        {"id": "deload", "today": "2026-11-24"},
+        {"id": "after-plan", "today": "2026-12-12"},
+        {"id": "leg-1", "today": "2026-11-09", "checkins": [{"date": "2026-11-09", "pain": "2", "leg": "1"}]},
+        {"id": "leg-3", "today": "2026-11-09", "checkins": [{"date": "2026-11-09", "leg": "3"}]},
+        {"id": "wearable", "today": "2026-11-09", "recovery_from_daily": true},
+        {"id": "wearable-late", "today": "2026-11-20", "recovery_from_daily": true},
+        {"id": "rest-mode-on", "today": "2026-11-20", "recovery_from_daily": true, "rest_mode": ["2026-11-18", "2026-11-20"]},
+        {"id": "rest-mode-ended", "today": "2026-11-20", "recovery_from_daily": true, "rest_mode": ["2026-11-14", "2026-11-17"]},
+        {"id": "rest-mode-long-ago", "today": "2026-11-20", "recovery_from_daily": true, "rest_mode": ["2026-10-01", "2026-10-05"]}
+      ]
+    }
+  ]
+}

@@ -14,7 +14,7 @@ import os
 import sys
 from collections import defaultdict
 from datetime import date, datetime, timedelta
-from statistics import mean
+from statistics import mean, pstdev
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
@@ -24,6 +24,7 @@ DATA_DIR = str(paths.RECORDS)
 SRC = str(paths.SOURCES)
 
 OURA = os.path.join(SRC, "oura_daily.csv")
+OURA_WEIGHT = os.path.join(SRC, "oura_weight.csv")
 WHOOP = os.path.join(SRC, "whoop_daily.csv")
 WITHINGS_M = os.path.join(SRC, "withings_measures.csv")
 # Daily score bands per ring/strap: (red below, green from). Oura readiness and WHOOP recovery differ.
@@ -39,6 +40,16 @@ CHECKINS = os.path.join(DATA_DIR, "checkins.csv")
 WORKOUT_LOG = os.path.join(DATA_DIR, "workout_log.csv")
 
 MIN_REAL_SLEEP_H = 2.0  # shorter records are naps or a ring that came off
+REST_MODE_BACK_DAYS = 28  # a Rest Mode that ended longer ago than this no longer shapes the return to training
+PART_LOW = 70  # a readiness or sleep part under this is Oura's "pay attention"
+READINESS_PARTS = {"hrv_balance": "HRV balance", "resting_hr_contrib": "resting heart rate",
+                   "activity_balance_contrib": "activity balance", "body_temperature_contrib": "body temperature",
+                   "previous_day_activity_contrib": "previous day's activity", "previous_night_contrib": "previous night",
+                   "recovery_index_contrib": "recovery index", "sleep_balance_contrib": "sleep balance",
+                   "sleep_regularity_contrib": "sleep regularity"}
+SLEEP_PARTS = {"sleep_total_contrib": "total sleep", "sleep_efficiency_contrib": "efficiency",
+               "sleep_restfulness_contrib": "restfulness", "sleep_rem_contrib": "REM", "sleep_deep_contrib": "deep sleep",
+               "sleep_latency_contrib": "time to fall asleep", "sleep_timing_contrib": "timing"}
 
 
 def read_csv(path):
@@ -62,8 +73,14 @@ def avg(rows, key):
     return round(mean(vals), 1) if vals else None
 
 
+def night_h(r):
+    """The night's own sleep hours. total_sleep_h adds naps in (Oura since 2026-11); older rows and other sources only have the total."""
+    v = num(r.get("night_sleep_h"))
+    return v if v is not None else num(r.get("total_sleep_h"))
+
+
 def sleep_rows(rows):
-    return [r for r in rows if (num(r.get("total_sleep_h")) or 0) >= MIN_REAL_SLEEP_H]
+    return [r for r in rows if (night_h(r) or 0) >= MIN_REAL_SLEEP_H]
 
 
 def recovery_source():
@@ -74,6 +91,29 @@ def recovery_source():
         if rows and (best is None or rows[-1]["date"] > best[1][-1]["date"]):
             best = (name, rows)
     return best
+
+
+def rest_mode(rows, today):
+    """Oura Rest Mode from the rest_mode column: {"on", "since", "ended"}, or None when the rows don't have it.
+
+    on: the latest known day is in Rest Mode and is today or yesterday; since: the first day of that run.
+    ended: the first day after the last Rest Mode day, when that was within REST_MODE_BACK_DAYS."""
+    known = [r for r in rows if num(r.get("rest_mode")) is not None]
+    if not known:
+        return None
+    last = known[-1]
+    on = num(last["rest_mode"]) == 1 and (today - date.fromisoformat(last["date"])).days <= 1
+    since = ended = None
+    if on:
+        i = len(known) - 1
+        while i > 0 and num(known[i - 1]["rest_mode"]) == 1:
+            i -= 1
+        since = known[i]["date"]
+    else:
+        prev = next((r for r in reversed(known) if num(r["rest_mode"]) == 1), None)
+        if prev and (today - date.fromisoformat(prev["date"])).days <= REST_MODE_BACK_DAYS:
+            ended = (date.fromisoformat(prev["date"]) + timedelta(days=1)).isoformat()
+    return {"on": on, "since": since, "ended": ended}
 
 
 def recovery(today):
@@ -89,7 +129,7 @@ def recovery(today):
     base = [by_date[d] for d in d60 if d in by_date]
 
     latest = next((r for r in reversed(rows) if num(r.get("readiness_score")) is not None), rows[-1])
-    last_night = next((r for r in reversed(rows) if (num(r.get("total_sleep_h")) or 0) >= MIN_REAL_SLEEP_H), None)
+    last_night = next((r for r in reversed(rows) if (night_h(r) or 0) >= MIN_REAL_SLEEP_H), None)
 
     metrics = {}
     for key, label, src in [
@@ -116,19 +156,21 @@ def recovery(today):
     rhr = metrics["lowest_hr"]
     if rhr["last_7d"] is not None and rhr["baseline_60d"] is not None and rhr["last_7d"] - rhr["baseline_60d"] >= 3:
         flags.append(f"Night resting HR up {round(rhr['last_7d'] - rhr['baseline_60d'], 1)} bpm vs baseline")
-    sl = metrics["total_sleep_h"]["last_7d"]
+    sl = avg([{"night": night_h(r)} for r in last7], "night")  # the nights alone: naps don't make up for short nights here
     if sl is not None and sl < 6.5:
-        flags.append(f"Averaging {sl} h sleep this week (under 6.5 h)")
+        flags.append(f"Averaging {sl} h of night sleep this week (under 6.5 h)")
     temp = num(latest.get("temperature_deviation"))
     if temp is not None and temp >= 0.5:
         flags.append(f"Body temperature +{temp} °C — possible illness, don't train hard")
-    short_nights = sum(1 for r in last7 if 0 < (num(r.get("total_sleep_h")) or 0) < MIN_REAL_SLEEP_H or not r.get("total_sleep_h"))
+    short_nights = sum(1 for r in last7 if 0 < (night_h(r) or 0) < MIN_REAL_SLEEP_H or not night_h(r))
     if short_nights >= 3:
         flags.append(f"{short_nights} of the last 7 nights have missing or partial sleep data — trends less reliable")
 
     score = num(latest.get("readiness_score"))
     hard_flags = [f for f in flags if "data" not in f]
-    if (temp is not None and temp >= 0.5) or (score is not None and score < red_below) or len(hard_flags) >= 2:
+    rm = rest_mode(rows, today)
+    resting = bool(rm and rm["on"])
+    if resting or (temp is not None and temp >= 0.5) or (score is not None and score < red_below) or len(hard_flags) >= 2:
         status = "red"
     elif (score is not None and score >= green_from) and not hard_flags:
         status = "green"
@@ -137,6 +179,8 @@ def recovery(today):
     # Why, in the words the phone shows: the score against its bands, then what the flags add.
     name = metrics["readiness_score"]["label"].lower()
     why = []
+    if resting:
+        why.append(f"Oura rest mode on since {rm['since']}")
     if temp is not None and temp >= 0.5:
         why.append(f"temperature +{temp} °C")
     if score is not None:
@@ -169,7 +213,63 @@ def recovery(today):
         },
         "metrics": metrics,
         "flags": flags,
+        "rest_mode": rm,
     }
+
+
+def clock_min(ts):
+    """'2026-11-18T23:41' -> minutes after noon (23:41 -> 701, 00:30 -> 750), so bedtimes either side of midnight average."""
+    try:
+        h, m = int(ts[11:13]), int(ts[14:16])
+    except (TypeError, ValueError):
+        return None
+    return (h * 60 + m - 720) % 1440
+
+
+def clock_str(mins):
+    """Minutes after noon -> 'HH:MM'."""
+    if mins is None:
+        return None
+    t = int(round(mins + 720)) % 1440
+    return f"{t // 60:02d}:{t % 60:02d}"
+
+
+def oura_detail(today):
+    """What the recovery colour can't show: which parts of today's readiness and last night's sleep score are low,
+    and bedtimes (last night, the last 7 against the 60 before). Oura only; None for other sources or older rows."""
+    rows = sorted(read_csv(OURA), key=lambda r: r["date"])
+    rows = [r for r in rows if r["date"] <= today.isoformat()]
+    if not rows:
+        return None
+    out = {}
+    newer = [k for k in READINESS_PARTS if k not in ("hrv_balance", "resting_hr_contrib")]  # rows pulled since 2026-11
+    latest = next((r for r in reversed(rows) if any(num(r.get(k)) is not None for k in newer)), None)
+    if latest:
+        parts = {label: num(latest.get(k)) for k, label in READINESS_PARTS.items() if num(latest.get(k)) is not None}
+        out["readiness_parts"] = {"date": latest["date"], "parts": parts,
+                                  "low": sorted((k for k, v in parts.items() if v < PART_LOW), key=parts.get)}
+    night = next((r for r in reversed(rows) if any(num(r.get(k)) is not None for k in SLEEP_PARTS)), None)
+    if night:
+        parts = {label: num(night.get(k)) for k, label in SLEEP_PARTS.items() if num(night.get(k)) is not None}
+        out["sleep_parts"] = {"date": night["date"], "parts": parts,
+                              "low": sorted((k for k, v in parts.items() if v < PART_LOW), key=parts.get)}
+    beds = [r for r in rows if r.get("bedtime_start")]
+    if beds:
+        def window(a, b):
+            lo, hi = (today - timedelta(days=b)).isoformat(), (today - timedelta(days=a)).isoformat()
+            return [m for m in (clock_min(r["bedtime_start"]) for r in beds if lo < r["date"] <= hi) if m is not None]
+        w7, w60 = window(0, 7), window(7, 67)
+        last = beds[-1]
+        out["bedtime"] = {
+            "last_date": last["date"],
+            "last_bed": (last.get("bedtime_start") or "")[11:16] or None,
+            "last_wake": (last.get("bedtime_end") or "")[11:16] or None,
+            "avg_7d": clock_str(mean(w7)) if w7 else None,
+            "spread_7d_min": round(pstdev(w7)) if len(w7) >= 3 else None,
+            "avg_60d": clock_str(mean(w60)) if w60 else None,
+            "spread_60d_min": round(pstdev(w60)) if len(w60) >= 3 else None,
+        }
+    return out or None
 
 
 def training(today):
@@ -236,8 +336,12 @@ def load_json(path):
 
 
 def scale_rows():
-    """Weight and body-fat readings from Apple Health and Withings, one per day (Withings wins a tie)."""
+    """Weight and body-fat readings, one per day: Oura's copy of the profile weight (recorded when it changes),
+    then Apple Health, then Withings, each winning a tie over the one before."""
     by = {}
+    for r in read_csv(OURA_WEIGHT):
+        if num(r.get("weight_kg")):
+            by[r["date"]] = {"date": r["date"], "weight_kg": r["weight_kg"], "body_fat_pct": None, "source": "Oura profile"}
     for r in read_csv(APPLE_DAILY):
         if num(r.get("weight_kg")) or num(r.get("body_fat_pct")):
             by[r["date"]] = {"date": r["date"], "weight_kg": r.get("weight_kg"), "body_fat_pct": r.get("body_fat_pct"), "source": "Apple Health"}
@@ -387,10 +491,26 @@ def to_markdown(s):
               f"- {'WHOOP recovery' if r.get('source') == 'WHOOP' else 'Readiness'} ({r['latest_date']}): **{r['readiness_today']}**"
               + (f", temperature {r['temperature_deviation']:+} °C" if r['temperature_deviation'] is not None else "")
               + (f", resilience *{r['resilience']}*" if r['resilience'] else "")]
+        rm = r.get("rest_mode") or {}
+        if rm.get("on"):
+            L.append(f"- **Oura rest mode on** since {rm['since']}: rest; the first two sessions after it are easy (RPE ≤ 6)")
+        elif rm.get("ended"):
+            L.append(f"- Oura rest mode ended {rm['ended']}: the first two sessions since are easy (RPE ≤ 6)")
         n = r.get("last_night")
         if n:
             L.append(f"- Last full night ({n['date']}): {n['sleep_h']} h sleep, deep {n['deep_h']} h, "
                      f"REM {n['rem_h']} h, HRV {n['hrv']} ms, lowest HR {n['lowest_hr']}")
+        od = s.get("oura_detail") or {}
+        bt = od.get("bedtime")
+        if bt:
+            spread = lambda m: f" (±{m} min)" if m is not None else ""  # noqa: E731
+            L.append(f"- Bedtime ({bt['last_date']}): {bt['last_bed']} → {bt['last_wake']}; "
+                     f"last 7 nights {bt['avg_7d']}{spread(bt['spread_7d_min'])}, usual {bt['avg_60d']}{spread(bt['spread_60d_min'])}")
+        for key, what in (("readiness_parts", "Readiness"), ("sleep_parts", "Sleep score")):
+            p = od.get(key)
+            if p:
+                low = ", ".join(f"{k} {p['parts'][k]}" for k in p["low"])
+                L.append(f"- {what} parts ({p['date']}): " + (f"low (under {PART_LOW}): {low}" if low else "none low"))
         L += ["", "| Metric | Last 7 d | 60-d baseline | Δ |", "|---|---|---|---|"]
         for m in r["metrics"].values():
             d = f"{m['delta_pct']:+}%" if m["delta_pct"] is not None else "–"
@@ -472,6 +592,7 @@ def build(write=True, today=None):
     s = {
         "generated": datetime.now().isoformat(timespec="seconds"),
         "recovery": recovery(today),
+        "oura_detail": oura_detail(today),
         "training": training(today),
         "logged_workouts": logged_workouts(today),
         "wellbeing": wellbeing(today),

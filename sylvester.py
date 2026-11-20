@@ -15,6 +15,7 @@
     python sylvester.py images               download pictures for every exercise the plan uses
     python sylvester.py plan                 rebuild the rolling 14 days now and show them
     python sylvester.py next                 the one next step (Claude Code runs this when a session starts; init sets that up)
+    python sylvester.py export [file]        everything the iPhone app needs, in one file (no passwords or tokens)
 
 On macOS use `python3` instead of `python`.
 """
@@ -80,6 +81,25 @@ def migrate(quiet=False):
     return old, int(s.get("schema") or 0)
 
 
+def link_settings(cfg, data, old, hook):
+    """Claude Code's local settings for this app folder (uncommitted), updated in place and returned:
+    access to the data folder, and a SessionStart hook running `next` (one line on where setup stands).
+    After a move (a new app folder or data folder) the stale entries are replaced, not kept beside the new ones:
+    the previously linked data folder loses its access, and the hook points at this app folder."""
+    dirs = cfg.setdefault("permissions", {}).setdefault("additionalDirectories", [])
+    if old and str(old) != str(data) and str(old) in dirs:
+        dirs.remove(str(old))
+    if str(data) not in dirs:
+        dirs.append(str(data))
+    starts = cfg.setdefault("hooks", {}).setdefault("SessionStart", [])
+    ours = [h for s in starts for h in s.get("hooks", []) if h.get("command", "").endswith("sylvester.py\" next")]
+    for h in ours:
+        h["command"] = hook
+    if not ours:
+        starts.append({"hooks": [{"type": "command", "command": hook, "timeout": 20}]})
+    return cfg
+
+
 def init(folder=None):
     data = Path(folder).expanduser().resolve() if folder else paths.data_root()
     if (data / ".git").exists() or data == APP or APP in data.parents:
@@ -96,20 +116,16 @@ def init(folder=None):
     s["python"] = PY
     s["schema"] = s.get("schema") or paths.SCHEMA  # a new folder starts at the current layout
     settings.write_text(json.dumps(s, indent=2), encoding="utf-8")
+    try:
+        old = json.loads(paths.POINTER.read_text(encoding="utf-8")).get("data") if paths.POINTER.exists() else None
+    except ValueError:
+        old = None
     paths.POINTER.write_text(json.dumps({"data": str(data)}, indent=2), encoding="utf-8")
-    # Let Claude Code read and write the data folder from this app folder (a local, uncommitted setting).
     local = APP / ".claude" / "settings.local.json"
     cfg = json.loads(local.read_text(encoding="utf-8")) if local.exists() else {}
-    dirs = cfg.setdefault("permissions", {}).setdefault("additionalDirectories", [])
-    if str(data) not in dirs:
-        dirs.append(str(data))
-    # Each session starts with `next`: one line telling the Coach where this person is in setting up.
     hook = f'"{Path(PY).as_posix()}" "{(APP / "sylvester.py").as_posix()}" next'
-    starts = cfg.setdefault("hooks", {}).setdefault("SessionStart", [])
-    if not any(h.get("command", "").endswith("sylvester.py\" next") for s in starts for h in s.get("hooks", [])):
-        starts.append({"hooks": [{"type": "command", "command": hook, "timeout": 20}]})
     local.parent.mkdir(exist_ok=True)
-    local.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
+    local.write_text(json.dumps(link_settings(cfg, data, old, hook), indent=2), encoding="utf-8")
     if (APP / ".git").exists():
         subprocess.call(["git", "config", "core.hooksPath", "tools/hooks"], cwd=str(APP))
     print(f"Data folder ready: {data}")
@@ -321,6 +337,62 @@ def next_step():
     return f"Sylvester: ready. /coach today gives today's session; /coach sync sends the plan to the phone.{stale}"
 
 
+EXPORT_DAYS = 400  # wearable history the app gets: a year for baselines and trends
+
+
+def export_app(target=None):
+    """One file with the person's profile, active plan, calibration, logs and recent wearable days, for the iPhone
+    app's "Import from the desktop" (mobile/src/store/model.ts fromExport reads it). Secrets, medical records
+    (records/clinical_summary.*) and pictures stay here."""
+    import csv
+    from datetime import date, timedelta
+
+    def rows(path, since=None):
+        if not path.exists():
+            return []
+        with open(path, newline="", encoding="utf-8") as f:
+            return [r for r in csv.DictReader(f) if not since or r.get("date", "") >= since]
+
+    since = (date.today() - timedelta(days=EXPORT_DAYS)).isoformat()
+    plan_dir = paths.active_plan_dir()
+    plan = None
+    if plan_dir:
+        program = plan_dir / "program.md"
+        plan = {"name": plan_dir.name,
+                "program": program.read_text(encoding="utf-8") if program.exists() else "",
+                "rolling": paths.read_json(plan_dir / "rolling.json", {}) or {},
+                "routines": {f.stem: paths.read_json(f) for f in sorted((plan_dir / "routines").glob("*.json"))},
+                "overrides": {f.stem: paths.read_json(f) for f in sorted((plan_dir / "overrides").glob("*.json"))
+                              if f.stem >= date.today().isoformat()}}
+    shared = paths.PLANS / "routines"
+    apple = []
+    for r in rows(paths.SOURCES / "apple_daily.csv", since):
+        r = {k: v for k, v in r.items() if v not in ("", None)}
+        if r.get("hrv_sdnn_elitehrv"):
+            r["avg_hrv"] = r["hrv_sdnn_elitehrv"]
+        if r.get("resting_hr_elitehrv"):
+            r["lowest_hr"] = r["resting_hr_elitehrv"]
+        apple.append(r)
+    doc = {
+        "format": "sylvester-export", "version": 1, "exported": datetime.now().isoformat(timespec="seconds"), "source": "desktop",
+        "profile": {k: paths.read_json(paths.PROFILE / f"{k}.json", {}) or {} for k in ("health_profile", "equipment", "goals")},
+        "plan": plan,
+        "shared_routines": {f.stem: paths.read_json(f) for f in sorted(shared.glob("*.json"))} if shared.exists() else {},
+        "calibration": paths.read_json(paths.PLANS / "calibration.json", {}) or {},
+        "workouts": rows(paths.RECORDS / "workout_log.csv"),
+        "checkins": rows(paths.RECORDS / "checkins.csv"),
+        "assessment_rows": rows(paths.RECORDS / "assessments.csv"),
+        "daily": {name: [{k: v for k, v in r.items() if v not in ("", None)} for r in rows(paths.SOURCES / f, since)]
+                  for name, f in (("Oura", "oura_daily.csv"), ("WHOOP", "whoop_daily.csv"))},
+    }
+    doc["daily"]["Apple Health"] = apple
+    doc["daily"] = {k: v for k, v in doc["daily"].items() if v}
+    out = Path(target) if target else paths.DATA / "sylvester-export.json"
+    out.write_text(json.dumps(doc, ensure_ascii=False), encoding="utf-8")
+    print(f"Wrote {out} ({out.stat().st_size // 1024} KB). AirDrop it to your iPhone or save it to iCloud Drive, then in the app:")
+    print("Settings > Import from the desktop. It holds your health profile: keep it private and delete it after importing.")
+
+
 def main():
     try:
         sys.stdout.reconfigure(encoding="utf-8")  # Windows consoles default to a code page without → or ·
@@ -364,6 +436,8 @@ def main():
         images()
     elif cmd == "plan":
         sys.exit(run("coach/rolling.py", *a[1:]))
+    elif cmd == "export":
+        export_app(a[1] if len(a) > 1 else None)
     elif cmd == "next":
         try:
             print(next_step())

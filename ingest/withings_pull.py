@@ -9,7 +9,7 @@ Setup once:
     2. python sylvester.py connect withings
 
 Every day:
-    python sylvester.py pull withings                         # the last 7 days (the daily task does this)
+    python sylvester.py pull withings                         # catches up from the last stored day, at least 7 days (the daily task does this)
     python ingest/withings_pull.py pull 2024-01-01 2026-09-04 # a range (history back to 2009 if you have it)
 
 Writes, in <data>/sources/:
@@ -19,8 +19,9 @@ Writes, in <data>/sources/:
 
 import sys
 import time
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 
+import catch_up
 import oauth_local as oa
 from oauth_local import paths
 
@@ -118,8 +119,12 @@ if __name__ == "__main__":
     if args[:1] == ["auth"]:
         auth()
     elif args[:1] == ["pull"]:
-        end = args[2] if len(args) > 2 else date.today().isoformat()
-        start = args[1] if len(args) > 1 else (date.fromisoformat(end) - timedelta(days=6)).isoformat()
+        if len(args) > 2:
+            start, end = args[1], args[2]
+        else:  # catch up from the last stored day, at least the last week (ingest/catch_up.py)
+            start, end, note = catch_up.window(DAILY)
+            if note:
+                print(note)
         pull(start, end)
     else:
         print(__doc__)

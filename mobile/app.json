@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Sylvester",
+    "slug": "sylvester",
+    "scheme": "sylvester",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.example.sylvester",
+      "buildNumber": "1",
+      "supportsTablet": false,
+      "config": { "usesNonExemptEncryption": false },
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "Sylvester reads your sleep, heart rate variability, resting heart rate, steps, weight and blood pressure to adjust your training to how recovered you are. It never writes to Apple Health and keeps this data on your iPhone."
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-status-bar",
+      "expo-sqlite",
+      "expo-secure-store",
+      "expo-image",
+      "expo-web-browser",
+      "expo-sharing",
+      ["@kingstinct/react-native-healthkit", {
+        "NSHealthShareUsageDescription": "Sylvester reads your sleep, heart rate variability, resting heart rate, steps, weight and blood pressure to adjust your training to how recovered you are. It never writes to Apple Health and keeps this data on your iPhone.",
+        "NSHealthUpdateUsageDescription": false,
+        "background": false
+      }]
+    ],
+    "experiments": { "typedRoutes": true },
+    "extra": {
+      "serverUrl": ""
+    }
+  }
+}

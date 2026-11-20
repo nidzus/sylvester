@@ -9,7 +9,7 @@ Setup once:
     2. python sylvester.py connect whoop
 
 Every day:
-    python sylvester.py pull whoop                         # the last 3 days (the daily task does this)
+    python sylvester.py pull whoop                         # catches up from the last stored day, at least 7 days (the daily task does this)
     python ingest/whoop_pull.py pull 2026-08-01 2026-09-04 # a range
 
 Writes <data>/sources/whoop_daily.csv, one row per day (the day you woke up), with the same column
@@ -21,6 +21,7 @@ import time
 from datetime import date, datetime, timedelta
 from statistics import mean
 
+import catch_up
 import oauth_local as oa
 from oauth_local import paths
 
@@ -134,8 +135,12 @@ if __name__ == "__main__":
     if args[:1] == ["auth"]:
         auth()
     elif args[:1] == ["pull"]:
-        end = args[2] if len(args) > 2 else date.today().isoformat()
-        start = args[1] if len(args) > 1 else (date.fromisoformat(end) - timedelta(days=2)).isoformat()
+        if len(args) > 2:
+            start, end = args[1], args[2]
+        else:  # catch up from the last stored day, at least the last week (ingest/catch_up.py)
+            start, end, note = catch_up.window(CSV)
+            if note:
+                print(note)
         pull(start, end)
     else:
         print(__doc__)

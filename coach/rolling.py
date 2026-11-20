@@ -11,8 +11,10 @@ This script re-lays the next 14 days every time it runs (the daily task and ever
 - Hard days ease what follows: a session with RPE >= rules.hard_rpe or pain >= rules.pain_stop
   makes the next session easy; two hard sessions in four days add a rest day.
 - Recovery and check-ins adjust today: wearable status red -> recovery day, amber -> easy;
-  temperature +0.5 °C -> rest; check-in pain >= 6 -> recovery; personal signals apply their
-  own levels (see core/signals.py).
+  temperature +0.5 °C or Oura Rest Mode on -> rest; check-in pain >= 6 -> recovery; personal
+  signals apply their own levels (see core/signals.py).
+- Back from Rest Mode (on now, or ended within 28 days): the first two main sessions from then
+  (logged, laid out, or the Coach's overrides) are easy with RPE <= 6.
 - Loads: per exercise, from the last time it was logged. Top of the rep range on every set at
   RPE <= 8 -> one load step up; RPE >= 9.5, missed reps or pain -> hold or one step down.
 - Phases: rolling.json "phases" (weeks from "start"); deload weeks cut sets.
@@ -75,6 +77,35 @@ RULES = {
     "deload": {"sets_pct": 60},
     "progress_rpe": 8, "regress_rpe": 9.5,
 }
+# Returning after illness (coach/knowledge/recovery.md): after Oura Rest Mode, the first sessions are easy at RPE <= 6.
+BACK_SESSIONS, BACK_RPE = 2, 6
+
+
+# Who needs a doctor's go-ahead before any plan (the iPhone app's mobile/src/engine/clearance.ts is the same rule):
+# a yes to chest pain, dizziness or fainting, or "train only under supervision" in the health check; a heart condition
+# (the health-check question also covers high blood pressure: a yes counts unless they ticked hypertension); pregnancy.
+# A go-ahead covers the reasons it was recorded for (restrictions.cleared_for, with a cleared_on date); a new reason
+# needs a new one. Until then every day is laid out as a rest day saying so.
+REASONS = {"chest": "chest pain", "dizzy": "dizziness or fainting", "supervised": "a doctor's advice to exercise only under supervision",
+           "heart": "a heart condition", "pregnancy": "pregnancy (your care provider's OK)"}
+GATE_TITLE = "First, a doctor's go-ahead"
+
+
+def clearance_keys(prof):
+    a = (prof.get("screening") or {}).get("answers") or {}
+    conds = (prof.get("limits") or {}).get("conditions") or []
+    out = [k for k in ("chest", "dizzy", "supervised") if a.get(k) == "yes"]
+    if "heart" in conds or (a.get("heart") == "yes" and "hypertension" not in conds):
+        out.append("heart")
+    if "pregnancy" in conds:
+        out.append("pregnancy")
+    return out
+
+
+def needs_clearance(prof):
+    r = prof.get("restrictions") or {}
+    covered = set(r.get("cleared_for") or []) if re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(r.get("cleared_on") or "")) else set()
+    return [REASONS[k] for k in clearance_keys(prof) if k not in covered]
 
 
 def read_csv(path):
@@ -166,7 +197,7 @@ def session_strain(rows, rules):
 
 def today_state(today, plan):
     """What today's recovery data and check-in say: {"day": None|"easy"|"recovery"|"rest", ...}."""
-    st = {"day": None, "reasons": [], "avoid_tags": set(), "add_routines": [], "rpe_cap": None}
+    st = {"day": None, "reasons": [], "avoid_tags": set(), "add_routines": [], "rpe_cap": None, "back_from": None}
     order = {None: 0, "easy": 1, "recovery": 2, "rest": 3}
 
     def apply(day, reason):
@@ -177,8 +208,13 @@ def today_state(today, plan):
     snap = paths.read_json(paths.RECORDS / "snapshot.json", {}) or {}
     rec = snap.get("recovery") or {}
     fresh = rec.get("latest_date") and (today - date.fromisoformat(rec["latest_date"])).days <= 1
+    rm = rec.get("rest_mode") or {}
+    # Back from Rest Mode (on now, or switched off lately): the first BACK_SESSIONS sessions from here are easy.
+    st["back_from"] = today.isoformat() if (fresh and rm.get("on")) else rm.get("ended")
     if fresh:
-        if (rec.get("temperature_deviation") or 0) >= 0.5:
+        if rm.get("on"):
+            apply("rest", f"Oura rest mode is on (since {rm['since']})")
+        elif (rec.get("temperature_deviation") or 0) >= 0.5:
             apply("rest", f"body temperature +{rec['temperature_deviation']} °C")
         elif rec.get("status") == "red":
             apply("recovery", "recovery is red")
@@ -298,8 +334,10 @@ def ladder_now(ex, e, hist, day, rules, cap, who):
             and rpe is not None and rpe <= min(rules["progress_rpe"], cap):  # no RPE logged: hold
         move = +1
     if move:
-        # earned by performance, so a rung above the level cap is fine (one at a time)
-        nxt = library.step_rung(cur["id"], move, who["equipment"], who["avoid"], max(who["max_level"], cur["level"] + 1),
+        # earned by performance, so one rung above the level cap (or above what the plan named) is fine, never more;
+        # and never onto a rung that adds impact, jumping, high pressure or going upside down (library.RISKY)
+        ceiling = max(who["max_level"], ex["level"]) + 1
+        nxt = library.step_rung(cur["id"], move, who["equipment"], who["avoid"], min(max(who["max_level"], cur["level"] + 1), ceiling),
                                 who["caution"], who)
         if nxt:
             return nxt, ("a rung harder: top of the range last time" if move > 0 else "a rung easier: last time was too hard")
@@ -320,8 +358,10 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
     for e in r.get("exercises", []):
         e = dict(e)
         ex = None
+        own_avoid = set()  # a slot's own limits also hold for whatever stands in for its pick
         if e.get("slot"):
             slot = e.pop("slot")
+            own_avoid = set(slot.get("avoid") or [])
             # picked against standing limits only, so a bad day swaps the pick rather than reshuffling the rotation
             ex = library.pick(slot, slot_block(plan, slot, day), equipment, who["avoid"], who["max_level"], who["caution"], who)
             if not ex:
@@ -365,11 +405,11 @@ def plan_session(plan, key, day, intensity, hist, lib, steps, extra, who=None, a
             use_exercise(e, ex, swapped=True, who=who, equipment=equipment)
             name = e["name"]
         # Ruled out today (a signal's avoid_tags, the person's limits) or impossible without equipment: swap, don't drop.
-        blocked = set(e.get("tags") or []) & avoid
+        blocked = set(e.get("tags") or []) & (avoid | own_avoid)
         mine = blocked and blocked <= set(who["avoid"])  # the person's standing limits, not just today's check-in
         missing = anywhere and ((ex and not library.has_equipment(ex, equipment)) or (not ex and e.get("implement")))
         if blocked or missing:
-            alt = library.substitute(ex["id"], equipment, avoid, who["max_level"], who["caution"], who=who) if ex else None
+            alt = library.substitute(ex["id"], equipment, avoid | own_avoid, who["max_level"], who["caution"], who=who) if ex else None
             if alt:
                 notes.append(f"{'Swapped for your limits' if mine else 'Swapped today' if blocked else 'Without equipment'}: {name} → {alt['name']}.")
                 same_tool = alt["family"] == ex["family"] and alt.get("implement") and alt.get("implement") == e.get("implement")
@@ -492,6 +532,9 @@ def build(today=None):
     easy_streak = len(recent) >= 2 and all(k == "easy" for _, k in recent[-2:])
 
     now = today_state(today, plan)
+    back = now.get("back_from")
+    back_left = max(0, BACK_SESSIONS - len([d for d in main_dates if d >= back])) if back else 0
+    gate = needs_clearance(paths.read_json(paths.PROFILE / "health_profile.json", {}) or {})
     gap = int(plan.cfg.get("min_rest_days", 1))
     opt = plan.cfg.get("optional") or {}
     days, owed = [], False
@@ -511,6 +554,11 @@ def build(today=None):
             if any(s["routine"] in plan.rotation for s in logged):
                 last_main = day
             continue
+        if gate:
+            entry.update(kind="rest", title=GATE_TITLE, note=f"Because of {', '.join(gate)}: talk to your doctor before training. "
+                         "No sessions until the go-ahead is recorded.")
+            days.append(entry)
+            continue
         if ph.get("done"):
             entry.update(kind="review", title="Plan finished: run /coach review")
             days.append(entry)
@@ -525,6 +573,7 @@ def build(today=None):
                                     "intensity": entry["intensity"]}
             if override.get("routine") in plan.rotation:
                 nxt, last_main, owed = (plan.rotation.index(override["routine"]) + 1) % len(plan.rotation), day, False
+                back_left = max(0, back_left - 1)  # the Coach's own return session counts as one
             days.append(entry)
             continue
         rest_needed = gap + (1 if extra_rest and i <= 2 else 0)
@@ -544,7 +593,14 @@ def build(today=None):
             elif easy_streak and intensity == "normal":
                 entry["reasons"].append("the last two sessions were easy: go for the top of the ranges")
                 easy_streak = False
-            sess = variants(key, day, intensity, now if i == 0 else {})
+            extra = now if i == 0 else {}
+            if back_left:
+                intensity = "easy"
+                entry["reasons"] = entry["reasons"] + [f"back after Oura rest mode: session {BACK_SESSIONS - back_left + 1} "
+                                                       f"of {BACK_SESSIONS} easy, RPE ≤ {BACK_RPE}"]
+                extra = {**extra, "rpe_cap": min(extra.get("rpe_cap") or 10, BACK_RPE)}
+                back_left -= 1
+            sess = variants(key, day, intensity, extra)
             entry.update(kind="session", intensity=intensity, title=plan.routines[key]["title"], session=sess)
             nxt, last_main, owed = (nxt + 1) % len(plan.rotation), day, False
         else:

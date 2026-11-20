@@ -94,7 +94,12 @@ python sylvester.py schedule [HH:MM]    schedule the daily task (unschedule remo
 python sylvester.py images              download pictures for your plan's exercises
 python sylvester.py plan                rebuild and show the next 14 days
 python sylvester.py next                the one next step in setting up
+python sylvester.py export [file]       everything the iPhone app needs, in one file (no passwords or tokens)
 ```
+
+## The iPhone app
+
+`mobile/` is Sylvester as a native iPhone app: the same plan engine (ported to TypeScript and checked day by day against the Python one), check-ins, logging, calibration, Apple Health and Oura, with everything kept on the phone. The Coach runs on Claude through your own Anthropic API key, or through an invite code for someone else's account via the small server in `proxy/`. `python sylvester.py export` moves your data folder onto the phone. Building it needs no Mac: see `mobile/README.md`.
 
 ## Updating
 

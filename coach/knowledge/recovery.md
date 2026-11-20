@@ -10,11 +10,14 @@ Judge everything against **this person's own baseline**, not population norms. A
 
 | Signal | Source | What it means | Threshold worth acting on |
 |---|---|---|---|
+| Rest Mode | Oura | The person switched it on: ill, injured or run down | On → rest (status red); after it, the first two sessions easy at RPE ≤ 6 (`rolling.py` does both) |
 | Temperature deviation | Oura | Illness coming on, sometimes alcohol or heat | ≥ +0.5 °C → rest; ≥ +0.3 °C with other flags → easy only |
 | HRV (rMSSD, nightly avg) | Oura | Autonomic recovery; drops with stress, illness, alcohol, hard training, poor sleep | 7-day avg ≥ 10 % below baseline; or a single night ≥ 25 % below |
 | Lowest night HR | Oura | Rises with fatigue, illness, dehydration, alcohol, late meals | 7-day avg ≥ 3 bpm above baseline; single night ≥ 5 bpm |
 | Sleep duration / efficiency | Oura | Less than ~6.5 h repeatedly impairs recovery, insulin sensitivity, appetite control and mood | 7-day avg < 6.5 h, or two nights < 5.5 h |
 | Readiness score | Oura | Oura's own blend of the above | < 70 = poor, 70–79 = fair, ≥ 80 = good — but trust the components over the score |
+| Readiness and sleep parts | Oura | What the scores are made of (recovery index, sleep balance, REM, timing…) | A part under 70: the snapshot names it. Use it to say *why* a score is low, not as a rule of its own |
+| Bedtime and its spread | Oura | Late or irregular bedtimes lower sleep quality and readiness | 7-day average well after the usual, or a spread over ~60 min: talk about it before blaming training |
 | Check-in: energy, soreness, mood, pain | Form | Subjective — often the earliest warning | Energy ≤ 2 or soreness ≥ 4 two days running |
 | Training load, acute:chronic | Polar + log | Recent load relative to what the body is adapted to | > 1.5 = spike, deload; < 0.8 for weeks = detraining |
 
@@ -33,7 +36,7 @@ The snapshot's green / amber / red status is the starting point. Adjust it with 
 
 - Planned: every 4th–6th week, cut volume ~40 % (fewer sets), keep intensity moderate, keep the habit of showing up.
 - Reactive: when 7-day HRV is ≥ 10 % below baseline for 7+ days with resting HR up, or performance drops two sessions in a row with high effort, or the person reports persistent fatigue/soreness.
-- Returning after illness: first session back at ~50 % volume, RPE ≤ 6; normal after two good sessions with no relapse.
+- Returning after illness: first session back at ~50 % volume, RPE ≤ 6; normal after two good sessions with no relapse. With Oura Rest Mode the rolling plan does this by itself (easy sessions, RPE ≤ 6); without it, write the return sessions as overrides. A Coach override for a rotation session counts as one of the two.
 
 ## Sleep — the biggest lever
 

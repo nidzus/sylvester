@@ -116,7 +116,9 @@ textarea { min-height: 70px; resize: vertical; }
 .tick { width: 2.8em; height: 2.6em; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--muted); font-size: 18px; cursor: pointer; }
 .set.done .tick { background: var(--green); border-color: var(--green); color: var(--surface); }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-label.f { display: grid; gap: 4px; font-size: 14px; color: var(--muted); min-width: 0; }
+label.f, div.f { display: grid; gap: 4px; font-size: 14px; color: var(--muted); min-width: 0; }
+.bp { display: flex; align-items: center; gap: 6px; color: var(--fg); }
+.bp input { flex: 1; min-width: 0; text-align: center; }
 
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 14px; }
 .scale { display: grid; gap: 6px; }
@@ -220,7 +222,9 @@ code { font-size: 14px; background: var(--sunk); padding: 1px 5px; border-radius
       <form id="checkin" class="card" novalidate>
         <div class="row2">
           <label class="f">Date<input type="date" id="ci-date"></label>
-          <label class="f">Blood pressure<input id="ci-bp" inputmode="numeric" placeholder="e.g. 128/82"></label>
+          <div class="f" role="group" aria-label="Blood pressure">Blood pressure
+            <div class="bp"><input id="ci-bp-sys" inputmode="numeric" maxlength="3" placeholder="128" aria-label="Upper number (systolic)"><span aria-hidden="true">/</span><input id="ci-bp-dia" inputmode="numeric" maxlength="3" placeholder="82" aria-label="Lower number (diastolic)"></div>
+          </div>
         </div>
         <div id="ci-scales" style="display:grid;gap:14px"></div>
         <label class="f">Pain is where?<input id="ci-pain_where" placeholder="e.g. low back, right knee"></label>
@@ -832,8 +836,18 @@ function renderScales() {
 function fillCheckin(date) {
   const row = state.checkins.find(c => c.date === date) || {};
   for (const [k] of scales()) ci[k] = row[k] ?? "";
-  for (const k of ["bp", "pain_where", "notes"]) document.getElementById("ci-" + k).value = row[k] || "";
+  for (const k of ["pain_where", "notes"]) document.getElementById("ci-" + k).value = row[k] || "";
+  [bpSys.value, bpDia.value] = [...String(row.bp || "").split("/"), ""].slice(0, 2);
   renderScales();
+}
+// Two boxes, because a phone's number pad has no "/". Three digits in the upper box move on to the lower one.
+const bpSys = document.getElementById("ci-bp-sys"), bpDia = document.getElementById("ci-bp-dia");
+bpSys.addEventListener("input", () => { if (/^\d{3}$/.test(bpSys.value)) bpDia.focus(); });
+function readBp() {
+  const s = bpSys.value.trim(), d = bpDia.value.trim();
+  if (!s && !d) return "";
+  const ok = /^\d{2,3}$/.test(s) && /^\d{2,3}$/.test(d) && +s >= 70 && +s <= 260 && +d >= 40 && +d <= 160 && +d < +s;
+  return ok ? `${s}/${d}` : null;
 }
 const ciDate = document.getElementById("ci-date");
 ciDate.value = TODAY;
@@ -843,9 +857,9 @@ document.getElementById("checkin").addEventListener("submit", async ev => {
   const msg = document.getElementById("ci-msg"), btn = document.getElementById("ci-save");
   if (!state.db) return;
   const date = ciDate.value || TODAY;
-  const bp = document.getElementById("ci-bp").value.trim();
-  if (bp && !/^\d{2,3}\s*\/\s*\d{2,3}$/.test(bp)) { msg.className = "err"; msg.textContent = "Blood pressure looks like 128/82."; return; }
-  const doc = { date, saved_at: new Date().toISOString(), bp: bp.replace(/\s/g, "") };
+  const bp = readBp();
+  if (bp === null) { msg.className = "err"; msg.textContent = "Blood pressure: upper number in the first box (e.g. 128), lower in the second (e.g. 82)."; return; }
+  const doc = { date, saved_at: new Date().toISOString(), bp };
   for (const [k] of scales()) doc[k] = ci[k] === "" || ci[k] == null ? "" : String(ci[k]);
   for (const k of ["pain_where", "notes"]) doc[k] = document.getElementById("ci-" + k).value.trim();
   btn.disabled = true; msg.className = ""; msg.textContent = "Saving…";

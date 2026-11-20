@@ -188,7 +188,7 @@ Never use images from sources without a clear free licence (ExerciseDB GIFs, Mus
 ## Safety rules (non-negotiable)
 
 - Never program a movement listed in an injury's `aggravating` or `triggers` (movements the person ticked in the setup wizard), or in `restrictions.avoid`; substitute the same pattern without the painful range.
-- A "yes" to `chest`, `dizzy` or `supervised` in `health_profile.screening.answers`, without a doctor's clearance in `restrictions.medical_advice`, means gentle sessions only (RPE ≤ 5, no maximal tests).
+- A "yes" to `chest`, `dizzy` or `supervised` in `health_profile.screening.answers`, a heart condition (or a `heart` yes that isn't blood pressure only) or pregnancy means no plan at all until a doctor's go-ahead is recorded for each reason (`restrictions.cleared_on` with a date, `restrictions.cleared_for` listing what it covers: chest, dizzy, supervised, heart, pregnancy). `coach/rolling.py` lays out no sessions until then. Help them prepare for that conversation; write the go-ahead in only when they tell you they have it.
 - Personal signals: follow each signal's `levels`, and its `stop` text for when to send the person to a professional.
 - Spine: follow the lumbar section of `medical.md` (centralisation rule, no loaded flexion, staged progression to heavier hinges and squats).
   - Any new leg numbness or weakness: regress and recommend review.

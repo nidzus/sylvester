@@ -72,7 +72,7 @@ def trend_days(snapshot, today, n=14):
     for i in range(n - 1, -1, -1):
         d = (date.fromisoformat(today) - timedelta(days=i)).isoformat()
         r = rows.get(d) or {}
-        real = (snapshot.num(r.get("total_sleep_h")) or 0) >= snapshot.MIN_REAL_SLEEP_H
+        real = (snapshot.night_h(r) or 0) >= snapshot.MIN_REAL_SLEEP_H
         out.append({"date": d, **{k: r1(snapshot.num(r.get(k))) if real or k not in SLEEP_COLUMNS else None
                                   for k, _ in STATUS_METRICS}})
     return out

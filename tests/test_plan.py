@@ -69,6 +69,24 @@ class Library(unittest.TestCase):
         self.assertGreater(len(picks), 1)
 
 
+    def test_ladders_never_climb_into_jumping_on_their_own(self):
+        who = library.person()
+        gear = who["equipment"] | set(library.load()["household"])
+        ex = library.get("reverse_lunge")
+        for _ in range(4):
+            up = library.step_rung(ex["id"], +1, gear, set(), 5, (), who)
+            if not up:
+                break
+            self.assertFalse({"impact", "ballistic"} & set(up["stresses"]), up["id"])
+            ex = up
+
+    def test_a_slot_keeps_its_own_limits(self):
+        who = library.person()
+        slot = {"pattern": "squat", "avoid": ["knee_deep"]}
+        for b in range(3):
+            self.assertNotIn("knee_deep", library.pick(slot, b, who["equipment"], set(), 5, (), who)["stresses"])
+
+
 class Fit(unittest.TestCase):
     def test_equipment_never_counts(self):
         who = library.person()
@@ -159,6 +177,42 @@ class Plan(unittest.TestCase):
         write("records/snapshot.json", {"recovery": {"latest_date": "2026-11-06", "status": "red"}})
         days = rolling.build(FRIDAY)["days"]
         self.assertTrue(any("recovery is red" in "; ".join(d.get("reasons") or []) for d in days if d["date"] == "2026-11-06"))
+
+    def test_rest_mode_rests_today_and_eases_the_next_two_sessions(self):
+        rm = {"on": True, "since": "2026-11-05", "ended": None}
+        write("records/snapshot.json", {"recovery": {"latest_date": "2026-11-06", "status": "red", "rest_mode": rm}})
+        s = rolling.build(FRIDAY)
+        today = s["days"][0]
+        self.assertEqual((today["kind"], today["reasons"]), ("rest", ["Oura rest mode is on (since 2026-11-05)"]))
+        sessions = [d for d in s["days"] if d["kind"] == "session"]
+        for n, d in enumerate(sessions[:2], 1):
+            self.assertEqual(d["intensity"], "easy")
+            self.assertIn(f"back after Oura rest mode: session {n} of 2 easy, RPE ≤ 6", d["reasons"])
+            self.assertLessEqual(d["session"]["rpe_cap"], 6)
+        self.assertFalse(any("rest mode" in r for r in sessions[2]["reasons"]))
+
+    def test_after_rest_mode_logged_sessions_count(self):
+        # Ended on the 3rd; the session logged on the 4th was the first back, so only one easy one is left.
+        rm = {"on": False, "since": None, "ended": "2026-11-03"}
+        write("records/snapshot.json", {"recovery": {"latest_date": "2026-11-06", "status": "green", "rest_mode": rm}})
+        sessions = [d for d in rolling.build(FRIDAY)["days"] if d["kind"] == "session"]
+        self.assertEqual(sessions[0]["date"], "2026-11-06")
+        self.assertIn("back after Oura rest mode: session 2 of 2 easy, RPE ≤ 6", sessions[0]["reasons"])
+        self.assertFalse(any("rest mode" in r for r in sessions[1]["reasons"]))
+
+    def test_no_sessions_until_a_go_ahead_covers_every_reason(self):
+        kept = library.paths.read_json(library.paths.PROFILE / "health_profile.json")
+        try:
+            write("profile/health_profile.json", {**kept, "screening": {"answers": {"chest": "yes"}}})
+            days = rolling.build(FRIDAY)["days"]
+            self.assertTrue(all(d["title"] == rolling.GATE_TITLE and not d.get("session") for d in days))
+            cleared = {"cleared_on": "2026-11-01", "cleared_for": ["chest"]}
+            write("profile/health_profile.json", {**kept, "screening": {"answers": {"chest": "yes"}}, "restrictions": cleared})
+            self.assertTrue(any(d.get("session") for d in rolling.build(FRIDAY)["days"]))
+            write("profile/health_profile.json", {**kept, "screening": {"answers": {"chest": "yes", "dizzy": "yes"}}, "restrictions": cleared})
+            self.assertFalse(any(d.get("session") for d in rolling.build(FRIDAY)["days"]), "a new reason needs a new go-ahead")
+        finally:
+            write("profile/health_profile.json", kept)
 
     def test_plain_routines_still_build_and_progress_by_name(self):
         plan = rolling.Plan(rolling.paths.active_plan_dir())

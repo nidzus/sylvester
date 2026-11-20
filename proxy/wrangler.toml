@@ -1,0 +1,13 @@
+# The Sylvester server (see README.md). Fill in the KV namespace id from `npx wrangler kv namespace create SYLVESTER`.
+name = "sylvester"
+main = "src/worker.ts"
+compatibility_date = "2026-10-01"
+
+[[kv_namespaces]]
+binding = "SYLVESTER"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+# Secrets (never in this file): npx wrangler secret put ANTHROPIC_API_KEY / ADMIN_TOKEN / OURA_CLIENT_ID / OURA_CLIENT_SECRET
+[vars]
+ALLOWED_MODELS = "claude-opus-5-5,claude-sonnet-5-5,claude-haiku-5-5"
+MAX_TOKENS = "16000"

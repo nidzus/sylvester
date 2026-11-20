@@ -25,9 +25,10 @@ from core import paths  # noqa: E402
 
 DATA_DIR = str(paths.RECORDS)
 SRC = str(paths.SOURCES)
-from snapshot import read_csv, num, MIN_REAL_SLEEP_H  # noqa: E402
+from snapshot import read_csv, num, night_h, MIN_REAL_SLEEP_H  # noqa: E402
 
 OURA = os.path.join(SRC, "oura_daily.csv")
+OURA_WEIGHT = os.path.join(SRC, "oura_weight.csv")
 WHOOP = os.path.join(SRC, "whoop_daily.csv")
 WITHINGS_M = os.path.join(SRC, "withings_measures.csv")
 WITHINGS_D = os.path.join(SRC, "withings_daily.csv")
@@ -45,7 +46,7 @@ def daily_series():
         d = days[r["date"]]
         for k in ("readiness_score", "steps", "active_calories", "stress_high_min", "temperature_deviation"):
             d[k] = num(r.get(k))
-        if (num(r.get("total_sleep_h")) or 0) >= MIN_REAL_SLEEP_H:
+        if (night_h(r) or 0) >= MIN_REAL_SLEEP_H:
             for k in ("total_sleep_h", "avg_hrv", "lowest_hr", "efficiency", "deep_sleep_h"):
                 d[k] = num(r.get(k))
     # WHOOP fills the nights Oura doesn't have (someone who switched, or wears only WHOOP). Its recovery
@@ -56,9 +57,12 @@ def daily_series():
         for k in ("steps", "active_calories", "temperature_deviation"):
             if d.get(k) is None:
                 d[k] = num(r.get(k))
-        if (num(r.get("total_sleep_h")) or 0) >= MIN_REAL_SLEEP_H and d.get("avg_hrv") is None:
+        if (night_h(r) or 0) >= MIN_REAL_SLEEP_H and d.get("avg_hrv") is None:
             for k in ("total_sleep_h", "avg_hrv", "lowest_hr", "efficiency", "deep_sleep_h"):
                 d[k] = num(r.get(k))
+    for r in read_csv(OURA_WEIGHT):  # Oura's copy of the profile weight; Apple Health's own reading wins the same day
+        if num(r.get("weight_kg")) is not None:
+            days[r["date"]]["weight_kg"] = num(r["weight_kg"])
     for r in read_csv(APPLE):
         d = days[r["date"]]
         for k in ("weight_kg", "body_fat_pct", "bp_systolic", "bp_diastolic", "walking_speed_kmh",
@@ -77,7 +81,7 @@ def daily_series():
         d = days[r["date"]]
         if d.get("steps") is None:
             d["steps"] = num(r.get("steps"))
-        if (num(r.get("total_sleep_h")) or 0) >= MIN_REAL_SLEEP_H and d.get("total_sleep_h") is None:
+        if (night_h(r) or 0) >= MIN_REAL_SLEEP_H and d.get("total_sleep_h") is None:
             for k in ("total_sleep_h", "deep_sleep_h", "lowest_hr"):
                 d[k] = num(r.get(k))
     # Training minutes per day: Polar sessions, plus Apple workouts not auto-detected by Oura (those overlap Polar/Strava rarely)

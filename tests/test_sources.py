@@ -111,24 +111,215 @@ class Oura(unittest.TestCase):
             if "next_token" not in req["query"]:
                 return 200, {"data": [{"day": "2026-10-27", "score": 81, "temperature_deviation": 0.1,
                                        "contributors": {"hrv_balance": 77}}], "next_token": "p2"}
-            return 200, {"data": [{"day": "2026-10-28", "score": 64, "contributors": {}}], "next_token": None}
+            return 200, {"data": [{"day": "2026-10-28", "score": 64,
+                                   "contributors": {"recovery_index": 41, "sleep_balance": 66, "body_temperature": 98}}],
+                         "next_token": None}
         Fake.routes.update({
             ("POST", "/oura/token"): (200, {"access_token": "new", "refresh_token": "r2", "expires_in": 86400}),
             ("GET", "/oura/daily_readiness"): readiness,
-            ("GET", "/oura/daily_sleep"): (200, {"data": [{"day": "2026-10-28", "score": 70}]}),
+            ("GET", "/oura/daily_sleep"): (200, {"data": [{"day": "2026-10-28", "score": 70,
+                                                           "contributors": {"rem_sleep": 35, "total_sleep": 61, "timing": 90}}]}),
+            ("GET", "/oura/rest_mode_period"): (200, {"data": [{"start_day": "2026-10-20", "end_day": "2026-10-28"}]}),
+            ("GET", "/oura/personal_info"): (200, {"weight": 91.24, "height": 1.8}),
             ("GET", "/oura/daily_activity"): (200, {"data": [{"day": "2026-10-28", "steps": 8000, "score": 80}]}),
             ("GET", "/oura/daily_stress"): (200, {"data": [{"day": "2026-10-28", "stress_high": 3600}]}),
             ("GET", "/oura/daily_resilience"): (200, {"data": []}),
             ("GET", "/oura/sleep"): (200, {"data": [{"day": "2026-10-28", "type": "long_sleep", "total_sleep_duration": 25200,
-                                                     "average_hrv": 48, "lowest_heart_rate": 52}]}),
+                                                     "average_hrv": 48, "lowest_heart_rate": 52,
+                                                     "bedtime_start": "2026-10-27T23:41:12+01:00",
+                                                     "bedtime_end": "2026-10-28T06:58:40+01:00"}]}),
+            ("GET", "/oura/daily_spo2"): (200, {"data": [{"day": "2026-10-28", "spo2_percentage": {"average": 96.1},
+                                                         "breathing_disturbance_index": 2}]}),
+            ("GET", "/oura/vO2_max"): (401, {}),  # a sign-in without heart_health
+            ("GET", "/oura/workout"): (200, {"data": [{"id": "w1", "day": "2026-10-28", "activity": "walking", "intensity": "easy",
+                                                      "start_datetime": "2026-10-28T08:00:00+01:00",
+                                                      "end_datetime": "2026-10-28T08:40:00+01:00", "calories": 150}]}),
         })
+        Fake.seen.clear()
         quiet(oura_pull.cmd_pull, "2026-10-27", "2026-10-28")
+        ends = {q["query"]["end_date"][0] for q in Fake.seen if q["path"].startswith("/oura/") and "end_date" in q["query"]}
+        self.assertEqual(ends, {"2026-10-29"})  # asked a day past the end: Oura's sleep endpoints treat end_date as exclusive
         got = {r["date"]: r for r in rows("oura_daily.csv")}
         self.assertEqual(got["2026-10-27"]["readiness_score"], "81")
         self.assertEqual(got["2026-10-28"]["readiness_score"], "64")
         self.assertEqual(got["2026-10-28"]["total_sleep_h"], "7.0")
         self.assertEqual(got["2026-10-28"]["stress_high_min"], "60")
+        self.assertEqual((got["2026-10-28"]["spo2_avg"], got["2026-10-28"]["breathing_disturbance_index"]), ("96.1", "2"))
+        self.assertEqual(got["2026-10-28"]["vo2_max"], "")  # unavailable endpoints (401, 404) are skipped, not fatal
+        d = got["2026-10-28"]
+        self.assertEqual((d["recovery_index_contrib"], d["sleep_balance_contrib"], d["activity_balance_contrib"]), ("41", "66", ""))
+        self.assertEqual((d["sleep_rem_contrib"], d["sleep_total_contrib"], d["sleep_timing_contrib"]), ("35", "61", "90"))
+        self.assertEqual((d["bedtime_start"], d["bedtime_end"]), ("2026-10-27T23:41", "2026-10-28T06:58"))
+        # Rest Mode on from the 20th; switched off on the 28th, so that day no longer counts.
+        self.assertEqual((got["2026-10-27"]["rest_mode"], d["rest_mode"]), ("1", "0"))
+        rest_q = next(q for q in Fake.seen if q["path"] == "/oura/rest_mode_period")["query"]
+        self.assertEqual(rest_q["start_date"], ["2026-08-28"])  # looks back for a period that began before the pull
+        self.assertEqual(rows("oura_weight.csv")[-1], {"date": date.today().isoformat(), "weight_kg": "91.2"})
+        remove("sources/oura_weight.csv")
+
+    def test_profile_weight_is_kept_only_when_it_changes(self):
+        import oura_pull
+        self.addCleanup(remove, "sources/oura_weight.csv")
+        rec = oura_pull.record_weight
+        self.assertTrue(rec(100.6, "2026-11-19"))
+        self.assertFalse(rec(100.6, "2026-11-19"))   # pulled again the same day: nothing new
+        self.assertFalse(rec(100.6, "2026-11-20"))   # same as before: nothing new
+        self.assertFalse(rec(None, "2026-11-20"))    # no weight in the profile
+        self.assertTrue(rec(100.2, "2026-11-21"))
+        self.assertTrue(rec(100.0, "2026-11-21"))    # changed again the same day: that day keeps the latest
+        self.assertEqual([(r["date"], r["weight_kg"]) for r in rows("oura_weight.csv")],
+                         [("2026-11-19", "100.6"), ("2026-11-21", "100.0")])
+        self.assertTrue(rec(100.6, "2026-11-21"))    # and back to the earlier value: no new reading that day
+        self.assertEqual([(r["date"], r["weight_kg"]) for r in rows("oura_weight.csv")], [("2026-11-19", "100.6")])
+
+    def test_snapshot_weight_uses_the_newer_oura_reading(self):
+        import snapshot
+        self.addCleanup(remove, "sources/oura_weight.csv")
+        self.addCleanup(remove, "sources/apple_daily.csv")
+        write("sources/apple_daily.csv", "date,weight_kg\n2026-10-15,104.1\n2026-11-01,103.0\n")
+        write("sources/oura_weight.csv", "date,weight_kg\n2026-11-01,102.5\n2026-11-19,100.6\n")
+        by = {r["date"]: r for r in snapshot.scale_rows()}
+        self.assertEqual((by["2026-11-01"]["weight_kg"], by["2026-11-01"]["source"]), ("103.0", "Apple Health"))  # Apple wins a tie
+        b = snapshot.body(date(2026, 11, 20))
+        self.assertEqual((b["weight_kg"], b["weight_date"], b["weight_age_days"]), (100.6, "2026-11-19", 1))
+        self.assertEqual(b["weight_change_kg"]["30d"], -3.5)
+        self.assertEqual(rows("oura_workouts.csv")[0]["duration_min"], "40")
         self.assertEqual(json.loads((DATA / "secrets" / "oura_tokens.json").read_text())["refresh_token"], "r2")
+
+
+class CatchUp(unittest.TestCase):
+    """A default pull catches up after days with the computer off, and says which days the source itself lacks."""
+
+    def csv_with(self, last):
+        p = write("sources/catch_up_test.csv", "date,steps\n2026-07-01,5000\n" + (f"{last},7000\n" if last else ""))
+        self.addCleanup(remove, "sources/catch_up_test.csv")
+        return p
+
+    def test_window(self):
+        import catch_up
+        today = date(2026, 11, 14)
+        self.assertEqual(catch_up.window(DATA / "sources" / "missing.csv", today), ("2026-11-07", "2026-11-14", ""))
+        # Pulled yesterday: still the last week, since a ring can sync to its app days late.
+        self.assertEqual(catch_up.window(self.csv_with("2026-11-13"), today)[:2], ("2026-11-07", "2026-11-14"))
+        # Laptop off since the 4th: from the last stored day (fetched again, it may be incomplete).
+        self.assertEqual(catch_up.window(self.csv_with("2026-11-04"), today)[:2], ("2026-11-04", "2026-11-14"))
+        # Off for months: capped, with the range to pull by hand.
+        start, end, note = catch_up.window(self.csv_with("2026-08-01"), today)
+        self.assertEqual(start, "2026-09-15")
+        self.assertIn("2026-08-01 2026-09-14", note)
+        self.assertEqual(catch_up.days_between("2026-10-30", "2026-11-02"), ["2026-10-30", "2026-10-31", "2026-11-01", "2026-11-02"])
+        self.assertEqual(catch_up.ranges(["2026-11-12", "2026-11-05", "2026-11-06", "2026-11-07"]), "2026-11-05 to 2026-11-07, 2026-11-12")
+
+    def test_oura_lists_the_days_oura_itself_lacks(self):
+        import oura_pull
+        got = [{"date": "2026-11-05", "total_sleep_h": 7.1, "sleep_score": 80},
+               {"date": "2026-11-07", "total_sleep_h": None, "sleep_score": None, "steps": 4000}]
+        lines = oura_pull.gap_report("2026-11-05", "2026-11-09", got, today=date(2026, 11, 9))
+        self.assertEqual(lines, ["Oura has no data for: 2026-11-06, 2026-11-08 (ring not worn, or not yet synced to the Oura app).",
+                                 "Oura has no night recorded for: 2026-11-07."])
+        self.assertEqual(oura_pull.gap_report("2026-11-05", "2026-11-05", got[:1], today=date(2026, 11, 9)), [])
+
+    def test_oura_asks_past_the_last_day_and_never_erases_a_night(self):
+        import oura_pull
+        oura_pull.merge_rows([{"date": "2026-11-14", "readiness_score": 80, "total_sleep_h": 7.1, "lowest_hr": 55}])
+        oura_pull.merge_rows([{"date": "2026-11-14", "readiness_score": 81, "total_sleep_h": None, "lowest_hr": None}])
+        got = {r["date"]: r for r in rows("oura_daily.csv")}["2026-11-14"]
+        self.assertEqual((got["readiness_score"], got["total_sleep_h"], got["lowest_hr"]), ("81", "7.1", "55"))
+
+    def test_rest_mode_days(self):
+        import oura_pull
+        on = oura_pull.rest_mode_on
+        ps = [{"start_day": "2026-11-10", "end_day": "2026-11-13"}, {"start_day": "2026-11-15", "end_day": "2026-11-15"},
+              {"start_day": "2026-11-18", "end_day": None}]
+        self.assertEqual([on(ps, f"2026-11-{d:02d}") for d in range(9, 20)], [0, 1, 1, 1, 0, 0, 1, 0, 0, 1, 1])
+        self.assertEqual(on([], "2026-11-10"), 0)
+
+    def test_oura_adds_up_the_sessions_and_takes_the_night_for_the_rest(self):
+        import oura_pull
+        recs = [{"day": "2026-11-12", "type": "sleep", "total_sleep_duration": 430},
+                {"day": "2026-11-12", "type": "long_sleep", "total_sleep_duration": 21600, "deep_sleep_duration": 3600,
+                 "lowest_heart_rate": 58, "average_hrv": 44, "latency": 600},
+                {"day": "2026-11-12", "type": "late_nap", "total_sleep_duration": 650, "deep_sleep_duration": 0},
+                {"day": "2026-11-12", "type": "rest", "total_sleep_duration": 9000},
+                {"day": "2026-11-13", "type": "sleep", "total_sleep_duration": 900},
+                {"day": "2026-11-13", "type": "sleep", "total_sleep_duration": 5400, "lowest_heart_rate": 58}]
+        by_day = oura_pull.sleep_by_day(recs)
+        d = oura_pull.sleep_fields(by_day["2026-11-12"])
+        self.assertEqual((d["total_sleep_h"], d["night_sleep_h"], d["nap_sleep_h"], d["sleep_sessions"]), (6.3, 6.0, 0.3, 3))
+        self.assertEqual((d["lowest_hr"], d["avg_hrv"], d["latency_min"], d["deep_sleep_h"]), (58, 44, 10, 1.0))
+        d = oura_pull.sleep_fields(by_day["2026-11-13"])
+        self.assertEqual((d["night_sleep_h"], d["lowest_hr"], d["sleep_sessions"]), (1.5, 58, 2))
+
+
+class NightSleep(unittest.TestCase):
+    def test_naps_count_in_the_hours_but_a_short_night_still_flags(self):
+        import snapshot
+        from datetime import timedelta
+        today = date(2026, 11, 20)
+        lines = ["date,readiness_score,total_sleep_h,night_sleep_h,avg_hrv,lowest_hr"]
+        for i in range(40):
+            d = (today - timedelta(days=i)).isoformat()
+            lines.append(f"{d},82,7.4,{5.2 if i < 7 else 7.4},45,52")
+        write("sources/oura_daily.csv", "\n".join(lines) + "\n")
+        self.addCleanup(remove, "sources/oura_daily.csv")
+        rec = snapshot.recovery(today)
+        self.assertTrue(any(f.startswith("Averaging 5.2 h of night sleep") for f in rec["flags"]), rec["flags"])
+        self.assertEqual(snapshot.night_h({"total_sleep_h": "6.6"}), 6.6)  # older rows: the total is the night
+
+
+class OuraDetail(unittest.TestCase):
+    TODAY = date(2026, 11, 20)
+
+    def days(self, rest=(), extra=lambda i: {}):
+        from datetime import timedelta
+        rows = []
+        for i in range(30):
+            d = (self.TODAY - timedelta(days=29 - i)).isoformat()
+            rows.append({"date": d, "readiness_score": "84", "total_sleep_h": "7.2", "avg_hrv": "45", "lowest_hr": "52",
+                         "rest_mode": "1" if d in rest else "0", **extra(i)})
+        fields = list(dict.fromkeys(k for r in rows for k in r))
+        write("sources/oura_daily.csv", "\n".join([",".join(fields)] + [",".join(r.get(k, "") for k in fields) for r in rows]) + "\n")
+        self.addCleanup(remove, "sources/oura_daily.csv")
+
+    def test_rest_mode_on_is_red_and_says_since_when(self):
+        import snapshot
+        self.days(rest={"2026-11-18", "2026-11-19", "2026-11-20"})
+        rec = snapshot.recovery(self.TODAY)
+        self.assertEqual(rec["rest_mode"], {"on": True, "since": "2026-11-18", "ended": None})
+        self.assertEqual((rec["status"], rec["status_why"][0]), ("red", "Oura rest mode on since 2026-11-18"))
+
+    def test_rest_mode_ended_lately_and_long_ago(self):
+        import snapshot
+        self.days(rest={"2026-11-12", "2026-11-13"})
+        rec = snapshot.recovery(self.TODAY)
+        self.assertEqual(rec["rest_mode"], {"on": False, "since": None, "ended": "2026-11-14"})
+        self.assertEqual(rec["status"], "green")
+        self.days(rest={"2026-10-22"})
+        self.assertEqual(snapshot.recovery(self.TODAY)["rest_mode"], {"on": False, "since": None, "ended": None})
+
+    def test_low_parts_and_bedtimes(self):
+        import snapshot
+        beds = ["23:10", "23:40", "00:20"]  # either side of midnight
+        self.days(extra=lambda i: {"recovery_index_contrib": "41", "sleep_balance_contrib": "66", "hrv_balance": "90",
+                                   "sleep_rem_contrib": "35", "sleep_total_contrib": "80",
+                                   "bedtime_start": f"2026-11-01T{beds[i % 3]}", "bedtime_end": "2026-11-02T07:05"})
+        od = snapshot.oura_detail(self.TODAY)
+        self.assertEqual(od["readiness_parts"]["low"], ["recovery index", "sleep balance"])
+        self.assertEqual(od["sleep_parts"]["low"], ["REM"])
+        bt = od["bedtime"]
+        self.assertEqual((bt["last_bed"], bt["last_wake"]), (beds[29 % 3], "07:05"))
+        self.assertEqual(bt["avg_7d"][:2], "23")  # 23:10, 23:40 and 00:20 average to before midnight, not to noon
+        self.assertGreater(bt["spread_7d_min"], 0)
+        md = snapshot.to_markdown(snapshot.build(write=False, today=self.TODAY))
+        self.assertIn("Readiness parts (2026-11-20): low (under 70): recovery index 41, sleep balance 66", md)
+        self.assertIn(f"Bedtime (2026-11-20): {beds[29 % 3]} → 07:05", md)
+
+    def test_older_rows_have_no_detail_and_no_rest_mode(self):
+        import snapshot
+        write("sources/oura_daily.csv", "date,readiness_score,total_sleep_h,hrv_balance\n2026-11-20,80,7.0,88\n")
+        self.addCleanup(remove, "sources/oura_daily.csv")
+        self.assertIsNone(snapshot.oura_detail(self.TODAY))
+        self.assertIsNone(snapshot.recovery(self.TODAY)["rest_mode"])
 
 
 class Polar(unittest.TestCase):

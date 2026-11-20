@@ -15,7 +15,7 @@ The caller gives you the person's data folder (`<data>`). If it doesn't, read `.
 2. `<data>/profile/health_profile.json`:
    - conditions;
    - injuries, especially `aggravating`, `triggers`, `status` and `pain_now`;
-   - `screening.answers`: a yes to `chest`, `dizzy` or `supervised` without a recorded clearance in `restrictions.medical_advice` blocks anything above RPE 5 and any maximal test;
+   - `screening.answers` and conditions: a yes to `chest`, `dizzy` or `supervised`, a heart condition or pregnancy without a recorded go-ahead (`restrictions.cleared_on`, covering it in `cleared_for`) blocks any plan;
    - medications;
    - restrictions;
    - `signals` and their `levels`;

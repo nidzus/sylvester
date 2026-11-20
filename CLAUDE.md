@@ -22,10 +22,12 @@ A personal training coach run from Claude Code. This folder is the **shared app*
 - **Pictures:** only catalogues ship (`coach/exercises/*.json`). Images download into `<data>/media/` on demand. Never add images from sources without a clear free licence (ExerciseDB GIFs, MuscleWiki, ExRx).
 - **Pages:** `app/phone.html` (each person publishes their own artifact from it), `app/setup.html` (the onboarding wizard, `sylvester.py setup`) and `app/index.html` (the local form), both served by `app/server.py`. The wizard and the form edit the same profile files; entries the wizard owns carry `"source": "setup"`.
 
+- **iPhone app:** `mobile/` (Expo, TypeScript; `mobile/README.md`). `mobile/src/engine/` is a port of `rolling.py`, `library.py`, `signals.py` and the snapshot's recovery: change both together; `mobile/test/parity.test.ts` (via `tools/parity.py`) fails if they lay out different days. The app reads the catalogues through `mobile/scripts/build-assets.mjs`; `sylvester.py export` is its import format. The Coach there only proposes changes (`mobile/src/coach/changes.ts` checks them, then a safety-review call). `proxy/` is the optional server for invite codes and Oura sign-in. Nothing personal goes into either: test fixtures are made-up people.
+
 ## Conventions
 
 - Python 3.10+, standard library only (the pulls use `ingest/http_lite.py` and `ingest/oauth_local.py` for HTTPS, no `requests`).
 - LF line endings (`.gitattributes`). Metric units.
-- Tests: `python -m unittest` (standard library, a throwaway data folder, a fake API on localhost). Add a test with any change to `rolling.py`, `library.py`, the pulls or the snapshot.
+- Tests: `python -m unittest` (standard library, a throwaway data folder, a fake API on localhost). Add a test with any change to `rolling.py`, `library.py`, the pulls or the snapshot. The app: `cd mobile && npm test`; the server: `cd proxy && npm test`.
 - Generated files in the data folder (`records/snapshot.*`, `trends.*`, `baseline.*`, `plans/*/schedule.*`): regenerate, don't hand-edit.
 - Apple Health `export.xml` can be over a gigabyte: stream it with `iterparse`, never load it whole.
