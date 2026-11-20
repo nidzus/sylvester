@@ -7,13 +7,13 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { checkPlan } from "../src/coach/changes.ts";
-import { ExerciseLibrary } from "../src/engine/library.ts";
-import type { Library } from "../src/engine/types.ts";
-import { emptyState, schedule } from "../src/store/model.ts";
-import { needsClearance, recordClearance } from "../src/store/clearance.ts";
-import { answersFrom, applySetup, blankAnswers, loadSteps } from "../src/store/setup.ts";
-import { starterPlan } from "../src/store/starter.ts";
+import { checkPlan } from "../../shared/changes.ts";
+import { ExerciseLibrary } from "../../shared/engine/library.ts";
+import type { Library } from "../../shared/engine/types.ts";
+import { emptyState, schedule } from "../../shared/model.ts";
+import { needsClearance, recordClearance } from "../../shared/clearance.ts";
+import { answersFrom, applySetup, blankAnswers, loadSteps } from "../../shared/setup.ts";
+import { starterPlan } from "../../shared/starter.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const data = JSON.parse(readFileSync(join(HERE, "..", "..", "coach", "library.json"), "utf8")) as Library;

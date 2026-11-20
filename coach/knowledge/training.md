@@ -1,6 +1,6 @@
 # Training module — designing and progressing the program
 
-Load when: `/coach plan`, `/coach review`, choosing or swapping exercises, or setting progression. Always together with `medical.md` (constraints win over everything here) and `<data>/profile/equipment.json` (only program what exists).
+Load when: `/sylvester:coach plan`, `/sylvester:coach review`, choosing or swapping exercises, or setting progression. Always together with `medical.md` (constraints win over everything here) and `<data>/profile/equipment.json` (only program what exists).
 
 ## Program skeleton
 

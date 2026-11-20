@@ -3,13 +3,13 @@
 // below run at once (anything blocking goes straight back to the Coach to fix), and a separate safety review runs
 // before applying anything that changes exercises or intensity. Pure functions; tested under Node.
 
-import { ExerciseLibrary } from "../engine/library.ts";
-import { build } from "../engine/rolling.ts";
-import type { Exercise, Obj, Person, PlanDoc, Routine } from "../engine/types.ts";
-import { addDays } from "../engine/util.ts";
-import { needsClearance } from "../store/clearance.ts";
-import type { AppState } from "../store/model.ts";
-import { currentRecovery, workoutRows } from "../store/model.ts";
+import { ExerciseLibrary } from "./engine/library.ts";
+import { build } from "./engine/rolling.ts";
+import type { Exercise, Obj, Person, PlanDoc, Routine } from "./engine/types.ts";
+import { addDays } from "./engine/util.ts";
+import { needsClearance } from "./engine/clearance.ts";
+import type { AppState } from "./model.ts";
+import { currentRecovery, workoutRows } from "./model.ts";
 
 export type Change =
   | { type: "new_plan"; plan: PlanDoc }

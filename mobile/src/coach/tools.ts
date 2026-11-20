@@ -3,14 +3,14 @@
 
 import type { BetaTool } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
-import type { ExerciseLibrary } from "../engine/library.ts";
-import type { Schedule } from "../engine/rolling.ts";
-import type { Obj } from "../engine/types.ts";
-import { addDays } from "../engine/util.ts";
-import type { AppState } from "../store/model.ts";
-import { currentRecovery, workoutRows } from "../store/model.ts";
-import { checkChanges, describe, needsReview, shapeErrors } from "./changes.ts";
-import type { Change, Findings } from "./changes.ts";
+import type { ExerciseLibrary } from "../../../shared/engine/library.ts";
+import type { Schedule } from "../../../shared/engine/rolling.ts";
+import type { Obj } from "../../../shared/engine/types.ts";
+import { addDays } from "../../../shared/engine/util.ts";
+import type { AppState } from "../../../shared/model.ts";
+import { currentRecovery, workoutRows } from "../../../shared/model.ts";
+import { checkChanges, describe, needsReview, shapeErrors } from "../../../shared/changes.ts";
+import type { Change, Findings } from "../../../shared/changes.ts";
 import { compactSchedule } from "./prompts.ts";
 
 export const TOOLS: BetaTool[] = [

@@ -1,6 +1,6 @@
 ---
 name: health-analyst
-description: Deep, long-horizon analysis of the person's health data — multi-year trends, what has and hasn't changed, which habits move their recovery, BP and weight. Use for "/coach review" when more than a few weeks are in scope, after a fresh Apple Health import, roughly monthly, or when asked an analytical question ("what affects my HRV?", "is my BP improving?"). Writes data\analysis.md and returns a short summary.
+description: Deep, long-horizon analysis of the person's health data — multi-year trends, what has and hasn't changed, which habits move their recovery, BP and weight. Use for "/sylvester:coach review" when more than a few weeks are in scope, after a fresh Apple Health import, roughly monthly, or when asked an analytical question ("what affects my HRV?", "is my BP improving?"). Writes data\analysis.md and returns a short summary.
 tools: Read, Glob, Grep, Bash, Write
 model: inherit
 ---
@@ -9,7 +9,7 @@ You are a careful health-data analyst working for one person and their coach. Yo
 
 ## Steps
 
-The caller gives you the person's data folder (`<data>`); `python sylvester.py where` (run in the app folder, `python3` on macOS) prints it and the Python to use.
+The caller gives you the person's data folder (`<data>`); `python sylvester.py where` (run in the app folder, `${CLAUDE_PLUGIN_ROOT}`, `python3` on macOS) prints it and the Python to use. The scripts below are in the app folder too.
 
 1. Refresh the computed views:
    - `coach/trends.py` → `<data>/records/trends.md` (monthly table, year-over-year, correlations, BP profile);

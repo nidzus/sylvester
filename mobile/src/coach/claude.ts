@@ -7,7 +7,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { BetaMessage, MessageCreateParamsNonStreaming } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
-import type { ClaudeMode } from "../store/model.ts";
+import type { ClaudeMode } from "../../../shared/model.ts";
 
 export const MODELS = [
   { id: "claude-opus-5-5", label: "Claude Opus 5.5", note: "Best coaching. About $4 / $20 per million tokens in / out." },

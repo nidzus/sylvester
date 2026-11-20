@@ -4,8 +4,8 @@
 import { useState } from "react";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
 
-import { STATUS_METRICS } from "../../engine/recovery.ts";
-import { status } from "../../store/model.ts";
+import { STATUS_METRICS } from "../../../../shared/engine/recovery.ts";
+import { status } from "../../../../shared/model.ts";
 import { useAppState, useToday } from "../../store/store.ts";
 import { refreshWearables } from "../../store/sync.ts";
 import { Bullets, Card, H, P, Row } from "../../ui/kit.tsx";

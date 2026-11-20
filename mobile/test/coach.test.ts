@@ -8,12 +8,12 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { newThread, safetyReview, send, transcript } from "../src/coach/agent.ts";
-import { applyChanges, checkChanges, needsReview } from "../src/coach/changes.ts";
+import { applyChanges, checkChanges, needsReview } from "../../shared/changes.ts";
 import { contextMessage, systemPrompt } from "../src/coach/prompts.ts";
-import { ExerciseLibrary } from "../src/engine/library.ts";
-import type { Library } from "../src/engine/types.ts";
-import { collapse, emptyState, fromExport, saveCheckin, saveWorkout, schedule, toExport, todayGate, workoutRows } from "../src/store/model.ts";
-import type { AppState } from "../src/store/model.ts";
+import { ExerciseLibrary } from "../../shared/engine/library.ts";
+import type { Library } from "../../shared/engine/types.ts";
+import { collapse, emptyState, fromExport, saveCheckin, saveWorkout, schedule, toExport, todayGate, workoutRows } from "../../shared/model.ts";
+import type { AppState } from "../../shared/model.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const lib = new ExerciseLibrary(JSON.parse(readFileSync(join(HERE, "..", "..", "coach", "library.json"), "utf8")) as Library);

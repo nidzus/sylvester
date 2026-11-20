@@ -1,9 +1,9 @@
 // What ships with the app: the exercise library, the calibration tests, picture links and the Coach's knowledge
 // (copied from the repository by scripts/build-assets.mjs).
 
-import type { Catalogue } from "../engine/calibration.ts";
-import { ExerciseLibrary } from "../engine/library.ts";
-import type { Library } from "../engine/types.ts";
+import type { Catalogue } from "../../../shared/engine/calibration.ts";
+import { ExerciseLibrary } from "../../../shared/engine/library.ts";
+import type { Library } from "../../../shared/engine/types.ts";
 import assessments from "../generated/assessments.json";
 import { KNOWLEDGE } from "../generated/knowledge.ts";
 import library from "../generated/library.json";

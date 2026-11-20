@@ -1,14 +1,17 @@
 // What the Coach is told. The system prompt is the same for every conversation (so it caches); the person's
 // own data goes into the first message of each conversation (contextMessage), never into the system prompt.
-// The rules here follow the desktop Coach (.claude/skills/coach/SKILL.md) and safety reviewer
-// (.claude/agents/safety-reviewer.md); the knowledge modules are coach/knowledge/*.md, copied in at build time.
+// The rules here follow the desktop Coach (skills/coach/SKILL.md) and safety reviewer
+// (agents/safety-reviewer.md, prompt in shared/review.ts); the knowledge modules are coach/knowledge/*.md, copied in at build time.
 
-import type { ExerciseLibrary } from "../engine/library.ts";
-import type { Schedule } from "../engine/rolling.ts";
-import type { Obj } from "../engine/types.ts";
-import { addDays } from "../engine/util.ts";
-import type { AppState } from "../store/model.ts";
-import { currentRecovery, workoutRows } from "../store/model.ts";
+import type { ExerciseLibrary } from "../../../shared/engine/library.ts";
+import type { Schedule } from "../../../shared/engine/rolling.ts";
+import type { Obj } from "../../../shared/engine/types.ts";
+import { addDays } from "../../../shared/engine/util.ts";
+import type { AppState } from "../../../shared/model.ts";
+import { currentRecovery, workoutRows } from "../../../shared/model.ts";
+import { compactSchedule } from "../../../shared/review.ts";
+
+export { REVIEWER, REVIEW_SCHEMA, compactSchedule } from "../../../shared/review.ts";
 
 const ROLE = `You are the person's training coach inside Sylvester, an iPhone app. You have their health profile, equipment, goals, wearable recovery data, daily check-ins, workout log, calibration results and their plan. Your job: plans they can actually do with their equipment, that respect their body, and move them toward a goal they chose.
 
@@ -77,21 +80,6 @@ export function systemPrompt(lib: ExerciseLibrary, knowledge: Record<string, str
   return `${ROLE}\n\n${vocab}\n\n# Reference\n\nThe desktop file paths these modules mention are the same data you have here.\n\n${modules}`;
 }
 
-const compactSession = (s: Obj | undefined) => s && (s.battery ? { calibration: s.battery } : {
-  intensity: s.intensity, rpe_cap: s.rpe_cap, note: s.coach_note,
-  exercises: (s.exercises || []).map((e: Obj) => [e.name, `${e.sets ?? ""}×${typeof e.reps === "object" ? JSON.stringify(e.reps) : e.reps ?? ""}`,
-    e.load_kg !== undefined ? `${e.load_kg} kg` : "", e.ex || ""].filter(Boolean).join(" · ")),
-});
-
-export function compactSchedule(sched: Schedule | null) {
-  if (!sched) return null;
-  return {
-    today: sched.today, phase: sched.phase,
-    days: sched.days.map(d => ({ date: d.date, weekday: d.weekday, kind: d.kind, title: d.title, intensity: d.intensity,
-      reasons: d.reasons?.length ? d.reasons : undefined, note: d.note || undefined, session: compactSession(d.session) })),
-  };
-}
-
 /** The person's data as the first message of a conversation. */
 export function contextMessage(state: AppState, sched: Schedule | null, today: string): string {
   const since = (n: number) => addDays(today, -n);
@@ -116,33 +104,3 @@ export function contextMessage(state: AppState, sched: Schedule | null, today: s
   };
   return `<my_data>\n${JSON.stringify(data)}\n</my_data>`;
 }
-
-export const REVIEWER = `You are a cautious sports-medicine reviewer. A coach has proposed changes to one person's training plan. Find what in them could hurt this person, given their actual medical history. You did not write the plan; assume it contains mistakes and look for them.
-
-Check, item by item:
-- Every exercise against every injury and restriction: is it in an injury's aggravating or triggers, or restrictions.avoid? Does it load a structure their history shows is compromised (loaded spinal flexion, heavy axial loading, end-range extension with lumbar disc disease or stenosis)? Heavy floor deadlifts or barbell back squats before the medical module's progression criteria are met?
-- Blood pressure: with diagnosed hypertension or home BP in stage 1–2, maximal or near-maximal efforts, low-rep sets (under 6), breath-holding cues, long head-down positions, zone-5 work.
-- Heart-rate zones computed from sensible max and resting values; RPE instead if a medication blunts heart rate.
-- Impact and joint load for their bodyweight and foot or knee history. Grip and wrist load given wrist or elbow history.
-- Progression: weekly cardio volume ≤ +10 %, load jumps realistic for the equipment, a deload planned.
-- Red-flag guidance present: does the plan tell them when to stop?
-- Equipment: anything programmed they don't own, or used unsafely.
-- The automatic envelope: phase RPE caps, deloads, rest days, and the rule that every exercise goes up one load step whenever the top of the range is reached. Is that safe for each exercise and this person? Exercises a signal or injury should drop must carry tags the signal's levels avoid.
-- Calibration tests: loads, gates and stop rules against the profile; no maximal tests.
-- Limits: does limits.avoid cover what each diagnosis and injury needs (compare the library's condition guidance and each injury's triggers)? Is every caution justified? For each slot, could it pick something unsafe (same pattern, their equipment, not avoided, not caution, level ≤ max_level)? Is the next rung of each bodyweight ladder safe?
-- Clearance: chest pain, dizziness or fainting, "supervised only", a heart condition or pregnancy need a recorded doctor's go-ahead (restrictions.cleared_on, covering each reason in cleared_for) before any plan at all.
-- loosens_limits lists what the person ticked as their own decision on the card. A tick is not medical clearance: judge the risk anyway.
-
-BLOCK if any exercise contradicts a recorded restriction or aggravating movement, or creates a clear risk given a diagnosis. Be specific and cite your source ("profile: injuries[0].triggers", "check-in 2026-11-03"). Don't pad with generic advice; if it's fine, PASS. Write each item as one short sentence the person can read on a phone.`;
-
-export const REVIEW_SCHEMA = {
-  type: "object",
-  properties: {
-    verdict: { type: "string", enum: ["PASS", "PASS WITH WARNINGS", "BLOCK"] },
-    blocking: { type: "array", items: { type: "string" } },
-    warnings: { type: "array", items: { type: "string" } },
-    missing_information: { type: "array", items: { type: "string" } },
-  },
-  required: ["verdict", "blocking", "warnings", "missing_information"],
-  additionalProperties: false,
-};

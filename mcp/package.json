@@ -1,0 +1,22 @@
+{
+  "name": "sylvester-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sylvester's coach tools over MCP, for Claude Code (the plugin) and Claude Desktop (the extension).",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "start": "node src/server.ts",
+    "test": "node --no-warnings --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "extension": "node scripts/build-extension.mjs"
+  },
+  "devDependencies": {
+    "@anthropic-ai/mcpb": "^2.1.2",
+    "@types/node": "^24.19.2",
+    "esbuild": "^0.28.2",
+    "typescript": "^6.0.3"
+  }
+}

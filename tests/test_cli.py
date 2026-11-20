@@ -70,7 +70,7 @@ class NextStep(unittest.TestCase):
 
     def test_walks_through_setup_in_order(self):
         self.assertIn("setup wizard", self.onboarding())
-        self.assertIn("/setup", self.onboarding(wizard_completed=True))
+        self.assertIn("/sylvester:setup", self.onboarding(wizard_completed=True))
         self.assertIn("ready", self.onboarding(wizard_completed=True, completed=True))
 
 

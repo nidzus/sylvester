@@ -6,10 +6,10 @@ import Storage from "expo-sqlite/kv-store";
 import { useMemo, useSyncExternalStore } from "react";
 
 import type { Thread } from "../coach/agent.ts";
-import { localToday } from "../engine/util.ts";
+import { localToday } from "../../../shared/engine/util.ts";
 import { lib, pictures } from "./catalog.ts";
-import { STATE_VERSION, emptyState, schedule } from "./model.ts";
-import type { AppState } from "./model.ts";
+import { STATE_VERSION, emptyState, schedule } from "../../../shared/model.ts";
+import type { AppState } from "../../../shared/model.ts";
 
 const STATE_KEY = "state", THREADS_KEY = "threads";
 

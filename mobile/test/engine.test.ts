@@ -6,13 +6,13 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { batteryDoc, mergeCatalogue } from "../src/engine/calibration.ts";
-import { ExerciseLibrary } from "../src/engine/library.ts";
-import { recovery } from "../src/engine/recovery.ts";
-import { useExercise } from "../src/engine/rolling.ts";
-import { levelActions } from "../src/engine/signals.ts";
-import type { DailyRow, Library } from "../src/engine/types.ts";
-import { addDays, pyRound, repRange, step, weekday } from "../src/engine/util.ts";
+import { batteryDoc, mergeCatalogue } from "../../shared/engine/calibration.ts";
+import { ExerciseLibrary } from "../../shared/engine/library.ts";
+import { recovery } from "../../shared/engine/recovery.ts";
+import { useExercise } from "../../shared/engine/rolling.ts";
+import { levelActions } from "../../shared/engine/signals.ts";
+import type { DailyRow, Library } from "../../shared/engine/types.ts";
+import { addDays, pyRound, repRange, step, weekday } from "../../shared/engine/util.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..", "..");

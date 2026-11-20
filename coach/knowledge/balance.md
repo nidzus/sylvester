@@ -1,6 +1,6 @@
 # Balance module — stress, mood, sustainability
 
-Load when: check-ins show mood, energy or motivation trending down; stress is high (Oura stress, check-ins); adherence drops; the person mentions life load, burnout, low mood; or in every `/coach review`.
+Load when: check-ins show mood, energy or motivation trending down; stress is high (Oura stress, check-ins); adherence drops; the person mentions life load, burnout, low mood; or in every `/sylvester:coach review`.
 
 ## What this module is — and isn't
 

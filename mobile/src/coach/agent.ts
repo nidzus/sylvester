@@ -5,14 +5,12 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import type { BetaContentBlockParam, BetaMessage, BetaMessageParam, BetaToolResultBlockParam } from "@anthropic-ai/sdk/resources/beta/messages/messages";
 
-import type { ExerciseLibrary } from "../engine/library.ts";
-import type { Schedule } from "../engine/rolling.ts";
-import { addDays } from "../engine/util.ts";
-import type { AppState } from "../store/model.ts";
-import { currentRecovery, schedule } from "../store/model.ts";
-import { checkChanges } from "./changes.ts";
+import type { ExerciseLibrary } from "../../../shared/engine/library.ts";
+import type { Schedule } from "../../../shared/engine/rolling.ts";
+import type { AppState } from "../../../shared/model.ts";
+import { REVIEWER, REVIEW_SCHEMA, reviewDocument } from "../../../shared/review.ts";
 import { create, textOf } from "./claude.ts";
-import { REVIEWER, REVIEW_SCHEMA, compactSchedule, contextMessage } from "./prompts.ts";
+import { contextMessage } from "./prompts.ts";
 import { TOOLS, runTool } from "./tools.ts";
 import type { Proposal } from "./tools.ts";
 
@@ -109,52 +107,12 @@ const TOOL_LABEL: Record<string, string> = {
 
 export type Verdict = NonNullable<Proposal["verdict"]>;
 
-/** For each slot in the plan, what it could pick for this person (the best fits, in turn), so the reviewer can judge
- *  the rotation, not only the named exercises. */
-function slotCandidates(state: AppState, lib: ExerciseLibrary): Record<string, string[]> {
-  const hp = state.profile.health_profile;
-  const who = lib.person(hp, state.profile.equipment, state.profile.goals);
-  const out: Record<string, string[]> = {};
-  for (const [key, r] of Object.entries(state.plan?.routines || {})) {
-    (r.exercises || []).forEach((e: Record<string, any>, i: number) => {
-      if (!e.slot) return;
-      const picks = new Set<string>();
-      for (let b = 0; b < 3; b++) {
-        const x = lib.pick(e.slot, b, who.equipment, who.avoid, who.max_level, who.caution, who);
-        if (x) picks.add(`${x.id} (L${x.level}; loads ${[...lib.stresses(x, who, who.equipment)].join(", ") || "nothing listed"})`);
-      }
-      out[`${r.title || key} #${i + 1} ${e.slot.pattern}`] = [...picks];
-    });
-  }
-  return out;
-}
-
 /** The independent safety review (a separate call, without the Coach's conversation). */
 export async function safetyReview(client: Anthropic, model: string, state: AppState, p: Proposal, lib: ExerciseLibrary, today: string,
                                    medical: string): Promise<Verdict> {
-  const { after, blocking, warnings } = checkChanges(state, p.changes, lib, today);
-  if (blocking.length) return { verdict: "BLOCK", blocking, warnings, missing_information: [] };
-  const rec = currentRecovery(state, today);
-  const doc = {
-    today,
-    profile: state.profile.health_profile,
-    equipment: state.profile.equipment,
-    current_plan: state.plan,
-    proposal: { summary: p.summary, why: p.why, changes: p.changes },
-    plan_after_changes: after.plan,
-    library_entries: Object.fromEntries([...JSON.stringify(after.plan || {}).matchAll(/"(?:ex|anywhere_ex)":"([a-z0-9_]+)"|"from":\[([^\]]*)\]/g)]
-      .flatMap(m => (m[1] ? [m[1]] : (m[2] || "").replace(/"/g, "").split(","))).filter(id => lib.get(id))
-      .map(id => [id, (({ id: _, cues: __, ...rest }) => rest)(lib.get(id)!)])),
-    slot_candidates: slotCandidates(after, lib),
-    next_14_days_after: (() => { try { return compactSchedule(schedule(after, lib, today, {})); } catch (e) { return `doesn't build: ${(e as Error).message}`; } })(),
-    loosens_limits: p.confirm,
-    conditions_guidance: Object.fromEntries((state.profile.health_profile.limits?.conditions || [])
-      .map((c: string) => [c, lib.data.conditions[c]]).filter(([, v]: [string, unknown]) => v)),
-    local_check_warnings: warnings,
-    recovery: rec && { status: rec.status, flags: rec.flags },
-    checkins_14d: state.checkins.filter(c => c.date >= addDays(today, -14)),
-    calibration_results: state.assessments,
-  };
+  const r = reviewDocument(state, p, lib, today);
+  if ("blocked" in r) return r.blocked;
+  const { doc, warnings } = r;
   const res = await create(client, model, {
     max_tokens: 8000,
     system: [{ type: "text", text: `${REVIEWER}\n\n<knowledge module="medical">\n${medical}\n</knowledge>`, cache_control: { type: "ephemeral" } }],

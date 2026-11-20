@@ -5,7 +5,7 @@ import { serverUrl } from "../coach/connection.ts";
 import * as apple from "../health/apple.ts";
 import * as oura from "../health/oura.ts";
 import { getState, update } from "./store.ts";
-import { mergeDaily } from "./model.ts";
+import { mergeDaily } from "../../../shared/model.ts";
 
 let running: Promise<string[]> | null = null;
 

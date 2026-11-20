@@ -12,10 +12,10 @@ The Sylvester coach as a native iPhone app (Expo / React Native, TypeScript). Ev
 
 ## How it fits the desktop app
 
-- **One engine.** `src/engine/` is a line-for-line TypeScript port of `coach/rolling.py`, `coach/library.py`, `core/signals.py` and the recovery part of `coach/snapshot.py`. `test/parity.test.ts` runs both on the same scenarios (`test/fixtures/scenarios.json`) and fails if a single day differs. Change the Python and the TypeScript together.
+- **One engine.** `../shared/engine/` (shared with the desktop's MCP server in `../mcp`) is a line-for-line TypeScript port of `coach/rolling.py`, `coach/library.py`, `core/signals.py` and the recovery part of `coach/snapshot.py`. `test/parity.test.ts` runs both on the same scenarios (`test/fixtures/scenarios.json`) and fails if a single day differs. Change the Python and the TypeScript together.
 - **One catalogue.** `scripts/build-assets.mjs` copies `coach/library.json`, `coach/assessments.json`, the picture links, `coach/knowledge/*.md` and `templates/plan` into `src/generated/` on every `npm install` and test run. Never edit `src/generated/`.
 - **Same data shapes.** `python sylvester.py export` writes one file with the profile, active plan, calibration, logs and a year of wearable days (no secrets, no medical records file); the app imports it (Settings, or the first screen). The app's backup is the same format.
-- **The Coach** follows the desktop Coach and safety reviewer (`src/coach/prompts.ts`), but it can only *propose* changes (`src/coach/changes.ts`). Local checks block anything that loads an avoided stress, breaks the plan or ignores a health-check "yes"; an independent safety-review call runs before anything that changes exercises or intensity is applied.
+- **The Coach** follows the desktop Coach and safety reviewer (`src/coach/prompts.ts`, `../shared/review.ts`), but it can only *propose* changes (`../shared/changes.ts`). Local checks block anything that loads an avoided stress, breaks the plan or ignores a health-check "yes"; an independent safety-review call runs before anything that changes exercises or intensity is applied.
 
 ## Develop (Windows or Mac; no Mac needed)
 

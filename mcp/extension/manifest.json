@@ -1,0 +1,179 @@
+{
+  "manifest_version": "0.3",
+  "name": "sylvester",
+  "display_name": "Sylvester, your training coach",
+  "version": "1.0.0",
+  "description": "A personal training coach in your own Claude: today's session, check-ins, recovery and sleep, and a plan that adapts, kept on your computer.",
+  "long_description": "Sylvester is a training coach that runs inside your own Claude. It keeps your health profile, equipment, goals, daily check-ins, workout log and plan in a folder on your computer, and lays out the next 14 days from them: a bad night, a stressful week or a sore knee changes today's session, and loads move one step at a time from what you logged.\n\nOne coach covers training, recovery and sleep, and the balance between training and the rest of your life. It changes your plan only after its own safety checks, and it never loosens a limit you set without asking you first.\n\nTo begin, start a new chat and say: \"Set me up with Sylvester.\" If you already use the Sylvester desktop app, the extension finds your data folder by itself.\n\nSylvester is a training assistant, not a doctor or a medical device. It can be wrong. Share your plan with your doctor or physio, and stop and get help if something feels wrong.",
+  "author": {
+    "name": "nidzus",
+    "url": "https://github.com/nidzus"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nidzus/sylvester"
+  },
+  "homepage": "https://github.com/nidzus/sylvester",
+  "documentation": "https://github.com/nidzus/sylvester#readme",
+  "support": "https://github.com/nidzus/sylvester/issues",
+  "icon": "icon.png",
+  "license": "MIT",
+  "keywords": [
+    "training",
+    "coach",
+    "fitness",
+    "recovery",
+    "sleep",
+    "health"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.mjs",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.mjs"
+      ],
+      "env": {
+        "SYLVESTER_DATA": "${user_config.data_folder}"
+      }
+    }
+  },
+  "user_config": {
+    "data_folder": {
+      "type": "directory",
+      "title": "Where to keep your data (optional)",
+      "description": "Leave this empty. Your profile, plan and logs are then kept in a folder called health-data in your home folder (or the folder the Sylvester desktop app already uses), on this computer only. Choose a folder here only if you want them somewhere else."
+    }
+  },
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "tools": [
+    {
+      "name": "status",
+      "description": "Start here."
+    },
+    {
+      "name": "setup_guide",
+      "description": "Everything first-time setup needs: the disclaimer and data notice to show first, the health-check questions, and the choices for experience, aches, equipment and goals, with the answer format setup_profile takes."
+    },
+    {
+      "name": "setup_profile",
+      "description": "Create the data folder if needed and save the setup answers as the health profile, equipment and goals; limits start from the library's condition guidance and the aches' triggers."
+    },
+    {
+      "name": "record_clearance",
+      "description": "Record that a doctor (or the supervising professional) has cleared the person to train, covering everything that currently needs it."
+    },
+    {
+      "name": "today",
+      "description": "One day in full: the session with exercises, sets, reps and loads (plus its easier and no-equipment versions), or why it's a recovery or rest day; today's gate (what may be opened after the check-in); the recovery picture; and the check-in, or its scales if they haven't checked in."
+    },
+    {
+      "name": "get_schedule",
+      "description": "The rolling plan as the engine lays it out (after recovery, check-ins, signals, the log and overrides): one line per exercise with sets, reps and loads, and why each day is what it is."
+    },
+    {
+      "name": "get_plan",
+      "description": "The plan's direction: program text, schedule settings (rolling), routines, upcoming overrides, the shared routines and personal calibration tests, recent changes, and the formats propose_changes takes."
+    },
+    {
+      "name": "find_exercises",
+      "description": "Library exercises this person can do for a movement pattern, best fit first (goals, baseline focus, emphasis, their conditions' preferred exercises, their own adaptations, level; never equipment)."
+    },
+    {
+      "name": "get_exercise",
+      "description": "One library exercise in full: cues, stresses, equipment, unit, its progression ladder (family), and this person's adaptations for it."
+    },
+    {
+      "name": "log_workout",
+      "description": "Record a session: one entry per exercise."
+    },
+    {
+      "name": "recovery",
+      "description": "The recovery picture: green, amber or red and why; readiness, HRV, resting heart rate and sleep against their usual; last night; Oura Rest Mode; a day-by-day trend; and the check-in scales' 7-day averages against the two weeks before."
+    },
+    {
+      "name": "save_checkin",
+      "description": "Save the daily check-in: the common scales (mood, energy, stress, motivation, soreness 1–5; pain 0–10) and the person's own signals (keys and ranges in today's checkin.scales)."
+    },
+    {
+      "name": "get_history",
+      "description": "Logged data: workouts (one row per exercise), check-ins, calibration results, the wearable's daily rows, or the plan's change log."
+    },
+    {
+      "name": "read_report",
+      "description": "One of the longer reports the desktop app writes: snapshot (today's numbers), trends, baseline (the calibration's measured starting point), analysis (the multi-month analysis), clinical_summary (the medical records summary from Apple Health)."
+    },
+    {
+      "name": "get_profile",
+      "description": "The person's health profile (conditions, injuries, medications, restrictions, screening, signals, limits, coaching focus, their own ways of doing exercises, preferences), equipment with the loads it allows, and goals."
+    },
+    {
+      "name": "knowledge",
+      "description": "A reference module: medical (conditions, medications, injuries, red flags), recovery (signals, deloads, sleep), training (program design, progression, HR zones), exercise_library (choosing, mixing and progressing exercises), balance (stress, mood, motivation, sustainability)."
+    },
+    {
+      "name": "propose_changes",
+      "description": "Propose changes to the plan or profile."
+    },
+    {
+      "name": "review_brief",
+      "description": "Everything the independent safety review of a proposal needs: the reviewer's instructions, the medical module, and the document (profile, current plan, the proposal, the plan after it, the library entries it uses, what each slot could pick, the next 14 days after it, recovery and check-ins)."
+    },
+    {
+      "name": "apply_proposal",
+      "description": "Apply a proposal the person has agreed to: writes the plan and profile files, lays out the 14 days again and logs the change."
+    }
+  ],
+  "prompts": [
+    {
+      "name": "today",
+      "description": "What to do today, adjusted for last night, your check-in and your log.",
+      "text": "What should I do today? Use today and recovery; if I haven't checked in yet, ask me the check-in questions first (one message, all at once)."
+    },
+    {
+      "name": "check_in",
+      "description": "The daily check-in: mood, energy, stress, motivation, soreness, pain and your own signals.",
+      "text": "Let's do my check-in. Ask me the scales from today (all in one message), save them with save_checkin, then tell me what that changes about today."
+    },
+    {
+      "name": "log_session",
+      "description": "Record what you did, so the next loads and the rotation follow it.",
+      "arguments": [
+        "what"
+      ],
+      "text": "I want to log a session: ${arguments.what}. Match it to the session the plan laid out (today), ask only for what's missing (sets, reps, load, effort as RPE, any pain), then log_workout and tell me what comes next."
+    },
+    {
+      "name": "wind_down",
+      "description": "An evening conversation about sleep, stress and how the week is going; adjusts tomorrow if needed.",
+      "text": "Evening check: look at my recent sleep and recovery (recovery) and my check-ins, read knowledge(\"balance\") and knowledge(\"recovery\"), then ask me how today went before advising. Keep it to what I can do tonight and this week. If tomorrow's session should change, say so and propose it."
+    },
+    {
+      "name": "weekly_review",
+      "description": "How the last weeks went: sessions done, loads, recovery, sleep, check-ins, and one or two adjustments.",
+      "text": "Review my last two weeks: sessions planned vs done (get_history workouts, get_schedule), loads and effort, recovery and sleep trends (recovery), check-in trends, and anything in the change log. Finish with a short Balance section and at most two concrete adjustments, proposed as changes if they touch the plan."
+    },
+    {
+      "name": "new_plan",
+      "description": "A plan written for you toward a goal, checked for safety before it's saved.",
+      "arguments": [
+        "goal"
+      ],
+      "text": "Write me a plan for: ${arguments.goal}. Read get_profile, get_plan, get_history calibration and knowledge(\"medical\"), knowledge(\"training\") and knowledge(\"exercise_library\") first. If there are no calibration results, say what the plan would rest on and offer to start from the starter plan instead. Then one new_plan proposal, the safety review, and apply only with a PASS."
+    },
+    {
+      "name": "setup",
+      "description": "First-time setup: the disclaimer, a short health check, aches, equipment and goals, then a starter plan.",
+      "text": "Set me up with Sylvester. Call setup_guide and follow it."
+    }
+  ]
+}

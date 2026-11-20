@@ -2,7 +2,7 @@
 
 import Constants from "expo-constants";
 
-import type { AppState } from "../store/model.ts";
+import type { AppState } from "../../../shared/model.ts";
 import { getSecret, setSecret } from "../store/secrets.ts";
 import type { Connection } from "./claude.ts";
 

@@ -5,9 +5,9 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { View } from "react-native";
 
-import { BASE, personal } from "../engine/signals.ts";
-import { addDays } from "../engine/util.ts";
-import { saveCheckin } from "../store/model.ts";
+import { BASE, personal } from "../../../shared/engine/signals.ts";
+import { addDays } from "../../../shared/engine/util.ts";
+import { saveCheckin } from "../../../shared/model.ts";
 import { update, useAppState, useToday } from "../store/store.ts";
 import { Button, Card, Chip, Field, P, Row, Scale, Screen } from "../ui/kit.tsx";
 

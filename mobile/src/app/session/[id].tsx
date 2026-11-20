@@ -7,10 +7,10 @@ import { Redirect, Stack, router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
-import type { Session } from "../../engine/rolling.ts";
-import type { Obj } from "../../engine/types.ts";
+import type { Session } from "../../../../shared/engine/rolling.ts";
+import type { Obj } from "../../../../shared/engine/types.ts";
 import { lib, pictures } from "../../store/catalog.ts";
-import { collapse, routine, saveWorkout, todayGate } from "../../store/model.ts";
+import { collapse, routine, saveWorkout, todayGate } from "../../../../shared/model.ts";
 import { update, useAppState, useSchedule, useToday } from "../../store/store.ts";
 import { ExercisePicture } from "../../ui/Picture.tsx";
 import { Bullets, Button, Card, Chip, Field, H, P, Row, Screen } from "../../ui/kit.tsx";

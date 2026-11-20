@@ -7,9 +7,9 @@
 //
 // Not offered at all until a needed doctor's go-ahead is recorded (clearance.ts).
 
-import type { ExerciseLibrary } from "../engine/library.ts";
-import type { Obj, PlanDoc, Routine } from "../engine/types.ts";
-import { addDays, weekday } from "../engine/util.ts";
+import type { ExerciseLibrary } from "./engine/library.ts";
+import type { Obj, PlanDoc, Routine } from "./engine/types.ts";
+import { addDays, weekday } from "./engine/util.ts";
 import { needsClearance } from "./clearance.ts";
 
 const REPS = { reps: "8–12", s: "20–30", m: "20–30", min: "10–15" };

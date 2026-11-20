@@ -1,0 +1,6 @@
+{
+  "name": "sylvester-shared",
+  "private": true,
+  "type": "module",
+  "description": "Pure TypeScript shared by the iPhone app (mobile/) and the MCP server (mcp/): the plan engine, the data model, the change checks and the safety review."
+}

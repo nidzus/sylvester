@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Onboard a new Sylvester user, or resume an unfinished onboarding. Use for "/setup", "get me started", "onboard me", or when the coach finds no onboarding in the profile. Creates the private data folder, opens the setup wizard in the browser (disclaimer, health, injuries, equipment, goals, devices), follows up in chat on what needs judgement, connects wearables, publishes their phone page, schedules the daily task, and starts the baseline calibration.
+description: Onboard a new Sylvester user, or resume an unfinished onboarding. Use for "/sylvester:setup", "get me started", "onboard me", or when the coach finds no onboarding in the profile. Creates the private data folder, opens the setup wizard in the browser (disclaimer, health, injuries, equipment, goals, devices), follows up in chat on what needs judgement, connects wearables, publishes their phone page, schedules the daily task, and starts the baseline calibration.
 ---
 
 # Setup: onboarding a new person
@@ -8,6 +8,8 @@ description: Onboard a new Sylvester user, or resume an unfinished onboarding. U
 A browser wizard for the facts, then a short, friendly conversation for what needs judgement. One topic at a time, a few questions per message, and save as you go so nothing is lost if they stop halfway. Every step is resumable: check what's already filled in and skip it.
 
 ## 0. The data folder
+
+The app folder is `${CLAUDE_PLUGIN_ROOT}` (`<app>` below). Run the app's commands from there (`cd "${CLAUDE_PLUGIN_ROOT}"` first); paths like `app/phone.html`, `coach/…` and `docs/…` are in it.
 
 Run `python sylvester.py where` (`python3` on macOS). If the data folder is missing:
 1. Ask where to keep it. The default is `~/health-data` (on Windows: `C:\Users\<name>\health-data`); anywhere outside this app folder is fine, but never inside a git repository or a synced public folder.
@@ -103,14 +105,14 @@ Each person gets their own private page in their own claude.ai account:
 
 ## 5. Daily task
 
-Run `python sylvester.py schedule 11:00`, or another time after they usually wake. Windows uses Task Scheduler; macOS uses launchd. The task pulls wearable data, refreshes the snapshot and trends, and rebuilds the 14-day plan. The phone page gets the new plan whenever they open Claude and say `/coach sync` (or run any coach mode).
+Run `python sylvester.py schedule 11:00`, or another time after they usually wake. Windows uses Task Scheduler; macOS uses launchd. The task pulls wearable data, refreshes the snapshot and trends, and rebuilds the 14-day plan. The phone page gets the new plan whenever they open Claude and say `/sylvester:coach sync` (or run any coach mode).
 
 ## 6. Baseline, then the first plan
 
-1. Run the coach's `/coach calibrate`: build their batteries in `<data>/plans/calibration.json` from the catalogue, matching their equipment and profile, and have the safety-reviewer check them.
+1. Run the coach's `/sylvester:coach calibrate`: build their batteries in `<data>/plans/calibration.json` from the catalogue, matching their equipment and profile, and have the safety-reviewer check them.
 2. Push the first battery to their phone.
 3. Explain: two or three short test sessions on different days, nothing to failure.
-4. When results are in, `/coach plan <goal>` writes the plan and the rolling 14 days.
+4. When results are in, `/sylvester:coach plan <goal>` writes the plan and the rolling 14 days.
 
 ## 7. Finish
 
@@ -118,4 +120,4 @@ Run `python sylvester.py check` and fix anything marked `!!`. Set `onboarding.co
 - where their data lives;
 - their phone link;
 - what happens daily;
-- the three commands they'll use most: `/coach today`, `/coach sync`, `/coach review`.
+- the three commands they'll use most: `/sylvester:coach today`, `/sylvester:coach sync`, `/sylvester:coach review`.

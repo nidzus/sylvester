@@ -7,8 +7,8 @@
 
 import * as WebBrowser from "expo-web-browser";
 
-import type { DailyRow } from "../engine/types.ts";
-import { addDays, localToday } from "../engine/util.ts";
+import type { DailyRow } from "../../../shared/engine/types.ts";
+import { addDays, localToday } from "../../../shared/engine/util.ts";
 import { getSecret, setSecret } from "../store/secrets.ts";
 import { REST_MODE_LOOKBACK_DAYS, ouraRows } from "./ouraMap.ts";
 import type { OuraPull } from "./ouraMap.ts";

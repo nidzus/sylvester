@@ -7,11 +7,11 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import type { AssessmentResult } from "../../engine/calibration.ts";
-import type { Obj } from "../../engine/types.ts";
+import type { AssessmentResult } from "../../../../shared/engine/calibration.ts";
+import type { Obj } from "../../../../shared/engine/types.ts";
 import { sharedCatalogue } from "../../store/catalog.ts";
-import { needsClearance } from "../../store/clearance.ts";
-import { battery, saveAssessment, todayGate } from "../../store/model.ts";
+import { needsClearance } from "../../../../shared/clearance.ts";
+import { battery, saveAssessment, todayGate } from "../../../../shared/model.ts";
 import { update, useAppState, useSchedule, useToday } from "../../store/store.ts";
 import { ExercisePicture } from "../../ui/Picture.tsx";
 import { Bullets, Button, Card, Chip, Field, H, P, Row, Screen } from "../../ui/kit.tsx";

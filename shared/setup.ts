@@ -2,7 +2,7 @@
 // equipment and goals files. Limits start from the library's condition guidance plus each ache's triggers; the
 // Coach refines them with the person afterwards.
 
-import type { Library, Obj } from "../engine/types.ts";
+import type { Library, Obj } from "./engine/types.ts";
 import type { AppState } from "./model.ts";
 
 export const DISCLAIMER = "Sylvester's Coach is a training assistant, not a doctor or a medical device. It works only from what you and your records tell it, and it can be wrong. Share your plan with your doctor or physio, and stop and get help if something feels wrong: chest pain, dizziness, new numbness or weakness.";

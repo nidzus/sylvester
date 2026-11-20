@@ -3,7 +3,7 @@
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
-import type { DayEntry } from "../engine/rolling.ts";
+import type { DayEntry } from "../../../shared/engine/rolling.ts";
 import { space, useTheme } from "./theme.ts";
 
 export const KIND: Record<string, string> = {

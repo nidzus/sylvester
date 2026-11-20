@@ -1,0 +1,11 @@
+{
+  "name": "sylvester",
+  "owner": { "name": "nidzus", "url": "https://github.com/nidzus" },
+  "plugins": [
+    {
+      "name": "sylvester",
+      "source": "./",
+      "description": "A personal training coach that runs in Claude Code, with your data in a folder on your computer."
+    }
+  ]
+}

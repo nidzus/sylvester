@@ -5,7 +5,7 @@ import { router } from "expo-router";
 import { Fragment, useState } from "react";
 
 import { sharedCatalogue } from "../../store/catalog.ts";
-import { catalogue } from "../../store/model.ts";
+import { catalogue } from "../../../../shared/model.ts";
 import { useAppState, useSchedule, useToday } from "../../store/store.ts";
 import { DayRow } from "../../ui/Day.tsx";
 import { Button, Card, Divider, H, P, Rich, Screen } from "../../ui/kit.tsx";

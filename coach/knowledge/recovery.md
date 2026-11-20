@@ -1,6 +1,6 @@
 # Recovery module — reading the body's signals
 
-Load when: choosing today's session (`/coach today`), reviewing a block, or when the person asks why they feel flat. Data: `<data>/records/snapshot.md` (recovery, training, check-ins), `<data>/records/trends.md` (long-term).
+Load when: choosing today's session (`/sylvester:coach today`), reviewing a block, or when the person asks why they feel flat. Data: `<data>/records/snapshot.md` (recovery, training, check-ins), `<data>/records/trends.md` (long-term).
 
 ## Principle
 

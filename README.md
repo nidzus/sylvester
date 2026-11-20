@@ -1,14 +1,14 @@
 # Sylvester
 
-A personal training coach that runs in your own Claude Code: it reads your wearables, health records, check-ins and workouts, builds a plan around your body and the equipment you own, and keeps the next 14 days adjusted to how training is actually going. Your gym screen is a private page on your phone.
+A personal training coach that runs in your own Claude (Claude Code as a plugin, or the Claude desktop app as an extension): it reads your wearables, health records, check-ins and workouts, builds a plan around your body and the equipment you own, and keeps the next 14 days adjusted to how training is actually going. Your gym screen is a private page on your phone.
 
 > **Heads-up:** Sylvester's Coach is a training assistant, not a doctor or a medical device. It works only from what you and your records tell it, and it can be wrong. Share your plan with your doctor or physio, and stop and get help if something feels wrong: chest pain, dizziness, new numbness or weakness.
 
 ## What it does
 
-- **Onboarding (`/setup`):** a 10-minute wizard in your browser (health check, a body map for aches and injuries, your gear, your goals), then a short chat with the Coach about anything that needs a second question.
-- **Baseline (`/coach calibrate`):** measured test sessions (body, mobility, balance, strength) that set your starting weights and show left/right differences.
-- **Plan (`/coach plan`):** a program built only from your equipment, around every condition and injury, checked by an independent safety reviewer.
+- **Onboarding (`/sylvester:setup`):** a 10-minute wizard in your browser (health check, a body map for aches and injuries, your gear, your goals), then a short chat with the Coach about anything that needs a second question.
+- **Baseline (`/sylvester:coach calibrate`):** measured test sessions (body, mobility, balance, strength) that set your starting weights and show left/right differences.
+- **Plan (`/sylvester:coach plan`):** a program built only from your equipment, around every condition and injury, checked by an independent safety reviewer.
 - **Rolling 14 days:** rebuilt daily from what happened. A hard session eases the next one, a poor recovery day moves the session, and loads go up one step when you reach the top of the range.
 - **Exercise library:** 228 exercises (calisthenics with just a wall and floor, conventional strength, functional and unconventional work, mobility, balance, conditioning), each tagged with what it trains, what it needs and what it loads. Main lifts stay put; accessories rotate every few weeks; bodyweight moves climb their progression ladder; a bad day swaps an exercise for a safe one instead of dropping it; and every session has a no-equipment version on the phone.
 - **Phone page:** today's session with pictures and set logging, the daily check-in, a status page (recovery, sleep and HRV against your usual, with 14-day trends), the 14-day strip and history, on your own claude.ai page.
@@ -37,9 +37,9 @@ You need:
 
 **The easy way:** open Claude Code in any folder and paste:
 
-> Install Sylvester from https://github.com/nidzus/sylvester into my home folder: clone it, run `sylvester.py init`, then start the setup wizard for me.
+> Install Sylvester from https://github.com/nidzus/sylvester into my home folder: clone it, run `sylvester.py init`, add the clone to Claude Code as a plugin marketplace and install the `sylvester` plugin from it, then start the setup wizard for me.
 
-Claude installs what's missing, asks before anything it needs your permission for, and opens the wizard in your browser. Afterwards, start `claude` inside the `sylvester` folder: each session begins with a one-line check of where you are in setting up, so the Coach can offer the next step.
+Claude installs what's missing, asks before anything it needs your permission for, and opens the wizard in your browser. Afterwards the Coach is there in any Claude Code session (`/sylvester:coach`). Sessions started inside the `sylvester` folder also begin with a one-line check of where you are in setting up, so the Coach can offer the next step.
 
 **By hand, on Windows:**
 
@@ -48,6 +48,8 @@ winget install Python.Python.3.12 Git.Git
 git clone https://github.com/nidzus/sylvester.git %USERPROFILE%\sylvester
 cd %USERPROFILE%\sylvester
 python sylvester.py init
+claude plugin marketplace add %USERPROFILE%\sylvester
+claude plugin install sylvester@sylvester
 claude
 ```
 
@@ -59,10 +61,14 @@ brew install python               # or the installer from python.org (then run i
 git clone https://github.com/nidzus/sylvester.git ~/sylvester
 cd ~/sylvester
 python3 sylvester.py init
+claude plugin marketplace add ~/sylvester
+claude plugin install sylvester@sylvester
 claude
 ```
 
-Then run `python sylvester.py setup` (the wizard), and `/setup` in Claude Code for the short follow-up. Run `python sylvester.py check` (`python3` on macOS) any time to see what's working. Nothing needs `pip install`: Sylvester uses only Python's standard library.
+The plugin is added from your clone, so `git pull` updates it too. (Installing it straight from GitHub works for the Coach, but the daily task and the wizard need the clone.) The coach's tools need [Node.js](https://nodejs.org) 22.18 or newer.
+
+Then run `python sylvester.py setup` (the wizard), and `/sylvester:setup` in Claude Code for the short follow-up. Run `python sylvester.py check` (`python3` on macOS) any time to see what's working. Nothing needs `pip install`: Sylvester uses only Python's standard library.
 
 ## Everyday use
 
@@ -70,10 +76,11 @@ Then run `python sylvester.py setup` (the wizard), and `/setup` in Claude Code f
 |---|---|
 | See today's session | Open your phone page (add it to your home screen) |
 | Log a workout or check in | On the phone page |
-| Get the latest plan onto the phone | `/coach sync` in Claude Code |
-| Ask what to do today, or change it | `/coach today` |
-| A progress review | `/coach review` (every 2–4 weeks) |
-| A deep look at your data | `/coach analyze` |
+| Get the latest plan onto the phone | `/sylvester:coach sync` in Claude Code |
+| Ask what to do today, or change it | `/sylvester:coach today` |
+| A progress review | `/sylvester:coach review` (every 2–4 weeks) |
+| A deep look at your data | `/sylvester:coach analyze` |
+| Sleep, stress, an evening check | `/sylvester:balance` |
 | Edit your profile, equipment, goals | `python sylvester.py form`, or tell the Coach |
 
 Every day at the time you chose, the daily task pulls wearable data, refreshes your snapshot and trends, and rebuilds the 14 days. It uses Task Scheduler on Windows and launchd on macOS.
@@ -97,15 +104,21 @@ python sylvester.py next                the one next step in setting up
 python sylvester.py export [file]       everything the iPhone app needs, in one file (no passwords or tokens)
 ```
 
+## In the Claude desktop app (no Python, no terminal)
+
+Sylvester also comes as a Claude Desktop extension: the same coach, as tools in an ordinary chat. Download `sylvester.mcpb` (or build it: `cd mcp && npm install && npm run extension`), open it, and Claude Desktop installs it. Then start a chat and say *"Set me up with Sylvester."* It asks the health check, your aches, equipment and goals, lays out a starter plan, and keeps everything in `~/health-data` on your computer (or the folder the desktop app already uses). The menu has ready prompts: today's session, the check-in, logging a session, an evening wind-down, the weekly review, a new plan.
+
+On its own it has no wearable pulls, phone page or daily task: those come from the Python app above, which works on the same folder. Before a plan change is saved the same checks run as on the phone; the safety review is done in the conversation, as a separate step, rather than by a separate reviewer as in Claude Code.
+
 ## The iPhone app
 
-`mobile/` is Sylvester as a native iPhone app: the same plan engine (ported to TypeScript and checked day by day against the Python one), check-ins, logging, calibration, Apple Health and Oura, with everything kept on the phone. The Coach runs on Claude through your own Anthropic API key, or through an invite code for someone else's account via the small server in `proxy/`. `python sylvester.py export` moves your data folder onto the phone. Building it needs no Mac: see `mobile/README.md`.
+`mobile/` is Sylvester as a native iPhone app: the same plan engine (TypeScript in `shared/`, checked day by day against the Python one), check-ins, logging, calibration, Apple Health and Oura, with everything kept on the phone. The Coach runs on Claude through your own Anthropic API key, or through an invite code for someone else's account via the small server in `proxy/`. `python sylvester.py export` moves your data folder onto the phone. Building it needs no Mac: see `mobile/README.md`.
 
 ## Updating
 
 `git pull` in the app folder. Updates never touch your data, except when a new version changes how the data folder is laid out: then `check` or the next daily run upgrades it once, and says so. If your data folder is newer than the app (you updated on another computer), Sylvester asks you to `git pull` first.
 
-To check an update before relying on it: `python -m unittest` in the app folder runs the tests against a throwaway data folder (no network, nothing of yours is read).
+To check an update before relying on it: `python -m unittest` in the app folder runs the tests against a throwaway data folder (no network, nothing of yours is read); `cd mcp && npm test` does the same for the coach's tools.
 
 ## Pictures
 

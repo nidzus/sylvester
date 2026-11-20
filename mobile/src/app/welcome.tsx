@@ -9,9 +9,9 @@ import { Pressable, Text, View } from "react-native";
 
 import * as apple from "../health/apple.ts";
 import { lib } from "../store/catalog.ts";
-import { fromExport } from "../store/model.ts";
-import { CARDIO, DISCLAIMER, EXPERIENCE, GEAR, GOALS, INJURY_STATUS, SCREEN, SERIOUS, SPOTS, TRIGGERS, answersFrom, applySetup, blankAnswers } from "../store/setup.ts";
-import type { Ache, SetupAnswers } from "../store/setup.ts";
+import { fromExport } from "../../../shared/model.ts";
+import { CARDIO, DISCLAIMER, EXPERIENCE, GEAR, GOALS, INJURY_STATUS, SCREEN, SERIOUS, SPOTS, TRIGGERS, answersFrom, applySetup, blankAnswers } from "../../../shared/setup.ts";
+import type { Ache, SetupAnswers } from "../../../shared/setup.ts";
 import { getState, replace, update, useToday } from "../store/store.ts";
 import { refreshWearables } from "../store/sync.ts";
 import { Bullets, Button, Card, Chip, Field, H, P, Row, Scale, Screen } from "../ui/kit.tsx";

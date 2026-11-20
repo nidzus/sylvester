@@ -81,7 +81,7 @@ RULES = {
 BACK_SESSIONS, BACK_RPE = 2, 6
 
 
-# Who needs a doctor's go-ahead before any plan (the iPhone app's mobile/src/engine/clearance.ts is the same rule):
+# Who needs a doctor's go-ahead before any plan (the iPhone app's shared/engine/clearance.ts is the same rule):
 # a yes to chest pain, dizziness or fainting, or "train only under supervision" in the health check; a heart condition
 # (the health-check question also covers high blood pressure: a yes counts unless they ticked hypertension); pregnancy.
 # A go-ahead covers the reasons it was recorded for (restrictions.cleared_for, with a cleared_on date); a new reason
@@ -492,7 +492,7 @@ def build(today=None):
     today = today or date.today()
     folder = paths.active_plan_dir()
     if not folder:
-        raise SystemExit("No active plan yet: the Coach writes one with /coach plan.")
+        raise SystemExit("No active plan yet: the Coach writes one with /sylvester:coach plan.")
     plan = Plan(folder)
     if not plan.rotation:
         raise SystemExit(f"{folder / 'rolling.json'}: 'rotation' names no routine in routines/.")
@@ -560,7 +560,7 @@ def build(today=None):
             days.append(entry)
             continue
         if ph.get("done"):
-            entry.update(kind="review", title="Plan finished: run /coach review")
+            entry.update(kind="review", title="Plan finished: run /sylvester:coach review")
             days.append(entry)
             continue
         override = paths.read_json(folder / "overrides" / f"{day.isoformat()}.json")

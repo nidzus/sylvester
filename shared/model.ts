@@ -4,16 +4,16 @@
 // The shapes are the desktop's: profile files, the plan folder, and the CSV rows. A desktop data folder exported
 // with `python sylvester.py export` imports as is, and an app backup has the same format.
 
-import { batteryDoc, mergeCatalogue } from "../engine/calibration.ts";
-import type { AssessmentResult, Catalogue } from "../engine/calibration.ts";
-import { ExerciseLibrary } from "../engine/library.ts";
-import { recovery, trendDays } from "../engine/recovery.ts";
-import { levelActions, personal } from "../engine/signals.ts";
+import { batteryDoc, mergeCatalogue } from "./engine/calibration.ts";
+import type { AssessmentResult, Catalogue } from "./engine/calibration.ts";
+import { ExerciseLibrary } from "./engine/library.ts";
+import { recovery, trendDays } from "./engine/recovery.ts";
+import { levelActions, personal } from "./engine/signals.ts";
 import { needsClearance } from "./clearance.ts";
-import { build, routineSession } from "../engine/rolling.ts";
-import type { Schedule, Session } from "../engine/rolling.ts";
-import type { CheckinRow, DailyRow, Obj, PlanDoc, Recovery, Routine, WorkoutRow } from "../engine/types.ts";
-import { addDays } from "../engine/util.ts";
+import { build, routineSession } from "./engine/rolling.ts";
+import type { Schedule, Session } from "./engine/rolling.ts";
+import type { CheckinRow, DailyRow, Obj, PlanDoc, Recovery, Routine, WorkoutRow } from "./engine/types.ts";
+import { addDays } from "./engine/util.ts";
 
 export const EXPORT_FORMAT = "sylvester-export";
 export const STATE_VERSION = 1;

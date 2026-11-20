@@ -1,0 +1,18 @@
+{
+  "name": "sylvester",
+  "displayName": "Sylvester",
+  "version": "1.0.0",
+  "description": "A personal training coach: plans from your own equipment around every condition and injury, a rolling 14 days that follows your recovery, sleep, check-ins and log, and an independent safety review before any change. Your data stays in a folder on your computer.",
+  "author": { "name": "nidzus", "url": "https://github.com/nidzus" },
+  "homepage": "https://github.com/nidzus/sylvester",
+  "repository": "https://github.com/nidzus/sylvester",
+  "license": "MIT",
+  "icon": "./mobile/assets/icon.png",
+  "keywords": ["training", "coach", "fitness", "recovery", "sleep", "health"],
+  "mcpServers": {
+    "sylvester": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/src/server.ts"]
+    }
+  }
+}

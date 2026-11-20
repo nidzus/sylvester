@@ -3,7 +3,7 @@
 import { Redirect } from "expo-router";
 import { NativeTabs } from "expo-router/native-tabs";
 
-import { isOnboarded } from "../../store/model.ts";
+import { isOnboarded } from "../../../../shared/model.ts";
 import { useAppState } from "../../store/store.ts";
 
 export default function Tabs() {

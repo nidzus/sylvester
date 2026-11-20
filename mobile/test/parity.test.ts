@@ -9,10 +9,10 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { ExerciseLibrary } from "../src/engine/library.ts";
-import { recovery } from "../src/engine/recovery.ts";
-import { REVIEW_TITLE, build } from "../src/engine/rolling.ts";
-import type { Library } from "../src/engine/types.ts";
+import { ExerciseLibrary } from "../../shared/engine/library.ts";
+import { recovery } from "../../shared/engine/recovery.ts";
+import { REVIEW_TITLE, build } from "../../shared/engine/rolling.ts";
+import type { Library } from "../../shared/engine/types.ts";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, "..", "..");

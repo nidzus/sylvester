@@ -47,7 +47,7 @@ Limits and signals use the same tags:
 
 ## The person's limits
 
-`health_profile.json` → `limits`, written by the Coach during `/setup` (or whenever the profile changes) and confirmed with the person:
+`health_profile.json` → `limits`, written by the Coach during `/sylvester:setup` (or whenever the profile changes) and confirmed with the person:
 
 ```json
 "limits": {"avoid": ["spine_flex_loaded", "spine_rot_loaded"], "caution": ["knee_deep"], "max_level": 3, "no_household": ["table"]}

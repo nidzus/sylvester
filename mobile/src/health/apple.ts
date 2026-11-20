@@ -15,8 +15,8 @@ import {
 } from "@kingstinct/react-native-healthkit";
 import type { QuantityTypeIdentifier } from "@kingstinct/react-native-healthkit";
 
-import type { DailyRow } from "../engine/types.ts";
-import { localToday } from "../engine/util.ts";
+import type { DailyRow } from "../../../shared/engine/types.ts";
+import { localToday } from "../../../shared/engine/util.ts";
 
 const READ = [
   "HKQuantityTypeIdentifierHeartRateVariabilitySDNN",

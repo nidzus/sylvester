@@ -346,7 +346,7 @@ function renderState() {
   const box = document.getElementById("stat"), s = state.status;
   if (!s || !s.recovery) {
     box.replaceChildren($("div", { class: "empty" }, $("h3", { text: "No status yet" }),
-      $("p", { class: "muted", text: "It arrives with the next sync from the Coach (/coach sync)." })));
+      $("p", { class: "muted", text: "It arrives with the next sync from the Coach (/sylvester:coach sync)." })));
     return;
   }
   const r = s.recovery, n = s.last_night, word = r.status || "–";
@@ -544,7 +544,7 @@ function renderSession() {
   if (!s) {
     box.replaceChildren($("div", { class: "empty" },
       $("h3", { text: "No session yet" }),
-      $("p", { class: "muted" }, "Sessions appear here when the Coach writes them. In Claude Code, run ", $("code", { text: "/coach today" }), ".")));
+      $("p", { class: "muted" }, "Sessions appear here when the Coach writes them. In Claude Code, run ", $("code", { text: "/sylvester:coach today" }), ".")));
     return;
   }
   // A recovery day (red recovery, pain 6+, a signal at its recovery level) replaces today's session or calibration,

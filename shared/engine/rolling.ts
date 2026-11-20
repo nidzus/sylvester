@@ -10,7 +10,7 @@ import type { CheckinRow, Entry, Exercise, Obj, Person, PlanDoc, Recovery, Routi
 import { DAYS, addDays, daysBetween, deepEqual, floorDiv, g, num, nums, pyRound, repRange, sortedStrings, step, weekday } from "./util.ts";
 
 export const HORIZON = 14;
-// The desktop says "Plan finished: run /coach review"; on the phone the review happens in the Coach tab.
+// The desktop says "Plan finished: run /sylvester:coach review"; on the phone the review happens in the Coach tab.
 export const REVIEW_TITLE = "Plan finished: time for a review";
 export const GATE_TITLE = "First, a doctor's go-ahead";
 export const RULES = {

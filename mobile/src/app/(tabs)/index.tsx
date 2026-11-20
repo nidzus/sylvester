@@ -6,11 +6,11 @@ import { RefreshControl, ScrollView, Text, View } from "react-native";
 
 import { Alert } from "react-native";
 
-import { applyChanges, checkPlan } from "../../coach/changes.ts";
-import { needsClearance, recordClearance } from "../../store/clearance.ts";
+import { applyChanges, checkPlan } from "../../../../shared/changes.ts";
+import { needsClearance, recordClearance } from "../../../../shared/clearance.ts";
 import { lib } from "../../store/catalog.ts";
-import { status, todayGate } from "../../store/model.ts";
-import { starterPlan } from "../../store/starter.ts";
+import { status, todayGate } from "../../../../shared/model.ts";
+import { starterPlan } from "../../../../shared/starter.ts";
 import { update, useAppState, useSchedule, useToday } from "../../store/store.ts";
 import { refreshWearables } from "../../store/sync.ts";
 import { DayRow, openDay } from "../../ui/Day.tsx";

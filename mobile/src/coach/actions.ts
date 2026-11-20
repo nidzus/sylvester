@@ -4,13 +4,13 @@
 
 import { useSyncExternalStore } from "react";
 
-import { localToday } from "../engine/util.ts";
+import { localToday } from "../../../shared/engine/util.ts";
 import { knowledge, lib, pictures } from "../store/catalog.ts";
-import { schedule } from "../store/model.ts";
+import { schedule } from "../../../shared/model.ts";
 import { getState, getThreads, saveThread, update } from "../store/store.ts";
 import { newThread, safetyReview, send } from "./agent.ts";
 import type { Thread } from "./agent.ts";
-import { applyChanges, checkChanges } from "./changes.ts";
+import { applyChanges, checkChanges } from "../../../shared/changes.ts";
 import { explain, makeClient } from "./claude.ts";
 import { connection } from "./connection.ts";
 import { systemPrompt } from "./prompts.ts";

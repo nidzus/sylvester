@@ -1,7 +1,7 @@
 // Oura API v2 responses -> the daily rows the recovery rules read (the same columns as the desktop's
 // sources/oura_daily.csv, built the same way as ingest/oura_pull.py). Pure, so it's tested under Node.
 
-import type { DailyRow, Obj } from "../engine/types.ts";
+import type { DailyRow, Obj } from "../../../shared/engine/types.ts";
 
 const byDay = (xs: Obj[] | null | undefined) => new Map((xs || []).map(d => [d.day as string, d]));
 const hours = (s: unknown) => (typeof s === "number" && s ? Math.round(s / 3600 * 100) / 100 : null);

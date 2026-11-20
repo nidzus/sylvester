@@ -130,7 +130,7 @@ def init(folder=None):
         subprocess.call(["git", "config", "core.hooksPath", "tools/hooks"], cwd=str(APP))
     print(f"Data folder ready: {data}")
     print(f"Linked in {paths.POINTER}")
-    print("Next: python sylvester.py setup (the onboarding wizard), then /setup in Claude Code.")
+    print("Next: python sylvester.py setup (the onboarding wizard), then /sylvester:setup in Claude Code.")
 
 
 def where():
@@ -199,7 +199,7 @@ def check():
     prof = paths.read_json(paths.PROFILE / "health_profile.json", {}) or {}
     ob = prof.get("onboarding") or {}
     line(bool(ob.get("wizard_completed")), "setup wizard finished", "python sylvester.py setup")
-    line(bool(ob.get("completed")), "onboarding finished with the Coach", "In Claude Code: /setup")
+    line(bool(ob.get("completed")), "onboarding finished with the Coach", "In Claude Code: /sylvester:setup")
     eq = paths.read_json(paths.PROFILE / "equipment.json", {}) or {}
     line(bool(eq.get("items")), "equipment listed", "python sylvester.py setup, or the Equipment tab in the form")
     s = paths.settings()
@@ -208,9 +208,9 @@ def check():
             line((paths.SECRETS / f"{src}_tokens.json").exists(), f"{src.title()} connected", f"python sylvester.py connect {src}")
     if s["sources"].get("apple_health"):
         line((paths.SOURCES / "apple_daily.csv").exists(), "Apple Health imported", "python sylvester.py import apple")
-    line(bool(s.get("phone_url")), "phone page published", "/setup publishes it from app/phone.html")
+    line(bool(s.get("phone_url")), "phone page published", "/sylvester:setup publishes it from app/phone.html")
     line(scheduled(), "daily task scheduled" if SYSTEM != "Linux" else "daily task (add the cron line from `schedule`)", "python sylvester.py schedule")
-    line(paths.active_plan_dir() is not None or None, "a plan exists", "/coach calibrate, then /coach plan")
+    line(paths.active_plan_dir() is not None or None, "a plan exists", "/sylvester:coach calibrate, then /sylvester:coach plan")
     hooks = subprocess.run(["git", "config", "core.hooksPath"], cwd=str(APP), capture_output=True, text=True).stdout.strip() if (APP / ".git").exists() else "n/a"
     line(hooks in ("tools/hooks", "n/a"), "privacy check runs before every commit", "git config core.hooksPath tools/hooks")
     print("\nAll good." if ok else "\nFix the !! lines above (the → line says how).")
@@ -323,18 +323,18 @@ def next_step():
     ob = prof.get("onboarding") or {}
     if not ob.get("wizard_completed"):
         return ("Sylvester: the setup wizard hasn't been finished. Offer to open it: run "
-                f"`{py} sylvester.py setup` in the background (it opens the browser and ends itself on Finish), then /setup.")
+                f"`{py} sylvester.py setup` in the background (it opens the browser and ends itself on Finish), then /sylvester:setup.")
     if not ob.get("completed"):
-        return "Sylvester: the wizard is done but onboarding isn't. Offer to continue with /setup (a short follow-up chat)."
+        return "Sylvester: the wizard is done but onboarding isn't. Offer to continue with /sylvester:setup (a short follow-up chat)."
     if paths.active_plan_dir() is None:
-        return "Sylvester: set up, but there is no plan yet. Offer /coach calibrate, then /coach plan."
+        return "Sylvester: set up, but there is no plan yet. Offer /sylvester:coach calibrate, then /sylvester:coach plan."
     snap = paths.RECORDS / "snapshot.json"
     stale = ""
     if snap.exists():
         age = (datetime.now() - datetime.fromtimestamp(snap.stat().st_mtime)).days
         if age >= 2:
             stale = f" The daily update last ran {age} days ago; `{py} sylvester.py check` shows why."
-    return f"Sylvester: ready. /coach today gives today's session; /coach sync sends the plan to the phone.{stale}"
+    return f"Sylvester: ready. /sylvester:coach today gives today's session; /sylvester:coach sync sends the plan to the phone.{stale}"
 
 
 EXPORT_DAYS = 400  # wearable history the app gets: a year for baselines and trends
@@ -342,7 +342,7 @@ EXPORT_DAYS = 400  # wearable history the app gets: a year for baselines and tre
 
 def export_app(target=None):
     """One file with the person's profile, active plan, calibration, logs and recent wearable days, for the iPhone
-    app's "Import from the desktop" (mobile/src/store/model.ts fromExport reads it). Secrets, medical records
+    app's "Import from the desktop" (shared/model.ts fromExport reads it). Secrets, medical records
     (records/clinical_summary.*) and pictures stay here."""
     import csv
     from datetime import date, timedelta
