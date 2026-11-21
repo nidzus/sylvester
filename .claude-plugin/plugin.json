@@ -1,7 +1,7 @@
 {
   "name": "sylvester",
   "displayName": "Sylvester",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A personal training coach: plans from your own equipment around every condition and injury, a rolling 14 days that follows your recovery, sleep, check-ins and log, and an independent safety review before any change. Your data stays in a folder on your computer.",
   "author": { "name": "nidzus", "url": "https://github.com/nidzus" },
   "homepage": "https://github.com/nidzus/sylvester",
