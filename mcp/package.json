@@ -1,6 +1,6 @@
 {
   "name": "sylvester-mcp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "type": "module",
   "description": "Sylvester's coach tools over MCP, for Claude Code (the plugin) and Claude Desktop (the extension).",

@@ -11,7 +11,7 @@ import { pathToFileURL } from "node:url";
 import { INSTRUCTIONS, PROMPTS } from "./instructions.ts";
 import { TOOLS, callTool } from "./tools.ts";
 
-export const VERSION = "1.0.1";
+export const VERSION = "1.0.2";
 const PROTOCOLS = ["2025-11-25", "2025-06-18", "2025-03-26", "2024-11-05"];
 
 type Id = string | number | null;

@@ -618,8 +618,15 @@ export const TOOLS: Tool[] = [
   {
     name: "review_brief",
     title: "Safety review brief",
-    description: "Everything the independent safety review of a proposal needs: the reviewer's instructions, the medical module, and the document (profile, current plan, the proposal, the plan after it, the library entries it uses, what each slot could pick, the next 14 days after it, recovery and check-ins). It is also saved as a file, so a separate reviewer (the safety-reviewer agent in Claude Code) can read it.",
-    inputSchema: { type: "object", properties: { id: { type: "string" } }, required: ["id"] },
+    description: "Everything the independent safety review of a proposal needs: the reviewer's instructions, the medical module, and the document (profile, current plan, the proposal, the plan after it, the library entries it uses, what each slot could pick, the next 14 days after it, recovery and check-ins). It is also saved as a file, so a separate reviewer (the safety-reviewer agent in Claude Code) can read it: there, pass file_only and give the agent the file.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        id: { type: "string" },
+        file_only: { type: "boolean", description: "Return only where the brief is saved and what it covers, not the brief itself (for a separate reviewer)." },
+      },
+      required: ["id"],
+    },
     annotations: { ...READ, readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     run: (input, ctx) => {
       const { data, today } = ctx;
@@ -633,6 +640,8 @@ export const TOOLS: Tool[] = [
       const brief = { proposal: p.id, instructions: REVIEWER, answer_format: { verdict: "PASS | PASS WITH WARNINGS | BLOCK", blocking: ["..."], warnings: ["..."], missing_information: ["..."] },
         knowledge_medical: data.cat.knowledge.medical || "", document: r.doc };
       writeJson(file, brief);
+      if (input.file_only === true) return ok({ proposal: p.id, file, summary: p.summary, changes: p.lines,
+        warnings: r.warnings, how: "Give the file to the safety-reviewer agent with the data folder, then call apply_proposal with id and its review {verdict, blocking, warnings, missing_information, reviewer}." });
       return ok({ ...brief, file, how: "Review it as a cautious reviewer who didn't write it, then call apply_proposal with id and review {verdict, blocking, warnings, missing_information, reviewer}. In Claude Code, give the file to the safety-reviewer agent and pass its verdict." });
     },
   },

@@ -253,6 +253,10 @@ test("changes: blocked by the local checks, reviewed, confirmed, applied and log
   assert.match(brief.instructions, /sports-medicine reviewer/);
   assert.ok(brief.document.plan_after_changes && brief.document.slot_candidates);
   assert.ok(existsSync(brief.file), "saved for a separate reviewer");
+  const short = (await s.call("review_brief", { id, file_only: true })).json;
+  assert.equal(short.file, brief.file);
+  assert.ok(!("document" in short) && !("instructions" in short), "file_only leaves the brief in its file");
+  assert.ok(short.changes.length > 0);
   r = await s.call("apply_proposal", { id, review: { verdict: "BLOCK", blocking: ["made-up reason"] } });
   assert.equal(r.error, true);
   assert.match(r.text, /made-up reason/);
